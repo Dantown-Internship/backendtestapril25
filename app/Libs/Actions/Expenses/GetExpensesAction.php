@@ -9,7 +9,7 @@ class GetExpensesAction
 {
     public function handle($request)
     {
-        $expenses = Expense::with('user')->paginate();
+        $expenses = Expense::with('user')->paginate(RESULT_COUNT);
 
         return response()->json([
             'message' => 'Expenses retrieved successfully',

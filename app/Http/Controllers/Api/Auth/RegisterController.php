@@ -6,6 +6,9 @@ use App\Libs\Actions\Users\CreateUserAction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+/**
+ * @tags Auth
+ */
 final class RegisterController extends Controller
 {
     public function __construct(

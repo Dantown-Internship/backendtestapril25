@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LoginController;
 
@@ -39,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::prefix('users')->controller(UserController::class)->group(function(){
         Route::get('', 'index')->middleware(['role:admin', 'cache.response']);
         Route::post('', 'store')->middleware('role:admin');
-        Route::put('/{id}', 'updateRole')->middleware('role:admin');
+        Route::put('/{id}', 'update')->middleware('role:admin');
     });
 });
 

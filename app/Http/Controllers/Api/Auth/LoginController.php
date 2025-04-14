@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Libs\Actions\Auth\LoginAction;
 use App\Http\Controllers\Controller;
 
+/**
+ * @tags Auth
+ */
 final class LoginController extends Controller
 {
 

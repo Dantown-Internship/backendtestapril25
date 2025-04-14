@@ -8,7 +8,7 @@ class GetUsersAction
 {
     public function handle($request)
     {
-        $users = User::paginate();
+        $users = User::paginate(RESULT_COUNT);
 
         return response()->json([
             'message' => 'Users retrieved successfully',
