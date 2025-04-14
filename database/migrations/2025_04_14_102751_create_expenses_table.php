@@ -16,9 +16,10 @@ return new class extends Migration
             $table->uuid('company_id')->index();
             $table->uuid('user_id')->index();
             $table->string('title');
-            $table->bigInteger('amount')->default(0); // Using amount in it's base form (Kobo, Cents, Pence)
+            $table->bigInteger('amount')->default(0);
             $table->string('category');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
