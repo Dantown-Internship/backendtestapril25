@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,11 @@ Route::get('/', function () {
     ]);
 })->name('api.index');
 
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    // Route::apiResource('expenses', ExpenseController::class);
+    // Route::apiResource('users', UserController::class);
 Route::apiResource('companies', CompanyController::class);
+
+});
