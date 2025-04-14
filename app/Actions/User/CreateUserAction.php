@@ -13,6 +13,7 @@ class CreateUserAction
 
     public function execute(array $createUserRecordOptions)
     {
+        
         return $this->user->create(
             $createUserRecordOptions
         );
