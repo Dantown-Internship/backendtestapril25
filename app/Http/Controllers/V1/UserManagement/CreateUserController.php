@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\V1\Admin\UserManagement;
+namespace App\Http\Controllers\V1\UserManagement;
 
 use App\Actions\User\CreateUserAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Admin\UserManagement\CreateUserRequest;
-use App\Http\Resources\V1\Admin\UserManagement\GetUserResource;
+use App\Http\Requests\V1\UserManagement\CreateUserRequest;
+use App\Http\Resources\V1\UserManagement\GetUserResource;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUserController extends Controller

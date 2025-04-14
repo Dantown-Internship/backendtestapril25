@@ -2,4 +2,5 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('shared')->group(__DIR__.'/Shared/index.php');
+Route::prefix('authentication')->group(__DIR__.'/AuthenticationRoutes.php');
+Route::prefix('user-management')->group(__DIR__.'/UserManagementRoutes.php');

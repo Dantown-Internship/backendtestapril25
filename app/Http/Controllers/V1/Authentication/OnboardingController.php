@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\V1\Shared\Authentication;
+namespace App\Http\Controllers\V1\Authentication;
 
 use App\Actions\Company\CreateCompanyAction;
 use App\Actions\User\CreateUserAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Shared\Authentication\OnboardingRequest;
-use App\Http\Resources\V1\Shared\Authentication\OnboardingResource;
+use App\Http\Requests\V1\Authentication\OnboardingRequest;
+use App\Http\Resources\V1\Authentication\OnboardingResource;
 use App\Jobs\BackgroundProcessing\Onboarding\SetupCompanyExpenseCategoriesBackgroundProcessingJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;

@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\V1\Admin\UserManagement\CreateUserController;
-use App\Http\Controllers\V1\Admin\UserManagement\FetchUsersController;
-use App\Http\Controllers\V1\Admin\UserManagement\UpdateUserController;
+use App\Http\Controllers\V1\UserManagement\CreateUserController;
+use App\Http\Controllers\V1\UserManagement\FetchUsersController;
+use App\Http\Controllers\V1\UserManagement\UpdateUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {

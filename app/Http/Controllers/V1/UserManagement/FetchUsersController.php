@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\V1\Admin\UserManagement;
+namespace App\Http\Controllers\V1\UserManagement;
 
 use App\Actions\User\ListUsersAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Admin\UserManagement\FetchUsersRequest;
-use App\Http\Resources\V1\Admin\UserManagement\FetchUsersResource;
+use App\Http\Requests\V1\UserManagement\FetchUsersRequest;
+use App\Http\Resources\V1\UserManagement\FetchUsersResource;
 
 class FetchUsersController extends Controller
 {

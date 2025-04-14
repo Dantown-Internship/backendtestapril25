@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\V1\Shared\Authentication;
+namespace App\Http\Controllers\V1\Authentication;
 
 use App\Actions\User\GetUserByEmailAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Shared\Authentication\LoginRequest;
-use App\Http\Resources\V1\Shared\Authentication\LoginResource;
+use App\Http\Requests\V1\Authentication\LoginRequest;
+use App\Http\Resources\V1\Authentication\LoginResource;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller

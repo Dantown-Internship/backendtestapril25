@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\V1\Admin\UserManagement;
+namespace App\Http\Controllers\V1\UserManagement;
 
 use App\Actions\User\GetUserByIdAction;
 use App\Actions\User\UpdateUserAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Admin\UserManagement\UpdateUserRequest;
+use App\Http\Requests\V1\UserManagement\UpdateUserRequest;
 
 class UpdateUserController extends Controller
 {
