@@ -36,11 +36,10 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     // User Routes
-
     Route::prefix('users')->controller(UserController::class)->group(function(){
-        // Route::get('', 'index')->middleware(['role:admin', 'cache.response']);
-        // Route::post('', 'store')->middleware('role:admin');
-        // Route::put('/{id}', 'updateRole')->middleware('role:admin');
+        Route::get('', 'index')->middleware(['role:admin', 'cache.response']);
+        Route::post('', 'store')->middleware('role:admin');
+        Route::put('/{id}', 'updateRole')->middleware('role:admin');
     });
 });
 
