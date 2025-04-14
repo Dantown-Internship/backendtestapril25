@@ -13,4 +13,9 @@ class Expense extends AbstractModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function expenseCategory()
+    {
+        return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
+    }
 }
