@@ -1,7 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\ExpenseController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +18,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+
+// Authentication Routes
+Route::post('login', LoginController::class);
+Route::post('register', RegisterController::class);
+
+// Authenticated Routes
+Route::middleware('auth:sanctum')->group(function(){
+
+    // Expense Routes
+    Route::prefix('expenses')->controller(ExpenseController::class)->group(function(){
+        // Route::get('', 'index')->middleware('cache.response');
+        // Route::post('', 'store');
+        // Route::put('/{expense}', 'update')->middleware('role:admin,manager');
+        // Route::delete('/{expense}', 'destroy')->middleware('role:admin');
+    });
+
+    // User Routes
+
+    Route::prefix('users')->controller(UserController::class)->group(function(){
+        // Route::get('', 'index')->middleware(['role:admin', 'cache.response']);
+        // Route::post('', 'store')->middleware('role:admin');
+        // Route::put('/{id}', 'updateRole')->middleware('role:admin');
+    });
 });
+
