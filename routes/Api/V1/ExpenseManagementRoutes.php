@@ -7,7 +7,9 @@ use App\Http\Controllers\V1\ExpenseManagement\GetExpenseController;
 use App\Http\Controllers\V1\ExpenseManagement\UpdateExpenseController;
 use Illuminate\Support\Facades\Route;
 
-Route::group([], function () {
+Route::group([
+    'middleware' => ['auth']
+], function () {
     Route::delete('/expenses/{expenseId}', DeleteExpenseController::class);
 
     Route::put('/expenses/{expenseId}', UpdateExpenseController::class);
