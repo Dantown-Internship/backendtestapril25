@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Libs\Traits\BelongsToContext;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToContext;
 
     protected $fillable = [
         'user_id',

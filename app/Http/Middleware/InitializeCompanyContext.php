@@ -21,8 +21,8 @@ class InitializeCompanyContext
         }
 
         // Check path: /company/{company1}/resource
-        if (!$companyIdentifier && $request->segment(1) === 'company') {
-            $fromPath = $request->segment(2);
+        if (!$companyIdentifier) {
+            $fromPath = $request->segment(1);
             if ($this->isValidCompanyIdentifier($fromPath)) {
                 $companyIdentifier = $fromPath;
             }
@@ -45,6 +45,9 @@ class InitializeCompanyContext
             if ($company) {
                 // Bind company globally
                 app()->instance('currentCompany', $company);
+                // Optionally, you can set the company in the request object
+                $request->attributes->set('currentCompany', $company);
+
             } else {
                 return response()->json(['error' => 'Invalid company.'], 404);
             }

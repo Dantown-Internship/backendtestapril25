@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Libs\Traits\BelongsToContext;
 use App\Libs\Traits\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
-    use HasFactory, Loggable;
+    use HasFactory, Loggable, BelongsToContext;
 
     protected $fillable = [
         'company_id',
