@@ -40,5 +40,6 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('', 'store')->middleware('role:admin');
         Route::put('/{id}', 'update')->middleware('role:admin');
     });
+    
 });
 
