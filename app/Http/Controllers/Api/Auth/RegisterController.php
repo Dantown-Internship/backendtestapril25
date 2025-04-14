@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Libs\Actions\Users\CreateUserAction;
 use Illuminate\Http\Request;
-use App\Libs\Actions\Auth\RegisterAction;
 use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller
 {
     public function __construct(
-        protected RegisterAction $registerAction
+        protected CreateUserAction $registerAction
     ){}
 
     /**
-     * Handle the incoming request.
+     * Register New User.
      */
     public function __invoke(Request $request)
     {

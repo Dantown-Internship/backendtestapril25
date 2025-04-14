@@ -12,8 +12,9 @@ class LoginController extends Controller
     public function __construct(
         protected LoginAction $loginAction
     ){}
+    
     /**
-     * Handle the incoming request.
+     * Login In To Company.
      */
     public function __invoke(Request $request)
     {

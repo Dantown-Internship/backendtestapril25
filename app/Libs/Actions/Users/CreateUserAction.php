@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Libs\Actions\Auth;
+namespace App\Libs\Actions\Users;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
-class RegisterAction
+class CreateUserAction
 {
     public function handle($request)
     {
@@ -37,7 +37,5 @@ class RegisterAction
                 'success' => false
             ], 500);
         }
-
-        
     }
 }

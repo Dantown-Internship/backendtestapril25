@@ -29,10 +29,10 @@ Route::middleware('auth:sanctum')->group(function(){
 
     // Expense Routes
     Route::prefix('expenses')->controller(ExpenseController::class)->group(function(){
-        // Route::get('', 'index')->middleware('cache.response');
-        // Route::post('', 'store');
-        // Route::put('/{expense}', 'update')->middleware('role:admin,manager');
-        // Route::delete('/{expense}', 'destroy')->middleware('role:admin');
+        Route::get('', 'index')->middleware('cache.response');
+        Route::post('', 'store');
+        Route::put('/{expense}', 'update')->middleware('role:admin,manager');
+        Route::delete('/{expense}', 'destroy')->middleware('role:admin');
     });
 
     // User Routes
