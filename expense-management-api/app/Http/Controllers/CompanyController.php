@@ -72,7 +72,6 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate the request data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
         ]);
@@ -85,7 +84,6 @@ class CompanyController extends Controller
             ], 422);
         }
 
-        // Find the company
         $company = Company::find($id);
         if (!$company) {
             return response()->json([
@@ -94,7 +92,6 @@ class CompanyController extends Controller
             ], 404);
         }
 
-        // Update the company
         $company->update($validator->validated());
 
         return response()->json([

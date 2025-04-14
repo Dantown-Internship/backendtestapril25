@@ -20,4 +20,14 @@ class Company extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+    
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

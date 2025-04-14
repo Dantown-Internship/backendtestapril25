@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'company_id',
     ];
 
     /**
@@ -45,4 +47,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Admin';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'Manager';
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role === 'Employee';
+    }
+    
 }
