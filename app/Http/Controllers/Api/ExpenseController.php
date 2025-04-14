@@ -15,7 +15,6 @@ class ExpenseController extends Controller
 
     public function __construct(
         protected GetExpensesAction $getExpensesAction,
-        protected GetUsersAction $getUsersAction,
         protected CreateExpenseAction $createExpenseAction,
         protected UpdateExpenseAction $updateExpenseAction,
         protected DeleteExpenseAction $deleteExpenseAction,        
