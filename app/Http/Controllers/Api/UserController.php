@@ -9,7 +9,7 @@ use App\Libs\Actions\Users\GetUsersAction;
 use App\Libs\Actions\Users\CreateUserAction;
 use App\Http\Controllers\Controller;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
     public function __construct(
         protected CreateUserAction $createUserAction,

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\User::class)->index('user_id_index')->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\Company::class)->index('company_id_index')->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\User::class)->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Company::class)->cascadeOnDelete();
             $table->string('action');
             $table->json('changes')->nullable();
             $table->timestamp('created_at')->useCurrent();

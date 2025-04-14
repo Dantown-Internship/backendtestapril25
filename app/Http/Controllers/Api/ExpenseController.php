@@ -10,7 +10,7 @@ use App\Libs\Actions\Expenses\DeleteExpenseAction;
 use App\Libs\Actions\Expenses\CreateExpenseAction;
 use App\Http\Controllers\Controller;
 
-class ExpenseController extends Controller
+final class ExpenseController extends Controller
 {
 
     public function __construct(

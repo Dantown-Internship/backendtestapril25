@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Libs\Actions\Auth\LoginAction;
 use App\Http\Controllers\Controller;
 
-class LoginController extends Controller
+final class LoginController extends Controller
 {
 
     public function __construct(

@@ -6,7 +6,7 @@ use App\Libs\Actions\Users\CreateUserAction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class RegisterController extends Controller
+final class RegisterController extends Controller
 {
     public function __construct(
         protected CreateUserAction $registerAction
