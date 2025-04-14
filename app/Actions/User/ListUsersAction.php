@@ -23,6 +23,10 @@ class ListUsersAction
             $query->where('company_id', $filterRecordOptionsPayload['company_id']);
         }
 
+        if (!empty($filterRecordOptionsPayload['search_query'])) {
+            $query->where('name', 'LIKE', $filterRecordOptionsPayload['search_query'] . '%')->orWhere('email', 'LIKE', $filterRecordOptionsPayload['search_query'] . '%');
+        }
+
         if ($paginationPayload) {
             $paginatedUsers = $query->paginate(
                 $paginationPayload['limit'] ?? config('businessConfig.default_page_limit'),
