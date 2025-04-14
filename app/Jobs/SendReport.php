@@ -2,11 +2,15 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
+use App\Notifications\WeeklyExpenseReport;
+use App\Models\User;
+use App\Models\Expense;
 
 class SendReport implements ShouldQueue
 {
@@ -25,6 +29,12 @@ class SendReport implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        $admins = User::where('role', 'admin')->get();
+
+        $expenses = Expense::where('user_id', auth()->id())
+            ->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])->get();
+
+        Notification::send($admins, new WeeklyExpenseReport($expenses));
+        
     }
 }
