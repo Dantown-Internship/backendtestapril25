@@ -4,7 +4,6 @@ namespace App\Actions\Expenses;
 
 use App\Models\Expense;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class GetExpensesAction
 {
@@ -12,7 +11,7 @@ class GetExpensesAction
     {
         $expense = Expense::findOrFail($id);
         $user = Auth::user();
-        if($expense->user != $user){
+        if ($expense->user != $user) {
             abort(401, 'Unauthorised');
         }
 

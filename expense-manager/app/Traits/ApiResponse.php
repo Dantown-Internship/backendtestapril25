@@ -11,7 +11,6 @@ trait ApiResponse
      *
      * @param  mixed  $data
      * @param  string  $message
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function successResponse($message = 'Request Successful', $data = [], $code = 200): JsonResponse
     {
@@ -32,7 +31,6 @@ trait ApiResponse
      *
      * @param  string  $message
      * @param  int  $code
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function errorResponse($message = 'Error', $code = 400, $errors = null): JsonResponse
     {
@@ -52,7 +50,6 @@ trait ApiResponse
      * Not Found Response
      *
      * @param  string  $message
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function notFoundResponse($message = 'Resource not found'): JsonResponse
     {
@@ -63,7 +60,6 @@ trait ApiResponse
      * Forbidden Response
      *
      * @param  string  $message
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function forbiddenResponse($message = 'Forbidden'): JsonResponse
     {
@@ -74,30 +70,27 @@ trait ApiResponse
      * Paginated response
      *
      * @param  \Illuminate\Pagination\LengthAwarePaginator  $pagination
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function paginatedResponse(string $message, $items, $pagination, int $code = 200): JsonResponse
     {
         $pagination->appends(request()->except('page'));
 
         return response()->json([
-            'success'        => true,
-            'message'       => $message,
-            'data'          => $items,
-            'total'         => $pagination->total(),
-            'current_page'  => $pagination->currentPage(),
+            'success' => true,
+            'message' => $message,
+            'data' => $items,
+            'total' => $pagination->total(),
+            'current_page' => $pagination->currentPage(),
             'current_items' => $pagination->count(),
             'previous_page' => $pagination->previousPageUrl(),
-            'next_page'     => $pagination->nextPageUrl(),
-            'last_page'     => $pagination->lastPage(),
-            'per_page'      => $pagination->perPage(),
+            'next_page' => $pagination->nextPageUrl(),
+            'last_page' => $pagination->lastPage(),
+            'per_page' => $pagination->perPage(),
         ], $code);
     }
 
     /**
      * No Content Response
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function noContentResponse(string $message = 'No content', int $code = 204): JsonResponse
     {

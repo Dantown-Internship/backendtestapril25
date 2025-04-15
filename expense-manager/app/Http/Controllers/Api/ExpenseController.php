@@ -17,14 +17,15 @@ use Illuminate\Http\Request;
 class ExpenseController extends Controller
 {
     use ApiResponse;
+
     /**
      * All Expenses List
      */
     public function index(Request $request, ListExpensesAction $action)
     {
         $request->validate([
-            'search' =>'sometimes|string',
-            'category' => 'sometimes|string'
+            'search' => 'sometimes|string',
+            'category' => 'sometimes|string',
         ]);
         $filters = $request->only(['search', 'category']);
         $perPage = $request->input('per_page', 15);
@@ -42,10 +43,11 @@ class ExpenseController extends Controller
     public function store(StoreExpenseRequest $request, StoreExpensesAction $action)
     {
         $expense = $action->handle($request->validated());
+
         return (new ExpenseResource($expense))
             ->additional([
                 'success' => true,
-                'message' => 'Expense created successfully'
+                'message' => 'Expense created successfully',
             ])
             ->response()
             ->setStatusCode(201);
@@ -58,25 +60,25 @@ class ExpenseController extends Controller
     {
         $expense = $action->handle($id);
 
-        return (ExpenseResource::make(
+        return ExpenseResource::make(
             $expense
-        ))->additional([
+        )->additional([
             'success' => true,
-            'message' => 'Expense fetched successfully'
+            'message' => 'Expense fetched successfully',
         ]);
     }
 
     /**
      * Update Record (Managers & Admins only)
      */
-    public function update(UpdateExpenseRequest  $request, string $id)
+    public function update(UpdateExpenseRequest $request, string $id)
     {
-        $action = new UpdateExpensesAction();
+        $action = new UpdateExpensesAction;
         $expense = $action->handle($id, $request->validated());
 
         return (new ExpenseResource($expense))->additional([
             'success' => true,
-            'message' => 'Expense updated successfully'
+            'message' => 'Expense updated successfully',
         ]);
     }
 

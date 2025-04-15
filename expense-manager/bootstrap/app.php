@@ -20,6 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(fn(Throwable $exception, Request $request) => (new ExceptionHandler)->handle($exception, $request));
+        $exceptions->render(fn (Throwable $exception, Request $request) => (new ExceptionHandler)->handle($exception, $request));
 
     })->create();

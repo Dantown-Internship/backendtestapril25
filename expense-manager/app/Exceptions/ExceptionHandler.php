@@ -22,11 +22,11 @@ class ExceptionHandler
             return $this->handleApiException($exception);
         }
     }
+
     /**
      * Handles exceptions specifically for API requests, returning a JSON response.
      *
-     * @param Throwable $exception
-     * @return JsonResponse
+     * @param  Throwable  $exception
      */
     protected function handleApiException(Exception $exception): JsonResponse
     {
@@ -60,7 +60,7 @@ class ExceptionHandler
             ], 401);
         } elseif ($exception instanceof ThrottleRequestsException) {
             return response()->json([
-                'success'  => false,
+                'success' => false,
                 'message' => 'Too Many Requests.',
             ], 429);
         } elseif ($exception instanceof AuthorizationException) {

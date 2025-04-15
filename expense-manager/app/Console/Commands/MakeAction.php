@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -8,6 +9,7 @@ use Illuminate\Support\Str;
 class MakeAction extends Command
 {
     protected $signature = 'make:action {name}';
+
     protected $description = 'Create a new Action class';
 
     public function handle()
@@ -19,14 +21,15 @@ class MakeAction extends Command
 
         if (File::exists($path)) {
             $this->error("Action {$className} already exists!");
+
             return;
         }
 
         // Get the namespace
-        $namespace = 'App\\Actions\\' . str_replace('/', '\\', Str::beforeLast($relativePath, '/'));
+        $namespace = 'App\\Actions\\'.str_replace('/', '\\', Str::beforeLast($relativePath, '/'));
 
         // Fallback in case there's no subdirectory (root level)
-        if (!Str::contains($namespace, '\\')) {
+        if (! Str::contains($namespace, '\\')) {
             $namespace = 'App\\Actions';
         }
 

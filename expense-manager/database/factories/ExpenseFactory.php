@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ExpenseFactory extends Factory
 {
-
     protected $model = Expense::class;
+
     /**
      * Define the model's default state.
      *
@@ -33,7 +33,7 @@ class ExpenseFactory extends Factory
                 'Software',
                 'Training',
                 'Marketing',
-                'Others'
+                'Others',
             ]),
         ];
     }

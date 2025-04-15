@@ -21,13 +21,13 @@ class DatabaseSeeder extends Seeder
             ->has(
                 User::factory()
                     ->count(5)
-                    ->state(fn(array $attributes, Company $company) => ['company_id' => $company->id])
+                    ->state(fn (array $attributes, Company $company) => ['company_id' => $company->id])
                     ->has(
                         Expense::factory()
                             ->count(10)
-                            ->state(fn(array $attrs, User $user) => [
+                            ->state(fn (array $attrs, User $user) => [
                                 'company_id' => $user->company_id,
-                                'user_id' => $user->id
+                                'user_id' => $user->id,
                             ])
                     )
             )

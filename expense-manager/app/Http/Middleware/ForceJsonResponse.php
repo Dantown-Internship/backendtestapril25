@@ -16,6 +16,7 @@ class ForceJsonResponse
     public function handle(Request $request, Closure $next): Response
     {
         $request->headers->add(['Accept' => 'application/json']);
+
         return $next($request);
     }
 }

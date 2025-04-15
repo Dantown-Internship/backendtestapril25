@@ -14,19 +14,21 @@ class AuthController extends Controller
 
     /**
      * Register Admin
+     *
      * @unauthenticated
      */
     public function register(Request $request)
     {
-        $action = new RegisterUser();
+        $action = new RegisterUser;
         $request->validate([
             'company_name' => 'required|string|max:255',
             'company_email' => 'required|string|email|max:255|unique:companies,email',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:8',
         ]);
         $data = $action->handle($request);
+
         // Successful Registration
         return response()->json([
             'success' => true,
@@ -37,16 +39,18 @@ class AuthController extends Controller
 
     /**
      * Account Login
+     *
      * @unauthenticated
      */
     public function login(Request $request)
     {
-        $action = new LoginUser();
+        $action = new LoginUser;
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|min:8',
         ]);
         $data = $action->handle($request);
+
         // Successful Login
         return response()->json([
             'success' => true,

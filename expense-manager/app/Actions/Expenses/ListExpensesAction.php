@@ -6,7 +6,6 @@ use App\Enums\Roles;
 use App\Models\Expense;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ListExpensesAction
 {
@@ -23,15 +22,15 @@ class ListExpensesAction
         }
 
         // Apply search filters
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->where(function ($q) use ($filters) {
-                $q->where('title', 'like', '%' . $filters['search'] . '%')
-                    ->orWhere('category', 'like', '%' . $filters['search'] . '%');
+                $q->where('title', 'like', '%'.$filters['search'].'%')
+                    ->orWhere('category', 'like', '%'.$filters['search'].'%');
             });
         }
 
         // Apply category filter
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->where('category', $filters['category']);
         }
 

@@ -5,7 +5,6 @@ namespace App\Actions\Auth;
 use App\Enums\Roles;
 use App\Models\Company;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterUser
@@ -26,10 +25,11 @@ class RegisterUser
             'role' => Roles::ADMIN,
         ]);
         $token = $user->createToken('api-token')->plainTextToken;
+
         return [
             'token' => $token,
             'user' => $user,
-            'company' => $company
+            'company' => $company,
         ];
     }
 }

@@ -16,10 +16,11 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     use ApiResponse;
+
     /**
      * List All Users
      */
-    function index(Request $request, ListUserAction $action)
+    public function index(Request $request, ListUserAction $action)
     {
         $search = $request->input('search');
         $perPage = $request->input('per_page', 15);
@@ -33,14 +34,14 @@ class UserController extends Controller
     /**
      * Add User
      */
-    function store(CreateUserRequest $request, CreateUserAction $action)
+    public function store(CreateUserRequest $request, CreateUserAction $action)
     {
         $user = $action->handle($request->validated());
 
         return (new UserResource($user))
             ->additional([
                 'success' => true,
-                'message' => 'User created successfully'
+                'message' => 'User created successfully',
             ])
             ->response()
             ->setStatusCode(201);
@@ -49,14 +50,14 @@ class UserController extends Controller
     /**
      *  Update User Role
      */
-    function update(UpdateUserRequest $request, string $id, UpdateUserAction $action)
+    public function update(UpdateUserRequest $request, string $id, UpdateUserAction $action)
     {
         $user = $action->handle($id, $request->validated());
 
         return (new UserResource($user))
             ->additional([
                 'success' => true,
-                'message' => 'User updated successfully'
+                'message' => 'User updated successfully',
             ])
             ->response()
             ->setStatusCode(201);
@@ -64,10 +65,8 @@ class UserController extends Controller
 
     /**
      * Delete User
-     *
      */
-
-    function destroy(DeleteUserAction $action, string $id)
+    public function destroy(DeleteUserAction $action, string $id)
     {
         $action->handle($id);
 

@@ -4,7 +4,6 @@ namespace App\Actions\Users;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ListUserAction
 {
@@ -16,13 +15,14 @@ class ListUserAction
         $query = User::where('company_id', $companyId);
 
         // Apply search filters
-        if (!empty($search)) {
+        if (! empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                    ->orWhere('role', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhere('role', 'like', '%'.$search.'%');
             });
         }
+
         return $query->latest()->paginate($perPage);
     }
 }
