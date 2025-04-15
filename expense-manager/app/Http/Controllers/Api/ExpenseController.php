@@ -11,11 +11,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-
+    use ApiResponse;
     /**
      * All Expenses List
      */
@@ -28,14 +29,13 @@ class ExpenseController extends Controller
         $filters = $request->only(['search', 'category']);
         $perPage = $request->input('per_page', 15);
 
-        $expenses = $action->handle($filters, $perPage);
+        $paginated = $action->handle($filters, $perPage);
 
-        return (ExpenseResource::collection(
-            $expenses
-        ))->additional([
-            'success' => true,
-            'message' => 'Expense fetched successfully'
-        ]);
+
+        $items = ExpenseResource::collection($paginated->items());
+
+        return $this->paginatedResponse('Expenses fetched successfully', $items, $paginated);
+
     }
 
     /**
