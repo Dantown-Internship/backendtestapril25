@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Actions\Auth\LoginUser;
 use App\Actions\Auth\RegisterUser;
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponse;
@@ -17,10 +18,17 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $action = new RegisterUser();
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'company_email' => 'required|string|email|max:255|unique:companies,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8'
+        ]);
         $data = $action->handle($request);
         // Successful Registration
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'message' => 'Registration successful',
             'data' => $data,
         ]);
@@ -29,4 +37,19 @@ class AuthController extends Controller
     /**
      * Account Login
      */
+    public function login(Request $request)
+    {
+        $action = new LoginUser();
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8',
+        ]);
+        $data = $action->handle($request);
+        // Successful Login
+        return response()->json([
+            'success' => true,
+            'message' => 'Registration successful',
+            'data' => $data,
+        ]);
+    }
 }

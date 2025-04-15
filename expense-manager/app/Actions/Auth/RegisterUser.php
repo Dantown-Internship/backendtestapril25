@@ -12,12 +12,6 @@ class RegisterUser
 {
     public function handle($request)
     {
-        $request->validate([
-            'company_name' => 'required|string|max:255',
-            'company_email' => 'required|string|email|max:255|unique:companies,email',
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-        ]);
         // create company
         $company = Company::create([
             'name' => $request->company_name,
