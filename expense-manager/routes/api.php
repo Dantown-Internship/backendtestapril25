@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ExpenseController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -11,3 +12,6 @@ Route::post('login', [AuthController::class, 'login']);
 
 // Expenses
 Route::apiResource('expenses', ExpenseController::class)->middleware('auth:sanctum');
+
+// Users Management
+Route::apiResource('users', UserController::class)->middleware('auth:sanctum');

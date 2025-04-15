@@ -30,8 +30,6 @@ class ExpenseController extends Controller
         $perPage = $request->input('per_page', 15);
 
         $paginated = $action->handle($filters, $perPage);
-
-
         $items = ExpenseResource::collection($paginated->items());
 
         return $this->paginatedResponse('Expenses fetched successfully', $items, $paginated);

@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Actions\Users;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class UpdateUserAction
+{
+    public function handle($id, $validated)
+    {
+        $user = User::findOrFail($id);
+        if($user->company_id != Auth::user()->company_id){
+            abort(404, 'Unauthorised');
+        }
+        $user->update($validated);
+
+        return $user;
+    }
+}
