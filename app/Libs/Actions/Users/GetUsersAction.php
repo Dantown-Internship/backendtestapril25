@@ -2,18 +2,24 @@
 
 namespace App\Libs\Actions\Users;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Models\User;
+use App\Http\Resources\ExpenseResource;
 
 class GetUsersAction
 {
-    public function handle($request)
+    /**
+     * Handle the action to get all users.
+     * @param mixed $request
+     * @return AnonymousResourceCollection<ExpenseResource>
+     */
+    public function handle($request): AnonymousResourceCollection
     {
-        $users = User::paginate(RESULT_COUNT);
+        $users = User::latest()->paginate(RESULT_COUNT);
 
-        return response()->json([
+        return ExpenseResource::collection($users)->additional([
             'message' => 'Users retrieved successfully',
-            'data' => $users,
-            'success' => true
-        ], 200);
+            'success' => true,
+        ]);
     }
 }

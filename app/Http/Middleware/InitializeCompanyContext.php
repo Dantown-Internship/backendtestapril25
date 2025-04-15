@@ -2,61 +2,81 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\App;
+use Illuminate\Http\Request;
+use Closure;
 use App\Models\Company;
 
 class InitializeCompanyContext
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $companyIdentifier = null;
-
-        // Check subdomain
-        $host = $request->getHost(); // e.g., {company1}.example.com
-        $subdomain = explode('.', $host)[0];
-        if ($this->isValidCompanyIdentifier($subdomain)) {
-            $companyIdentifier = $subdomain;
-        }
-
-        // Check path: /company/{company1}/resource
-        if (!$companyIdentifier) {
-            $fromPath = $request->segment(1);
-            if ($this->isValidCompanyIdentifier($fromPath)) {
-                $companyIdentifier = $fromPath;
-            }
-        }
-
-        // Check headers: X-Company-ID or X-Company-Name
-        if (!$companyIdentifier) {
-            $fromHeader = $request->header('X-Company-ID') ?? $request->header('X-Company-Name');
-            if ($this->isValidCompanyIdentifier($fromHeader)) {
-                $companyIdentifier = $fromHeader;
-            }
-        }
+        $companyIdentifier = $this->getCompanyIdentifier($request);
 
         if ($companyIdentifier) {
-            $company = Company::where('id', $companyIdentifier)
-                            ->orWhere('slug', $companyIdentifier)
-                            ->orWhere('name', $companyIdentifier)
-                            ->first();
+            $company = $this->findCompany($companyIdentifier);
 
-            if ($company) {
-                // Bind company globally
-                app()->instance('currentCompany', $company);
-                // Optionally, you can set the company in the request object
-                $request->attributes->set('currentCompany', $company);
-
-            } else {
+            if (!$company) {
                 return response()->json(['error' => 'Invalid company.'], 404);
             }
+
+            // Bind company globally
+            App::instance('currentCompany', $company);
+
+            // Optionally, set the company in the request object
+            $request->mergeIfMissing(['currentCompany' => $company]);
+            
         }
+
+        // echo App::make('currentCompany')->id;
+        // die;
+
 
         return $next($request);
     }
 
-    protected function isValidCompanyIdentifier($value): bool
+    /**
+     * Extract the company identifier from the request.
+     */
+    protected function getCompanyIdentifier(Request $request): ?string
+    {
+        // Check path: /{company}/resource
+        // $fromPath = $request->segment(1);
+        // if ($this->isValid($fromPath)) {
+        //     return $fromPath;
+        // }
+
+        // Check headers: X-Company-ID or X-Company-Name
+        $fromHeader = $request->header('X-Company-ID') ?? $request->header('X-Company-Name');
+        if ($fromHeader) {
+            $fromHeader = strtolower(str($fromHeader)->slug()->toString());
+            // echo $fromHeader;
+            // die;
+            if ($this->isValid($fromHeader)) {
+                return $fromHeader;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the company by identifier.
+     */
+    protected function findCompany(string $identifier): ?Company
+    {
+        $company = Company::where('id', $identifier)
+        ->orWhere('name', 'like', "%" . str($identifier)->replace('-', ' ')->toString() . "%")
+        ->first();
+
+        return $company  ?? auth()?->user()?->company ?? null;
+    }
+
+    /**
+     * Validate the identifier.
+     */
+    protected function isValid($value): bool
     {
         return !empty($value) && is_string($value) && strlen($value) < 100;
     }

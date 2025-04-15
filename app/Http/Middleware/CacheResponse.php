@@ -9,19 +9,29 @@ class CacheResponse
 {
     public function handle($request, Closure $next)
     {
-        // Generate a unique cache key based on the request URI and method
         $cacheKey = 'cache_' . md5($request->fullUrl());
+        $fingerprintKey = $cacheKey . '_fingerprint';
 
-        // Check if the response is cached
-        if (Cache::has($cacheKey)) {
+        // Check if we already have cached content and fingerprint
+        if (Cache::has($cacheKey) && Cache::has($fingerprintKey)) {
             return response()->json(Cache::get($cacheKey));
         }
 
-        // Get the response from the next middleware/controller
+        // Proceed to get the actual response
         $response = $next($request);
 
-        // Store the response in the cache
-        Cache::put($cacheKey, $response->getOriginalContent(), 60); // Cache for 60 seconds
+        // Get the response data as array or string
+        $responseData = $response->getOriginalContent();
+
+        // You can encode to JSON to ensure uniform structure for hashing
+        $responseJson = json_encode($responseData);
+
+        // Generate a hash from the response
+        $currentFingerprint = md5($responseJson);
+
+        // Cache the response and fingerprint
+        Cache::put($cacheKey, $responseData, 60);
+        Cache::put($fingerprintKey, $currentFingerprint, 60);
 
         return $response;
     }

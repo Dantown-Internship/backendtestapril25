@@ -2,9 +2,10 @@
 
 namespace App\Models\Scopes;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class CompanyScope implements Scope
 {
@@ -13,6 +14,8 @@ class CompanyScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('company_id', auth()->user()->company_id ?? app('currentCompany')->id);
+        $company = App::bound('currentCompany') ? App::make('currentCompany') : null;
+
+        $builder->where('company_id', $company->id);
     }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Libs\Actions\Expenses;
 
+use App\Models\Expense;
+use App\Http\Resources\ExpenseResource;
+
 class UpdateExpenseAction
 {
-    public function handle($request, $id)
+    public function handle($request, $id): ExpenseResource
     {
         $user = $request->user();
         $company = $request->currentCompany;
@@ -23,10 +26,9 @@ class UpdateExpenseAction
             'description' => $request->description,
         ]);
 
-        return response()->json([
+        return ExpenseResource::make($expense)->additional([
             'message' => 'Expense updated successfully',
-            'data' => $expense,
-            'success' => true
-        ], 200);
+            'success' => true,
+        ]);
     }
 }

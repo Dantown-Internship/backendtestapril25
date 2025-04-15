@@ -2,19 +2,20 @@
 
 namespace App\Libs\Actions\Expenses;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Expense;
+use App\Http\Resources\ExpenseResource;
 
 class CreateExpenseAction
 {
-    public function handle($request)
+    public function handle($request): ExpenseResource|JsonResponse
     {
         DB::beginTransaction();
 
         try{
-
             $expense = Expense::create([
-                'company_id' => $request->currentCompany->id,
+                'company_id' => app('currentCompany')->id,
                 'user_id' => auth()->id(),
                 'title' => $request->title,
                 'category' => $request->category,
@@ -23,11 +24,10 @@ class CreateExpenseAction
 
             DB::commit();
 
-            return response()->json([
+            return ExpenseResource::make($expense)->additional([
                 'message' => 'Expense created successfully',
-                'data' => $expense,
                 'success' => true
-            ], 201);
+            ]);
 
         }catch(\Exception $e){
 

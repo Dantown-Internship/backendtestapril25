@@ -7,7 +7,7 @@ use App\Models\Scopes\CompanyScope;
 
 trait BelongsToContext
 {
-    public function bootedBelongsToContext()
+    public static function bootBelongsToContext()
     {
         static::addGlobalScope(new CompanyScope);
     }

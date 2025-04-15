@@ -3,10 +3,11 @@
 namespace App\Libs\Actions\Expenses;
 
 use App\Models\Expense;
+use Illuminate\Http\JsonResponse;
 
 class DeleteExpenseAction
 {
-    public function handle($request, $id)
+    public function handle($request, $id): JsonResponse
     {
         $expense = Expense::findOrFail($id);
 

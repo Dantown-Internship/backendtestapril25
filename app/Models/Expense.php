@@ -15,8 +15,8 @@ class Expense extends Model
         'company_id',
         'user_id',
         'amount',
-        'description',
-        'created_at',
+        'title',
+        'category',
     ];
 
     public function company()

@@ -2,13 +2,15 @@
 
 namespace App\Libs\Actions\Auth;
 
+use Illuminate\Http\JsonResponse;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 
 class LoginAction
 {
-    public function handle($request)
+    public function handle($request): JsonResponse
     {
-        try{
+        try{            
             $credentials = $request->only('email', 'password');
 
             if (!auth()->attempt($credentials)) {
@@ -17,9 +19,9 @@ class LoginAction
 
             return response()->json([
                 'message' => 'Login successful',
-                'token' => auth()->user()->createToken()->plainTextToken,
+                'token' => auth()->user()->createToken('auth-token')->plainTextToken,
                 'token_type' => 'Bearer',
-                'user' => auth()->user(),
+                'user' => UserResource::make(auth()->user()),
                 'success' => true
             ], 200);
 

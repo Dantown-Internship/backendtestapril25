@@ -2,12 +2,14 @@
 
 namespace App\Libs\Actions\Users;
 
+use App\Http\Resources\ExpenseResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
 class CreateUserAction
 {
-    public function handle($request)
+    public function handle($request): ExpenseResource|JsonResource
     {
         DB::beginTransaction();
         try{

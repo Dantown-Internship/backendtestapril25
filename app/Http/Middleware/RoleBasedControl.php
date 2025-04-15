@@ -19,7 +19,7 @@ class RoleBasedControl
         $roles = is_string($roles) ? explode(',', $roles) : $roles;
         $executingRole = $request->user()->role;
 
-        if (!$request->user() || !in_array($roles, $executingRole)) {
+        if (!$request->user() || !in_array($executingRole, $roles)) {
             return response()->json([
                 'message' => "You cannot perform this action as a ". ucwords($executingRole) . " user",
                 "success" => false
