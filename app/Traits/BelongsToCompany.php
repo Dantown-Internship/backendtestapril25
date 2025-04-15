@@ -2,12 +2,21 @@
 
 namespace App\Traits;
 
+
+use App\Models\Company;
 use App\Models\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait BelongsToCompany
 {
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     protected static function booted(): void
     {
         // Apply the global scope for restricting reads to the current tenant
