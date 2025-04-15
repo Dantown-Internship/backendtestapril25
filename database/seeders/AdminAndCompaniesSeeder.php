@@ -11,14 +11,14 @@ class AdminAndCompaniesSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create up to 2 companies
+        // default users for testing I omitted register api
         $companies = Company::factory()->count(2)->create();
 
         foreach ($companies as $key => $company) {
             $company->users()->create([
                 'name' => fake()->name(),
                 'email' => 'admin@company1.com',
-                'password' => Hash::make('password'), // Change as needed
+                'password' => Hash::make('password'),
                 'role' => 'Admin',
             ]);
         }
