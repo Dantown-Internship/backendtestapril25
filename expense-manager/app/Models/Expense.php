@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Company extends Model
+class Expense extends Model
 {
     use HasUuids;
 
@@ -16,17 +16,20 @@ class Company extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email'
+        'company_id',
+        'user_id',
+        'title',
+        'amount',
+        'category'
     ];
 
-    public function users()
+    public function company()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(Company::class);
     }
 
-    public function expenses()
+    public function user()
     {
-        return $this->hasMany(Expense::class);
+        return $this->belongsTo(User::class);
     }
 }
