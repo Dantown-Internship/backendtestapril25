@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Libs\Enums\RoleEnum;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use App\Models\User;
+use App\Models\Company;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +16,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $companies = Company::factory()->count(3)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $companies->each(function ($company) {
+            User::factory()
+                ->count(3)
+                ->state(new Sequence(
+                    ['role' => RoleEnum::ADMIN],
+                    ['role' => RoleEnum::MANAGER],
+                    ['role' => RoleEnum::EMPLOYEE]
+                ))
+                ->create([
+                    'company_id' => $company->id
+                ]);
+        });
     }
 }
