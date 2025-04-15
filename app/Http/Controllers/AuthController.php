@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -28,9 +29,22 @@ class AuthController extends Controller
 
         $data = [
             'token'   => $token,
-            'profile' => $user,
+            'profile' => new UserResource($user),
         ];
 
         return ApiResponse::success($data, 'Login successful');
+    }
+
+    public function logout(Request $request)
+    {
+        // delete access token
+        $request->user()->currentAccessToken()->delete();
+
+        return ApiResponse::success(null, 'Logged out successfully');
+    }
+
+    public function profile(Request $request)
+    {
+        return ApiResponse::success(new UserResource($request->user()), 'Logged out successfully');
     }
 }
