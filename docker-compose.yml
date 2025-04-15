@@ -20,5 +20,17 @@ services:
     ports:
       - "6379:6379"
 
+   # PHP service with FPM for Laravel
+  php:
+    image: php:8.3-fpm  # Use the default PHP 8.3 FPM imageexp
+    container_name: php-fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./expense-manager:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+
 volumes:
   mysql-data:
