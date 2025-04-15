@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,6 +18,17 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+     protected static function booted(): void
+     {
+         static::addGlobalScope('company', function (Builder $query) {
+             if (auth()->hasUser()) {
+                 // $query->where('company_id', auth()->user()->company_id);
+                 // or with a `team` relationship defined:
+                 $query->whereBelongsTo(auth()->user()->company);
+             }
+         });
+     }
     protected $fillable = [
         'name',
         'email',
@@ -44,5 +56,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
     }
 }
