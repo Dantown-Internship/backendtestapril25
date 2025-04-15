@@ -16,14 +16,15 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         // default users for testing I omitted register api
-        $companies = Company::factory()->count(2)->make();
+        $companies = Company::factory()->count(2)->create();
 
         foreach ($companies as $key => $company) {
             $company->users()->create([
                 'name' => fake()->name(),
-                'email' => "admin@company{$key}.com",
+                'email' => "admin@company" . ($key + 1) . ".com",
                 'password' => Hash::make('password'),
                 'role' => 'Admin',
+                'company_id' => $company->id, // Ensure company_id is set
             ]);
         }
     }

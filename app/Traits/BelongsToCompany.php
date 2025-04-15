@@ -19,12 +19,17 @@ trait BelongsToCompany
 
     protected static function booted(): void
     {
+        parent::booted();
         // Apply the global scope for restricting reads to the current tenant
         // Keep this if you want both read restriction and automatic creation ID
         static::addGlobalScope(new CompanyScope);
 
-        // Set company_id automatically when creating a new model
-        static::creating(function (Model $model) {
+        self::creating(function (Model $model) {
+            // Skip auto-assign if running in console (e.g., seeder, artisan)
+            if (app()->runningInConsole()) {
+                return;
+            }
+
             // Check if company_id is not already set and user is authenticated
             if (Auth::check() && is_null($model->company_id)) {
                 // Ensure the authenticated user has a company_id
