@@ -22,7 +22,9 @@ services:
 
    # PHP service with FPM for Laravel
   php:
-    image: php:8.3-fpm  # Use the default PHP 8.3 FPM imageexp
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the custom Dockerfile for PHP
     container_name: php-fpm
     ports:
       - "9000:9000"
