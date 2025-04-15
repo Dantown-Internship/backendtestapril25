@@ -9,5 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class {{ class }} extends Model
 {
     {{ factory }}
-    use BelongsToCompany
+    use BelongsToCompany;
+
+    protected $guarded = [];
 }
