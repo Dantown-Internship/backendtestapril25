@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -39,7 +40,7 @@ class ExceptionHandler
 
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getStatusCode();
-            $response['status'] = 'error';
+            $response['success'] = false;
             $response['message'] = $exception->getMessage();
         } elseif ($exception instanceof ValidationException) {
             return new JsonResponse([
@@ -57,6 +58,11 @@ class ExceptionHandler
                 'success' => false,
                 'message' => 'Authentication required. Login to continue',
             ], 401);
+        } elseif ($exception instanceof ThrottleRequestsException) {
+            return response()->json([
+                'success'  => false,
+                'message' => 'Too Many Requests.',
+            ], 429);
         } elseif ($exception instanceof AuthorizationException) {
             return response()->json([
                 'success' => false,

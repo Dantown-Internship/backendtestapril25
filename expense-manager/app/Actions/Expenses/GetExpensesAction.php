@@ -3,17 +3,22 @@
 namespace App\Actions\Expenses;
 
 use App\Models\Expense;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GetExpensesAction
 {
-    public function handle($request)
+    public function handle($id)
     {
-        $user = $request->user();
-        $company = $user->company;
+        $expense = Expense::findOrFail($id);
+        $user = Auth::user();
+        if($expense->user != $user){
+            abort(401, 'Unauthorised');
+        }
 
         // get expenses
-        $expenses = Expense::whereCompanyId($company->id)->paginate(20);
-        return $expenses;
+        $expense = $expense->whereUserId($user->id)->first();
+
+        return $expense->load('user');
     }
 }
