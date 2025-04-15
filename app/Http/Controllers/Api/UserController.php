@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use GuzzleHttp\Promise\Create;
+use App\Models\User;
 use App\Libs\Actions\Users\UpdateUserAction;
 use App\Libs\Actions\Users\GetUsersAction;
 use App\Libs\Actions\Users\CreateUserAction;
@@ -54,12 +55,11 @@ final class UserController extends Controller
      * @param  int  $id
      * 
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => "sometimes|required|email|unique:users,email,{$id}",
-            'password' => 'sometimes|required|string|min:8',
+            'email' => "sometimes|required|email|unique:users,email,{$user->id}",
             'role' => 'sometimes|required|string|in:employee,admin,manager',
         ]);
 
@@ -70,6 +70,6 @@ final class UserController extends Controller
             ]);
         }
 
-        return $this->updateUserAction->handle($request, $id);
+        return $this->updateUserAction->handle($request, $user->id);
     }
 }

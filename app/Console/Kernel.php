@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->job(\App\Jobs\SendReport::class)->weeklyOn(1, '8:00');
+        // $schedule->job(\App\Jobs\SendReport::class)->weeklyOn(1, '8:00');
+        $schedule->job(\App\Jobs\SendReport::class)->everyMinute();
     }
 
     /**

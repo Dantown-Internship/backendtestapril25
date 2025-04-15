@@ -2,24 +2,27 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Notifications\Messages\MailMessage;
+use App\Models\Scopes\CompanyScope;
+use Illuminate\Support\Collection as ArrCollection;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class WeeklyExpenseReport extends Notification
 {
     use Queueable;
 
-    public $expenses;
+    public $meta;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Collection|array $expenses)
+    public function __construct(object $meta)
     {
-        $this->expenses = $expenses;
+        $this->meta = $meta;
     }
 
     /**
@@ -37,10 +40,19 @@ class WeeklyExpenseReport extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $company = $notifiable->company;
+
+        $expenses = $company->expenses()->withoutGlobalScope(CompanyScope::class)->where('user_id', auth()->id())
+        ->whereBetween('created_at', [$this->meta->startDate, $this->meta->endDate])->get();
+        
         return (new MailMessage)
         ->subject('Weekly Expense Report')
         ->markdown('weekly-expense-report', [
-            'expenses' => $this->expenses,
+            'startDate' => $this->meta->startDate,
+            'endDate' => $this->meta->endDate,
+            'expenses' => $expenses,
+            'totalExpenses' => $expenses->sum('amount'),
+            'notes' => 'No Additional Notes'
         ]);
     }
 
