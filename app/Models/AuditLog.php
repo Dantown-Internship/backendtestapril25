@@ -6,12 +6,11 @@ use App\Traits\BelongsToCompany;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Expense extends Model
+class AuditLog extends Model
 {
     //
-    use BelongsToCompany, SoftDeletes;
+    use BelongsToCompany;
 
     public function user(): BelongsTo
     {
