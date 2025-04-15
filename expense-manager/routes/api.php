@@ -10,4 +10,4 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 // Expenses
-Route::apiResource('expenses', ExpenseController::class);
+Route::apiResource('expenses', ExpenseController::class)->middleware('auth:sanctum');

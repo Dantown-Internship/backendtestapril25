@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Expenses\GetExpensesAction;
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -14,9 +15,13 @@ class ExpenseController extends Controller
     /**
      * All Expenses List
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $action = new GetExpensesAction();
+        $data = $action->handle($request);
+
+        return $data;
+        // get comapny lists
     }
 
     /**

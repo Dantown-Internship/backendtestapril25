@@ -14,6 +14,7 @@ class AuthController extends Controller
 
     /**
      * Register Admin
+     * @unauthenticated
      */
     public function register(Request $request)
     {
@@ -36,6 +37,7 @@ class AuthController extends Controller
 
     /**
      * Account Login
+     * @unauthenticated
      */
     public function login(Request $request)
     {
@@ -48,7 +50,7 @@ class AuthController extends Controller
         // Successful Login
         return response()->json([
             'success' => true,
-            'message' => 'Registration successful',
+            'message' => 'Login successful',
             'data' => $data,
         ]);
     }
