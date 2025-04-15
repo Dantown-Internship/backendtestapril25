@@ -13,7 +13,8 @@ class UpdateExpenseAction
 
         $expense->update([
             'amount' => $request->amount,
-            'title' => $request->description,
+            'title' => $request->title,
+            'category' => $request->category
         ]);
 
         return ExpenseResource::make($expense)->additional([

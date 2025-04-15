@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use GuzzleHttp\Promise\Create;
 use App\Libs\Actions\Users\UpdateUserAction;
@@ -51,7 +52,7 @@ final class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function update(Request $request, $id)
     {
@@ -59,8 +60,15 @@ final class UserController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => "sometimes|required|email|unique:users,email,{$id}",
             'password' => 'sometimes|required|string|min:8',
-            'role' => 'sometimes|required|string|in:user,admin,manager',
+            'role' => 'sometimes|required|string|in:employee,admin,manager',
         ]);
+
+        if($request->has('role') && !Gate::allows('update-role', auth()->user())){
+            return response()->json([
+                'message' => 'You are unauthorized to update a user\'s role',
+                'success' => false
+            ]);
+        }
 
         return $this->updateUserAction->handle($request, $id);
     }

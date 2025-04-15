@@ -19,6 +19,8 @@ class Expense extends Model
         'category',
     ];
 
+    protected $loggableFields = ['amount', 'title', 'category'];
+
     public function company()
     {
         return $this->belongsTo(Company::class);

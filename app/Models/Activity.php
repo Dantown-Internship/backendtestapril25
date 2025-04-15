@@ -10,6 +10,8 @@ class Activity extends Model
 {
     use HasFactory, BelongsToContext;
 
+    public $timestamps = false;
+    
     protected $fillable = [
         'user_id',
         'company_id',
