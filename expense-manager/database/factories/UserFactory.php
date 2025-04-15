@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\Roles;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,9 +26,11 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => Company::factory(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'role' => fake()->randomElement(Roles::cases()),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
@@ -37,8 +41,43 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+    /**
+     * Indicate that the user is an admin.
+     *
+     * @return static
+     */
+    public function admin(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => Roles::ADMIN,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a manager.
+     *
+     * @return static
+     */
+    public function manager(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => Roles::MANAGER,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an employee.
+     *
+     * @return static
+     */
+    public function employee(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => Roles::EMPLOYEE,
         ]);
     }
 }
