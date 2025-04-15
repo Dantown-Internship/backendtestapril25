@@ -11,8 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        
         $middleware->append(
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class
+        );
+
+        $middleware->append(
+            \App\Http\Middleware\SetTenantContext::class
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
