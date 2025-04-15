@@ -9,6 +9,5 @@ Thumbs.db
 /.fleet
 /.vscode
 .phpunit.result.cache
-/.env
 /storage
 /node_modules

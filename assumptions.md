@@ -42,7 +42,7 @@ lright3. **Expense Management**
 
 ### Instructions for Testing
 
-> Ensure `.env` is properly configured for `DB_*`, `CACHE_DRIVER=redis`, and `QUEUE_CONNECTION=database`
+> Ensure `.env` is properly configured for `DB_*`, `CACHE_DRIVER=redis`, and `QUEUE_CONNECTION=sync`
 
 1. **Seeder & Initial Setup**
    - Run migrations and seeders:
@@ -78,7 +78,7 @@ lright3. **Expense Management**
 
 4. **Expense Management**
    - List expenses (with pagination & search):  
-     `GET /api/expenses?page=1&search=transport`
+     `GET /api/expenses`
    - Create new expense:  
      `POST /api/expenses`  
      Body: `title`, `amount`, `category_id`
