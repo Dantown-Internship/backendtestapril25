@@ -30,8 +30,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::prefix('expenses')->controller(ExpenseController::class)->group(function(){
         Route::get('', 'index')->middleware('cache.response');
         Route::post('', 'store');
-        Route::put('/{expense}', 'update')->middleware('role:admin,manager');
-        Route::delete('/{expense}', 'destroy')->middleware('role:admin');
+        Route::put('/{id}', 'update')->middleware('role:admin,manager');
+        Route::delete('/{id}', 'destroy')->middleware('role:admin');
     });
 
     // User Routes

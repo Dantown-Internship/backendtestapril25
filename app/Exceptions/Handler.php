@@ -27,4 +27,13 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        return response()->json([
+            'error' => $exception->getMessage(),
+            'source' => pathinfo($exception->getFile(), PATHINFO_FILENAME) . " Class",
+            'line' => $exception->getLine(),
+        ], 500);
+    }
 }

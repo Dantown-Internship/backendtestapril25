@@ -13,13 +13,11 @@ class RoleBasedControl
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, array|string $roles): Response
+    public function handle(Request $request, Closure $next, string ...$role): Response
     {
-
-        $roles = is_string($roles) ? explode(',', $roles) : $roles;
         $executingRole = $request->user()->role;
 
-        if (!$request->user() || !in_array($executingRole, $roles)) {
+        if (!$request->user() || !in_array($executingRole, $role)) {
             return response()->json([
                 'message' => "You cannot perform this action as a ". ucwords($executingRole) . " user",
                 "success" => false
