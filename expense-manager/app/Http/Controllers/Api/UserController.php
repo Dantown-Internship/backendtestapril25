@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Users\CreateUserAction;
+use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUserAction;
 use App\Actions\Users\UpdateUserAction;
 use App\Http\Controllers\Controller;
@@ -59,5 +60,17 @@ class UserController extends Controller
             ])
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * Delete User
+     *
+     */
+
+    function destroy(DeleteUserAction $action, string $id)
+    {
+        $action->handle($id);
+
+        return $this->noContentResponse();
     }
 }

@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Actions\Users;
+
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DeleteUserAction
 {
-    public function handle($request)
+    public function handle($id)
     {
-        // Your logic here
+        $user = User::findOrFail($id);
+        $user->delete();
     }
 }
