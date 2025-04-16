@@ -6,20 +6,24 @@ use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, AuthorizesRequests;
 
     /**
      * Display a listing of the users, cached by company_id for 1 hour.
      */
     public function index(Request $request)
     {
+        if (Gate::denies('viewAny', User::class)) {
+            return $this->failure('You do not have the permission to view users.', 403);
+        }
+
         $companyId = $request->user()->company_id;
 
         $cacheKey = 'users.company.' . $companyId;
@@ -47,6 +51,7 @@ class UserController extends Controller
         if (Gate::denies('create', User::class)) {
             return $this->failure('You do not have permission to create a user.', 403);
         }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'role' => 'required|string|in:' . implode(',', [
@@ -79,6 +84,9 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        if (Gate::denies('viewAny', User::class)) {
+            return $this->failure('You do not have the permission to view user.', 403);
+        }
         return $this->success(new UserResource($user), 'User fetched successfully.');
     }
 
@@ -87,6 +95,10 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if (Gate::denies('update', User::class)) {
+            return $this->failure('You do not have the permission to update user', 403);
+        }
+
         $validated = $request->validate([
             'role' => 'required|string|in:' . implode(',', [
                 User::ADMIN,
@@ -110,7 +122,7 @@ class UserController extends Controller
         // Clear cache to ensure fresh data next fetch
         $this->clearUserCompanyCache($user->company_id);
 
-        return $this->success($user, 'User role updated successfully.');
+        return $this->success(new UserResource($user), 'User role updated successfully.');
     }
 
     /**
@@ -118,6 +130,10 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (Gate::denies('delete', User::class)) {
+            return $this->failure('You do not have the permission to delete user.', 403);
+        }
+
         $user->delete();
 
         // Clear cache to ensure fresh data next fetch

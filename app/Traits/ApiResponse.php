@@ -16,7 +16,7 @@ trait ApiResponse
     public static function failure($message = "failure", $statusCode = 400)
     {
         return response()->json([
-            'success' => true,
+            'success' => false,
             'message' => $message,
         ], $statusCode);
     }
