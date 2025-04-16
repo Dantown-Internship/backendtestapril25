@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -13,9 +14,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use Illuminate\Support\Str;
 
 class ExceptionHandler
 {
+    use ApiResponse;
+
     public function handle(Throwable $exception, Request $request)
     {
         if ($request->expectsJson()) {
@@ -28,55 +32,47 @@ class ExceptionHandler
      *
      * @param  Throwable  $exception
      */
-    protected function handleApiException(Exception $exception): JsonResponse
+    protected function handleApiException( $exception): JsonResponse
     {
-        // Custom JSON response for API requests
-        $statusCode = $exception->getCode() ?? 500;
-        $mes = 'An unexpected error occurred. Try again';
-        $response = [
-            'success' => false,
-            'message' => $mes,
-        ];
+        $defaultMessage = 'An unexpected error occurred. Try again';
+
+        $previous = $exception->getPrevious();
 
         if ($exception instanceof HttpException) {
-            $statusCode = $exception->getStatusCode();
-            $response['success'] = false;
-            $response['message'] = $exception->getMessage();
-        } elseif ($exception instanceof ValidationException) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => $exception->getMessage(),
-                'errors' => $exception->errors(),
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-        } elseif ($exception instanceof ModelNotFoundException) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Resource not found.',
-            ], 404);
-        } elseif ($exception instanceof AuthenticationException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Authentication required. Login to continue',
-            ], 401);
-        } elseif ($exception instanceof ThrottleRequestsException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Too Many Requests.',
-            ], 429);
-        } elseif ($exception instanceof AuthorizationException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This action is unauthorized.',
-            ], 403);
-        } else {
-            // Log the exception
-            Log::error($exception);
-            $response = [
-                'success' => false,
-                'message' => app()->environment('local') ? $exception->getMessage() : $mes,
-            ];
+            if ($previous instanceof ModelNotFoundException) {
+                $model = $previous->getModel();
+                $modelname = class_basename($model);
+                return $this->notFoundResponse("$modelname not found.");
+            }
+
+            if ($previous instanceof ThrottleRequestsException) {
+                return $this->errorResponse('Too Many Requests.', 429);
+            }
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
+
+        }
+        if ($exception instanceof ValidationException) {
+            return $this->errorResponse(
+                $exception->getMessage(),
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+                $exception->errors()
+            );
+        }
+         if ($exception instanceof AuthenticationException) {
+
+            return $this->errorResponse('Authentication required. Login to continue', 401);
+
+        }
+        if ($exception instanceof AuthorizationException) {
+            return $this->forbiddenResponse('This action is unauthorized.');
         }
 
-        return response()->json($response, $statusCode);
+        // Catch-all for everything else
+        Log::error($exception);
+        return $this->errorResponse(
+            app()->environment('local') ? $exception->getMessage() : $defaultMessage,
+            $exception->getCode() ?: 500
+        );
+
     }
 }
