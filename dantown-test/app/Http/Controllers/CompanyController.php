@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCompanyRequest;
@@ -14,21 +14,11 @@ class CompanyController extends Controller
 {
     protected CompanyService $companyService;
 
-    /**
-     * CompanyController constructor.
-     *
-     * @param CompanyService $companyService
-     */
     public function __construct(CompanyService $companyService)
     {
         $this->companyService = $companyService;
     }
 
-    /**
-     * Display a listing of companies.
-     *
-     * @return JsonResponse
-     */
     public function index(): JsonResponse
     {
         $companies = $this->companyService->getAllCompanies();
@@ -39,13 +29,7 @@ class CompanyController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created company.
-     *
-     * @param StoreCompanyRequest $request
-     * @return JsonResponse
-     */
-    public function store(StoreCompanyRequest $request): JsonResponse
+    public function registerCompany(StoreCompanyRequest $request): JsonResponse
     {
         $company = $this->companyService->createCompany($request->validated());
         
@@ -56,13 +40,7 @@ class CompanyController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified company.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function show(int $id): JsonResponse
+    public function viewCompany(int $id): JsonResponse
     {
         $company = $this->companyService->getCompanyById($id);
         
@@ -86,7 +64,7 @@ class CompanyController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(UpdateCompanyRequest $request, int $id): JsonResponse
+    public function updateCompany(UpdateCompanyRequest $request, int $id): JsonResponse
     {
         $company = $this->companyService->updateCompany($id, $request->validated());
         
@@ -110,7 +88,7 @@ class CompanyController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function deleteCompany(int $id): JsonResponse
     {
         $deleted = $this->companyService->deleteCompany($id);
         

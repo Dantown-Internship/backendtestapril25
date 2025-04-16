@@ -13,11 +13,10 @@ class AuthController extends Controller
 
     public function __construct(AuthService $authService)
     {
-        parent::__construct();
         $this->authService = $authService;
     }
 
-    public function register(Request $request)
+    public function registerUser(Request $request)
     {
     
         $fields = $request->validate([
@@ -28,7 +27,23 @@ class AuthController extends Controller
             "companyEmail" => "required|email|unique:users",
             "role" => "required"
         ]);
-        $data = $this->authService->createUser($fields);
+        $responseData = $this->authService->createUser($fields);
+        return response()->json($responseData, $responseData->success ? 200:400);
+    }
+
+    public function registerAdminUser(Request $request)
+    {
+    
+        $fields = $request->validate([
+            "name" => "required|string|max:255",
+            "email" => "required|email|unique:users",
+            "password" => "required|min:8",
+            "companyName" => "required|string|max:255",
+            "companyEmail" => "required|email|unique:users",
+            "role" => "required"
+        ]);
+        $responseData = $this->authService->createAdminUser($fields);
+        return response()->json($responseData, $responseData->success ? 200:400);
     }
 
     public function login(Request $request)
@@ -38,7 +53,7 @@ class AuthController extends Controller
             "password" => "required",
         ]);
         $responseData = $this->authService->loginUser($request);
-        return response()->json($responseData, $responseData->success ? 200:401);
+        return response()->json($responseData, $responseData['success'] ? 200:401);
     }
 
     public function logout(Request $request)

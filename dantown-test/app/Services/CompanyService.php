@@ -30,6 +30,11 @@ class CompanyService
         return Company::find($id);
     }
 
+    public function getCompanyByNameAndEmail(string $companyName, string $companyEmail): ?Company
+    {
+        return Company::where(['email'=> $companyEmail, 'name'=> $companyName])->first();
+    }
+
     /**
      * Create a new company
      *

@@ -11,7 +11,6 @@ class ExpensesController extends Controller
 
     public function __construct(ExpenseService $expenseService)
     {
-        parent::__construct();
         $this->expenseService = $expenseService;
     }
 
