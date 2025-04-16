@@ -1,5 +1,165 @@
 @baseUrl = http://127.0.0.1:8000/api
+@contentType = application/json
 
-###
+// Store tokens and variables for use in multiple requests
+@authToken = "1|6PTeE6MxAZQEwAgxN2cFZlFb1aXzPQGiH3LXwhSa7f25710c"
+@userId = 1
+@expenseId =
+
+// ==================== Authentication Tests ====================
+
+### Register a new user
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "Test User",
+  "email": "testuser@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "company_name": "Test Company",
+  "company_email": "testcompany@company.com"
+}
+
+### Login
 POST {{baseUrl}}/login
-###
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### Get current user info
+GET {{baseUrl}}/user
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Logout
+POST {{baseUrl}}/logout
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+// ==================== Company Tests ====================
+
+### Get company details
+GET {{baseUrl}}/company
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Update company details
+PUT {{baseUrl}}/company
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "Updated Company Name",
+  "address": "123 Company Street",
+  "phone": "555-1234",
+  "website": "https://updatedcompany.com"
+}
+
+### Get company statistics
+GET {{baseUrl}}/company/statistics
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+// ==================== User Management Tests ====================
+
+### Get all users
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Create a new user
+POST {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "New Employee",
+  "email": "employee@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "user"
+}
+
+// After creating a user, copy the user ID from the response and set it as @userId
+
+### Get specific user
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Update user
+PUT {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "Updated Employee Name",
+  "email": "updated_employee@example.com",
+  "role": "admin"
+}
+
+### Delete user
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+// ==================== Expense Tests ====================
+
+### Get all expenses
+GET {{baseUrl}}/expenses
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Create a new expense
+POST {{baseUrl}}/expenses
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "description": "Business lunch",
+  "amount": 45.50,
+  "date": "2025-04-15",
+  "category": "Meals",
+  "receipt_image": null
+}
+
+// After creating an expense, copy the expense ID from the response and set it as @expenseId
+
+### Get specific expense
+GET {{baseUrl}}/expenses/{{expenseId}}
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Update expense
+PUT {{baseUrl}}/expenses/{{expenseId}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "description": "Updated business lunch",
+  "amount": 52.75,
+  "date": "2025-04-15",
+  "category": "Meals",
+  "receipt_image": null
+}
+
+### Get expense audit logs
+GET {{baseUrl}}/expenses/{{expenseId}}/audit-logs
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}
+
+### Delete expense
+DELETE {{baseUrl}}/expenses/{{expenseId}}
+Authorization: Bearer {{authToken}}
+Accept: {{contentType}}

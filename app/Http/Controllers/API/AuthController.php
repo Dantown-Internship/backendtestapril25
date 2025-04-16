@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\TransientToken;
 
 class AuthController extends Controller
 {
@@ -88,7 +89,11 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // In testing, the token might be null or a transient token
+        $token = $request->user()->currentAccessToken();
+        if ($token && !($token instanceof TransientToken)) {
+            $token->delete();
+        }
 
         return response()->json([
             'message' => 'Logged out successfully',
