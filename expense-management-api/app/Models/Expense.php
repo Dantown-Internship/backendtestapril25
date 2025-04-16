@@ -14,6 +14,16 @@ class Expense extends Model
         'category',
     ];
 
+    protected $with = [
+        'user',
+        'company',
+    ];
+    
+    protected $hidden = [
+        'updated_at',
+        'created_at',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

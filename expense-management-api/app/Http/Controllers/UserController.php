@@ -4,43 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::paginate(10);
+        $users = Cache::remember('users_all', now()->addMinutes(10), function () {
+            return User::paginate(10);
+        });
+        
         return response()->json([
             'status' => true,
             'message' => 'Users retrieved successfully',
             'data' => $users,
         ], 200);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:8',
-    //         'role' => 'required|string|in:Admin,Manager,Employee',
-    //         'company_id' => 'required|exists:companies,id',
-    //     ]);
-
-    //     $user = User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => bcrypt($request->password),
-    //         'role' => $request->role,
-    //         'company_id' => $request->company_id,
-    //     ]);
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'User created successfully',
-    //         'data' => $user,
-    //     ], 201);
-    // }
 
     public function update(Request $request, $id)
     {
@@ -62,12 +41,14 @@ class UserController extends Controller
 
         $user->update($request->all());
 
+        Cache::forget('users_all');
+
         return response()->json([
             'status' => true,
             'message' => 'User updated successfully',
             'data' => $user,
         ], 200);
     }
-    
+
 
 }

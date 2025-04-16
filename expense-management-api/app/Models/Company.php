@@ -21,6 +21,11 @@ class Company extends Model
         'created_at',
     ];
 
+    protected $with = [
+        'users',
+        'expenses',
+    ];
+
     public function users()
     {
         return $this->hasMany(User::class);

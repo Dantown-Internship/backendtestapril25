@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class ExpenseController extends Controller
@@ -13,16 +14,22 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $userCompany = $request->authenticated_user->company_id;
+        $name        = $request->query('query');
+        $cacheKey    = $name ? "expense_search_" . strtolower($name) : "expense_all";
 
-        if ($request->has('query')) {
-            $query    = $request->input('query');
-            $expenses = Expense::where('title', 'LIKE', "%query%")
-                ->orWhere('category', 'LIKE', "%$query%")
-                ->where('company_id', $userCompany)
-                ->paginate(10);
-        } else {
-            $expenses = Expense::where('company_id', $userCompany)->paginate(10);
-        }
+        $expenses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($userCompany, $name) {
+            $query = Expense::where('company_id', $userCompany);
+
+            if ($name) {
+                $query->where(function ($q) use ($name) {
+                    $q->where('title', 'ILIKE', "%".$name."%")
+                        ->orWhere('category', 'ILIKE', "%".$name."%");
+                });
+            }
+
+            return $query->paginate(10);
+        });
+
         return response()->json([
             "status"  => true,
             "message" => "Expenses retrieved successfully",
@@ -51,6 +58,7 @@ class ExpenseController extends Controller
         $validatedData['user_id']    = $request->authenticated_user->id;
         $validatedData['company_id'] = $request->authenticated_user->company_id;
         $expense                     = Expense::create($validatedData);
+        Cache::forget("expense_all");
         return response()->json([
             "status"  => true,
             "message" => "Expense successfully created",
@@ -63,7 +71,9 @@ class ExpenseController extends Controller
      */
     public function show($id)
     {
-        $expense = Expense::find($id);
+        $expense = Cache::remember("expense_" . $id, now()->addMinutes(10), function () use ($id) {
+            return Expense::find($id);
+        });
 
         if (! $expense) {
             return response()->json([
@@ -105,6 +115,12 @@ class ExpenseController extends Controller
         }
         $validatedData = $validator->validated();
         $expense->update($validatedData);
+
+        Cache::forget("expense_" . $id);
+        Cache::forget("expense_all");
+        Cache::forget("expense_search_" . strtolower($validatedData['title'] ?? ''));
+        Cache::forget("expense_search_" . strtolower($validatedData['category'] ?? ''));
+
         return response()->json([
             "status"  => true,
             "message" => "Expense successfully updated",
@@ -125,6 +141,12 @@ class ExpenseController extends Controller
             ], 404);
         }
         $expense->delete();
+
+        Cache::forget("expense_" . $id);
+        Cache::forget("expense_all");
+        Cache::forget("expense_search_" . strtolower($expense->title));
+        Cache::forget("expense_search_" . strtolower($expense->category));
+        
         return response()->json([
             "status"  => true,
             "message" => "Expense successfully deleted",
