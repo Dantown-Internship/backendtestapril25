@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'company_id')) {
                 $table->foreignId('company_id')
+                    ->after('email')
                     ->constrained('companies')
                     ->onDelete('cascade');
             }
             if (!Schema::hasColumn('users', 'role')) {
-                $table->unsignedTinyInteger('role');
+                $table->unsignedTinyInteger('role')
+                    ->after('name');
             }
             if (!Schema::hasColumn('users', 'deleted_at')) {
                 $table->softDeletes();
