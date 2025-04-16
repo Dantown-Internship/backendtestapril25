@@ -13,4 +13,4 @@ Route::post('login', [AuthController::class, 'login']);
 Route::apiResource('expenses', ExpenseController::class)->middleware('auth:sanctum');
 
 // Users Management
-Route::apiResource('users', UserController::class)->middleware('auth:sanctum');
+Route::apiResource('users', UserController::class)->middleware(['auth:sanctum','role:admin']);

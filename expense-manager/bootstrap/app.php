@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToGroup('api', [
             ForceJsonResponse::class,
         ]);
+        $middleware->alias([
+            'role'=> \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(fn (Throwable $exception, Request $request) => (new ExceptionHandler)->handle($exception, $request));
