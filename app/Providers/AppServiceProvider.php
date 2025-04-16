@@ -8,6 +8,7 @@ use App\Policies\UserPolicy;
 use App\Policies\ExpensePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
         // POLICIES FOR ACTION RESTRICTIONS
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Expense::class, ExpensePolicy::class);
+
+        JsonResource::withoutWrapping();
     }
 }

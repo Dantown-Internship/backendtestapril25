@@ -1,4 +1,4 @@
-<!-- resources/views/emails/expense_report.blade.php -->
+
 <h1>Weekly Expense Report</h1>
 <p>Here is the expense summary for the week <strong>{{ $from->format('Y-m-d') }}</strong> to <strong>{{ $to->format('Y-m-d') }}</strong>:</p>
 <table border="1" cellpadding="6" style="border-collapse:collapse;">
