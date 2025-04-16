@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -19,13 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->map(function (NotFoundHttpException $exception, $request) {
-            if (str_starts_with($request->getPathInfo(), '/api/')) {
-                return response()->json([
-                    'error' => 'Resource not found'
-                ], 404);
-            }
+        // app('Illuminate\Contracts\Debug\ExceptionHandler')->renderable(function (NotFoundHttpException $e, Request $request) {
+        //     if (str_starts_with($request->getPathInfo(), '/api/')) {
+        //         return response()->json([
+        //             'error' => 'Resource not found'
+        //         ], 404);
+        //     }
 
-            return response()->view('errors.404', [], 404);
-        });
+        //     return response()->view('errors.404', [], 404);
+        // });
     })->create();
