@@ -12,9 +12,8 @@ class ListExpensesAction
     public function handle(array $filters, int $perPage): LengthAwarePaginator
     {
         $user = Auth::user();
-        $companyId = $user->company_id;
 
-        $query = Expense::with('user')->where('company_id', $companyId);
+        $query = Expense::with('user')->where('company_id', $user->company_id);
 
         // Show only empoyee expenses
         if ($user->role === Roles::EMPLOYEE) {
