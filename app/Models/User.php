@@ -5,6 +5,9 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Role;
+use App\Models\Concerns\HasUuid;
+use App\Models\Scopes\CompanyScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,9 +15,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+#[ScopedBy(CompanyScope::class)]
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +26,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'company_id',
         'role',
         'name',
