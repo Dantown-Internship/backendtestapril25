@@ -2,29 +2,45 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 trait HasApiResponse
 {
-    protected function successResponse($message = 'Success', $data = [],  $statusCode = 200)
+    protected function successResponse(string $message = 'Success', Responsable | array | null $data = null,  int $statusCode = 200)
     {
-        return response()->json([
-            'status' => 'success',
+        $response = [
+            'status' => true,
             'message' => $message,
-            'data' => $data,
-        ], $statusCode);
+        ];
+        if (!blank($data))
+        {
+            $response['data'] = $data;
+        }
+
+        return response()->json($response, $statusCode);
+
     }
 
-    protected function errorResponse($message = 'Error', $errors = [], $statusCode = 400)
+    protected function errorResponse(string $message = 'Error', int $statusCode = 400, ?array $errors = null)
     {
-        return response()->json([
-            'status' => 'error',
+        $response = [
+            'status' => false,
             'message' => $message,
-            'errors' => $errors,
-        ], $statusCode);
+        ];
+
+        if (!blank($errors))
+        {
+            $response['errors'] = $errors;
+        }
+
+        return response()->json($response, $statusCode);
     }
-    protected function paginatedResponse($message = 'Success', $data,  $statusCode = 200)
+    protected function paginatedResponse(string $message = 'Success', LengthAwarePaginator | AnonymousResourceCollection $data,  int $statusCode = 200)
     {
         return response()->json([
-            'status' => 'success',
+            'status' => true,
             'message' => $message,
             'data' => $data->items(),
             'meta' => [

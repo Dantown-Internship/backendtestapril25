@@ -21,8 +21,8 @@ class CustomException extends Exception
     {
         return $this->errorResponse(
             $this->getMessage(),
+            $this->getCode(),
             $this->errors,
-            $this->getCode()
         );
     }
 }
