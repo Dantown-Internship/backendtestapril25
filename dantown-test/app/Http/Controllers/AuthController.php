@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\AuthService;
+use App\Exceptions\CustomApiErrorResponseHandler;
 
 class AuthController extends Controller
 {
@@ -18,38 +19,31 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // user belong to a company
-        // Registration logic (Admin only)
-
-        $body = $request->all();
-
-        $validator = Validator::make($body, [
-            "username" => "required|string",
-            "password" => "required|string",
-        ], [
-            'username.required' => 'Kindly provide your email address or hmo id.',
-            'password.required' => 'Kindly provide your password.',
+    
+        $fields = $request->validate([
+            "name" => "required|string|max:255",
+            "email" => "required|email|unique:users",
+            "password" => "required|min:8",
+            "companyName" => "required|string|max:255",
+            "companyEmail" => "required|email|unique:users",
+            "role" => "required"
         ]);
-
-        if ($validator->fails()) {
-            throw new CustomApiErrorResponseHandler($validator->errors()->first());
-        }
-
-        $isMobile = $request->header('App-Name') !== null ? true : false;
-        $data = $this->accountsRepository->accountLogin($body, $isMobile);
+        $data = $this->authService->createUser($fields);
     }
 
     public function login(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
-        if ($user && Hash::check($request->password, $user->password)) {
-            return response()->json(['token' => $user->createToken('SaaSApp')->plainTextToken]);
-        }
-        return response()->json(['message' => 'Unauthorized'], 401);
+        $request->validate([
+            "email" => "required|email|exists:users",
+            "password" => "required",
+        ]);
+        $responseData = $this->authService->loginUser($request);
+        return response()->json($responseData, $responseData->success ? 200:401);
     }
 
     public function logout(Request $request)
     {
-        // Registration logic (Admin only)
+        $request->user()->tokens()->delete();
+         return response()->json(['message' => 'Logout Successfully'],  200);
     }
 }
