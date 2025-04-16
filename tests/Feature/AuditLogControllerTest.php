@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AuditLogControllerTest extends TestCase
@@ -45,7 +46,7 @@ class AuditLogControllerTest extends TestCase
         $this->token = $this->admin->createToken('test-token')->plainTextToken;
     }
 
-    /** @test */
+    #[Test]
     public function test_admin_can_view_audit_logs()
     {
         // Create some audit logs
@@ -80,7 +81,7 @@ class AuditLogControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function test_manager_can_view_audit_logs()
     {
         $managerToken = $this->manager->createToken('test-token')->plainTextToken;
@@ -97,7 +98,7 @@ class AuditLogControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function test_employee_cannot_view_audit_logs()
     {
         $employeeToken = $this->employee->createToken('test-token')->plainTextToken;
@@ -108,7 +109,7 @@ class AuditLogControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function test_admin_can_view_specific_audit_log()
     {
         $auditLog = AuditLog::factory()->create([
@@ -136,7 +137,7 @@ class AuditLogControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_view_audit_log_from_other_company()
     {
         $otherCompany = Company::factory()->create();
@@ -150,7 +151,7 @@ class AuditLogControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function test_admin_can_clear_audit_logs_cache()
     {
         $response = $this->withToken($this->token)
@@ -163,7 +164,7 @@ class AuditLogControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function test_non_admin_cannot_clear_audit_logs_cache()
     {
         $managerToken = $this->manager->createToken('test-token')->plainTextToken;
