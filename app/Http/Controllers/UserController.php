@@ -24,12 +24,19 @@ class UserController extends Controller
 
         $cacheKey = 'users.company.' . $companyId;
 
+
+        $page = $request->get('page', 1);
+        $cacheKey = "users.company.{$companyId}.page.{$page}";
+
         // One hour (60 minutes) cache
         $users = Cache::remember($cacheKey, 60 * 60, function () use ($companyId) {
-            return User::where('company_id', $companyId)->get();
+            return User::where('company_id', $companyId)->paginate(24);
         });
 
-        return $this->success($users, 'Users fetched successfully.');
+        return $this->success(
+            UserResource::collection($users)->response()->getData(true),
+            'Users fetched successfully.'
+        );
     }
 
     /**
@@ -62,7 +69,7 @@ class UserController extends Controller
         $user = User::create($validated);
 
         // Clear cache for this company
-        Cache::forget('users.company.' . $user->company_id);
+        $this->clearUserCompanyCache($user->company_id);
 
         return $this->success(new UserResource($user), 'User created successfully.', 201);
     }
@@ -81,9 +88,17 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|string|min:8',
+            'role' => 'required|string|in:' . implode(',', [
+                User::ADMIN,
+                User::MANAGER,
+                User::EMPLOYEE,
+            ]),
+        ], [
+            'role.in' => 'The selected role is invalid. Valid roles are: ' . implode(', ', [
+                User::ADMIN,
+                User::MANAGER,
+                User::EMPLOYEE,
+            ]),
         ]);
 
         if (isset($validated['password'])) {
@@ -93,9 +108,9 @@ class UserController extends Controller
         $user->update($validated);
 
         // Clear cache to ensure fresh data next fetch
-        Cache::forget('users.company.' . $user->company_id);
+        $this->clearUserCompanyCache($user->company_id);
 
-        return $this->success($user, 'User updated successfully.');
+        return $this->success($user, 'User role updated successfully.');
     }
 
     /**
@@ -106,8 +121,20 @@ class UserController extends Controller
         $user->delete();
 
         // Clear cache to ensure fresh data next fetch
-        Cache::forget('users.company.' . $user->company_id);
+        $this->clearUserCompanyCache($user->company_id);
 
         return $this->success(null, 'User deleted successfully.');
+    }
+
+    // caches function clearing
+    protected function clearUserCompanyCache($companyId)
+    {
+        $usersCount = User::count();
+        $perPage = 24; // or whatever your pagination size is
+        $maxPages = max(1, ceil($usersCount / $perPage));
+
+        for ($page = 1; $page <= $maxPages; $page++) {
+            Cache::forget("users.company.{$companyId}.page.{$page}");
+        }
     }
 }

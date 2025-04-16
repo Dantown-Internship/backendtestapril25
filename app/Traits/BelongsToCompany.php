@@ -20,8 +20,6 @@ trait BelongsToCompany
     protected static function booted(): void
     {
         parent::booted();
-        // Apply the global scope for restricting reads to the current tenant
-        // Keep this if you want both read restriction and automatic creation ID
         static::addGlobalScope(new CompanyScope);
 
         self::creating(function (Model $model) {

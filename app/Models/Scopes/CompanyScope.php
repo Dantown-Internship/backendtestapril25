@@ -14,8 +14,14 @@ class CompanyScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $user = Auth::user();
-        if ($user) {
+        // Skip if running in console (e.g., seeder, artisan)
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        $user = Auth::user();  // // Only apply if a user is authenticated
+
+        if ($user && $user->company_id) {
             $builder->where('company_id', $user->company_id);
         }
     }
