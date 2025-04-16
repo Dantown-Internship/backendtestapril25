@@ -34,6 +34,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -69,6 +72,14 @@ class User extends Authenticatable
     {
         return $this->role === 'Manager';
     }
+
+    public function isAdminOrManager(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
+    }
+
+
+
 
     public function isEmployee(): bool
     {
