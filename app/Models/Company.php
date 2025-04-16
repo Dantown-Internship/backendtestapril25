@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Company extends Model
 {
+    use HasFactory;
+
     protected $guarded = ['id'];
 
     public function users(): HasMany
@@ -15,8 +18,8 @@ class Company extends Model
         return $this->hasMany(User::class);
     }
 
-    public function expenses(): HasManyThrough
+    public function expenses(): HasMany
     {
-        return $this->hasManyThrough(Expense::class, User::class);
+        return $this->hasMany(Expense::class);
     }
 }
