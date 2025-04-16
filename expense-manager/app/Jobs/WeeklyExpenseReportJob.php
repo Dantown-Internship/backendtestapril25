@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\Roles;
 use App\Mail\WeeklyExpenseMail;
+use App\Models\Company;
 use App\Models\Expense;
 use App\Models\User;
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $companies = User::where('role', Roles::ADMIN)
+        $companies = User::where('role', Roles::ADMIN->value)
             ->select('company_id')
             ->distinct()
             ->get()
@@ -45,12 +46,16 @@ class WeeklyExpenseReportJob implements ShouldQueue
     /**
      * Generate and send weekly expense report for a company
      *
-     * @param  int  $companyId
+     * @param int $companyId
+     * @return void
      */
     protected function generateReportForCompany(string $companyId): void
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays(7);
+
+        // Get company information
+        $company = Company::findOrFail($companyId);
 
         // Get expenses for the past week
         $expenses = Expense::where('company_id', $companyId)
@@ -64,26 +69,27 @@ class WeeklyExpenseReportJob implements ShouldQueue
             ->map(function ($items) {
                 return [
                     'count' => $items->count(),
-                    'total' => $items->sum('amount'),
+                    'total' => $items->sum('amount')
                 ];
             });
 
         $userTotals = $expenses->groupBy('user_id')
             ->map(function ($items) {
                 return [
-                    'user' => $items->first()->user->name ?? 'Ghost User',
+                    'user' => $items->first()->user->name ?? "Ghost User",
                     'count' => $items->count(),
-                    'total' => $items->sum('amount'),
+                    'total' => $items->sum('amount')
                 ];
             });
 
         // Get all admins for this company
-        $admins = User::where('company_id', $companyId)->where('role', Roles::ADMIN)->get();
+        $admins = User::where('company_id', $companyId)->where('role', Roles::ADMIN->value)->get();
 
         // Send report email to each admin
         foreach ($admins as $admin) {
             $reportData = [
                 'admin' => $admin,
+                'company' => $company,
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'expenses' => $expenses,
@@ -92,7 +98,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
                 'userTotals' => $userTotals,
             ];
 
-            Mail::to($admin->email)->queue(new WeeklyExpenseMail($reportData));
+            Mail::to($admin->email)->send(new WeeklyExpenseMail($reportData));
         }
     }
 }

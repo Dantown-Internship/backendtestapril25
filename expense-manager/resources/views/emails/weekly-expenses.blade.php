@@ -6,130 +6,35 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
             color: #333;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
         }
         .header {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .summary {
-            margin-bottom: 30px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
+            padding: 20px 0;
             border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f5f5f5;
-        }
-        .category-section, .user-section {
-            margin-bottom: 30px;
         }
         .footer {
             margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #777;
             font-size: 0.9em;
+            color: #777;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Weekly Expense Report</h1>
-        <p>Period: {{ $reportData['startDate']->format('M d') }} - {{ $reportData['endDate']->format('M d, Y') }}</p>
+        <h2>Weekly Expense Report</h2>
+        <p>Hi {{ $reportData['admin']->name }},</p>
+        <p>Your weekly expense report for <strong>{{ $reportData['company']->name }}</strong> is ready for the period:</p>
+        <p><strong>{{ $reportData['startDate']->format('M d') }} - {{ $reportData['endDate']->format('M d, Y') }}</strong></p>
     </div>
 
-    <div class="summary">
-        <h2>Summary</h2>
-        <p><strong>Total Expenses:</strong> {{ count($reportData['expenses']) }}</p>
-        <p><strong>Total Amount:</strong> ${{ number_format($reportData['totalAmount'], 2) }}</p>
-    </div>
+    <p>Please find the attached PDF report with all details.</p>
 
-    <div class="category-section">
-        <h2>Expenses by Category</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th>Count</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($reportData['categoryTotals'] as $category => $data)
-                <tr>
-                    <td>{{ $category }}</td>
-                    <td>{{ $data['count'] }}</td>
-                    <td>${{ number_format($data['total'], 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="user-section">
-        <h2>Expenses by User</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Count</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($reportData['userTotals'] as $userData)
-                <tr>
-                    <td>{{ $userData['user'] }}</td>
-                    <td>{{ $userData['count'] }}</td>
-                    <td>${{ number_format($userData['total'], 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="expenses-section">
-        <h2>All Expenses</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>User</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($reportData['expenses'] as $expense)
-                <tr>
-                    <td>{{ $expense->created_at->format('M d, Y') }}</td>
-                    <td>{{ $expense->user->name }}</td>
-                    <td>{{ $expense->title }}</td>
-                    <td>{{ $expense->category }}</td>
-                    <td>${{ number_format($expense->amount, 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+    <p>Thanks,<br>The Expense Management System</p>
 
     <div class="footer">
-        <p>This is an automated report. Please do not reply to this email.</p>
-        <p>© {{ date('Y') }} Expense Management System</p>
+        <p>This is an automated message. Please do not reply.</p>
     </div>
 </body>
 </html>
