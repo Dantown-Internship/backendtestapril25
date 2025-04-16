@@ -39,10 +39,6 @@ class User extends Authenticatable
         'updated_at',
     ];
 
-    protected $with = [
-        'company',
-        'expenses',
-    ];
 
     /**
      * Get the attributes that should be cast.

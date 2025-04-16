@@ -23,7 +23,7 @@ class Company extends Model
 
     protected $with = [
         'users',
-        'expenses',
+        // 'expenses',
     ];
 
     public function users()

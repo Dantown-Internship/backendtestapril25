@@ -16,7 +16,7 @@ Route::get('/', function () {
     ]);
 })->name('api.index');
 
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware([ApiAuth::class])->group(function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');

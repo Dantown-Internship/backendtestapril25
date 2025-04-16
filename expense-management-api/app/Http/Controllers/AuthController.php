@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function login(Request $request){
-        
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
+        
         $user = User::where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
