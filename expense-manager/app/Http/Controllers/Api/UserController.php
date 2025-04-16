@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Actions\Users\CreateUserAction;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUserAction;
@@ -20,7 +21,7 @@ class UserController extends Controller
     /**
      * List All Users
      */
-    public function index(Request $request, ListUserAction $action)
+    public function index(Request $request, ListUserAction $action): JsonResponse
     {
         $search = $request->input('search');
         $perPage = $request->input('per_page', 15);
@@ -66,7 +67,7 @@ class UserController extends Controller
     /**
      * Delete User
      */
-    public function destroy(DeleteUserAction $action, string $id)
+    public function destroy(DeleteUserAction $action, string $id): JsonResponse
     {
         $action->handle($id);
 

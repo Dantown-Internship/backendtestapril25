@@ -11,7 +11,7 @@ class DeleteExpensesAction
 {
     use AuditLogTrait;
 
-    public function handle($id)
+    public function handle($id): void
     {
         $expense = Expense::findOrFail($id);
 

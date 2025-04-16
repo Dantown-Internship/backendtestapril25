@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Actions\Expenses\DeleteExpensesAction;
 use App\Actions\Expenses\GetExpensesAction;
 use App\Actions\Expenses\ListExpensesAction;
@@ -21,7 +22,7 @@ class ExpenseController extends Controller
     /**
      * All Expenses List
      */
-    public function index(Request $request, ListExpensesAction $action)
+    public function index(Request $request, ListExpensesAction $action): JsonResponse
     {
         $request->validate([
             'search' => 'sometimes|string',

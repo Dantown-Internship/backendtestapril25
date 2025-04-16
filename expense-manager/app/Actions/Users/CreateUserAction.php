@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CreateUserAction
 {
-    public function handle($validated)
+    public function handle(array $validated)
     {
         $admin = Auth::user();
 

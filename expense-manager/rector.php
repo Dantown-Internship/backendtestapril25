@@ -30,7 +30,6 @@ return RectorConfig::configure()
         SetList::DEAD_CODE,
         SetList::TYPE_DECLARATION,
         SetList::PRIVATIZATION,
-
     ])
     ->withRules([
         AddReturnTypeDeclarationRector::class,

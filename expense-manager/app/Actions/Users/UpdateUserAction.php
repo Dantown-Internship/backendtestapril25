@@ -14,6 +14,7 @@ class UpdateUserAction
         if ($user->company_id != Auth::user()->company_id) {
             abort(404, 'Unauthorised');
         }
+
         $user->update($validated);
 
         // Clear users cache for this company

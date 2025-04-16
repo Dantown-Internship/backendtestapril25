@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->company = Company::factory()->create();
 
     $this->admin = User::factory()->create([
@@ -28,7 +28,7 @@ beforeEach(function () {
     $this->token = $this->admin->createToken('test-token')->plainTextToken;
 });
 
-test('admin can list users', function () {
+test('admin can list users', function (): void {
     $response = $this->withHeaders([
         'Authorization' => 'Bearer '.$this->token,
     ])->getJson('/api/users');
@@ -52,7 +52,7 @@ test('admin can list users', function () {
     expect(count($response->json('data')))->toBe(3);
 });
 
-test('manager cannot list users', function () {
+test('manager cannot list users', function (): void {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([
@@ -62,7 +62,7 @@ test('manager cannot list users', function () {
     $response->assertStatus(403);
 });
 
-test('admin can create user', function () {
+test('admin can create user', function (): void {
     $userData = [
         'name' => 'New User',
         'email' => 'newuser@example.com',
@@ -94,7 +94,7 @@ test('admin can create user', function () {
     ]);
 });
 
-test('manager cannot create user', function () {
+test('manager cannot create user', function (): void {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $userData = [
@@ -112,7 +112,7 @@ test('manager cannot create user', function () {
     $response->assertStatus(403);
 });
 
-test('admin can update user role', function () {
+test('admin can update user role', function (): void {
     $updateData = [
         'role' => Roles::MANAGER->value,
     ];
@@ -139,7 +139,7 @@ test('admin can update user role', function () {
     ]);
 });
 
-test('manager cannot update user role', function () {
+test('manager cannot update user role', function (): void {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $updateData = [
@@ -153,7 +153,7 @@ test('manager cannot update user role', function () {
     $response->assertStatus(403);
 });
 
-test('admin can delete user', function () {
+test('admin can delete user', function (): void {
     $response = $this->withHeaders([
         'Authorization' => 'Bearer '.$this->token,
     ])->deleteJson('/api/users/'.$this->employee->id);
@@ -164,7 +164,7 @@ test('admin can delete user', function () {
     ]);
 });
 
-test('manager cannot delete user', function () {
+test('manager cannot delete user', function (): void {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([

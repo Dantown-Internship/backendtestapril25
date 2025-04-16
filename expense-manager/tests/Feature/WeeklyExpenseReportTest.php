@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     Mail::fake();
     Storage::fake('public');
     Storage::fake('local');
 });
 
-test('weekly expense report job generates pdf and sends email', function () {
+test('weekly expense report job generates pdf and sends email', function (): void {
 
     $company = Company::factory()->create();
 
@@ -39,7 +39,5 @@ test('weekly expense report job generates pdf and sends email', function () {
     $job->handle();
 
     // Assert that the email was sent to admin
-    Mail::assertSent(WeeklyExpenseMail::class, function ($mail) use ($admin) {
-        return $mail->hasTo($admin->email);
-    });
+    Mail::assertSent(WeeklyExpenseMail::class, fn($mail) => $mail->hasTo($admin->email));
 });

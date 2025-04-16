@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -35,9 +36,9 @@ class PdfService
             Storage::disk('local')->put($filePath, $pdf->output());
 
             return $filePath;
-        } catch (\Exception $e) {
-            Log::error('PDF generation failed: '.$e->getMessage());
-            throw $e;
+        } catch (Exception $exception) {
+            Log::error('PDF generation failed: '.$exception->getMessage());
+            throw $exception;
         }
     }
 

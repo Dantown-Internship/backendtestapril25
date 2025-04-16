@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->company = Company::factory()->create();
 
     $this->admin = User::factory()->create([
@@ -30,7 +30,7 @@ beforeEach(function () {
     $this->token = $this->admin->createToken('test-token')->plainTextToken;
 });
 
-test('audit log is created when expense is updated', function () {
+test('audit log is created when expense is updated', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->employee->id,
@@ -54,7 +54,7 @@ test('audit log is created when expense is updated', function () {
     ]);
 });
 
-test('audit log is created when expense is deleted', function () {
+test('audit log is created when expense is deleted', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->employee->id,
@@ -73,7 +73,7 @@ test('audit log is created when expense is deleted', function () {
     ]);
 });
 
-test('admin can view audit logs', function () {
+test('admin can view audit logs', function (): void {
     AuditLog::factory()->count(3)->create([
         'company_id' => $this->company->id,
         'user_id' => $this->admin->id,
@@ -93,7 +93,7 @@ test('admin can view audit logs', function () {
     expect(count($response->json('data')))->toBe(3);
 });
 
-test('manager cannot view audit logs', function () {
+test('manager cannot view audit logs', function (): void {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([
@@ -103,7 +103,7 @@ test('manager cannot view audit logs', function () {
     $response->assertStatus(403);
 });
 
-test('employee cannot view audit logs', function () {
+test('employee cannot view audit logs', function (): void {
     $employeeToken = $this->employee->createToken('employee-token')->plainTextToken;
 
     $response = $this->withHeaders([
@@ -113,7 +113,7 @@ test('employee cannot view audit logs', function () {
     $response->assertStatus(403);
 });
 
-test('admin cannot view audit logs from other company', function () {
+test('admin cannot view audit logs from other company', function (): void {
     $otherCompany = Company::factory()->create();
     $otherAuditLog = AuditLog::factory()->create([
         'company_id' => $otherCompany->id,

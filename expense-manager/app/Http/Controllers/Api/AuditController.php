@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Actions\Audits\GetAuditAction;
 use App\Actions\Audits\ListAuditAction;
 use App\Http\Controllers\Controller;
@@ -16,7 +17,7 @@ class AuditController extends Controller
     /**
      * Get all Audits.
      */
-    public function index(Request $request, ListAuditAction $action)
+    public function index(Request $request, ListAuditAction $action): JsonResponse
     {
         $filters = [
             'user_id' => $request->input('user_id'),

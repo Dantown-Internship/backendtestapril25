@@ -14,7 +14,7 @@ class GetExpensesAction
 
         Gate::authorize('view', $expense);
 
-        $user = Auth::user();
+        Auth::user();
 
         return $expense->load('user');
     }

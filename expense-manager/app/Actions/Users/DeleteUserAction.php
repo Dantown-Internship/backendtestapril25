@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DeleteUserAction
 {
-    public function handle($id)
+    public function handle($id): void
     {
         $user = User::findOrFail($id);
 

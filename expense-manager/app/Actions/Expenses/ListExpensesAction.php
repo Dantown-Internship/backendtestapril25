@@ -36,7 +36,7 @@ class ListExpensesAction
 
             // Apply search filters
             if (! empty($filters['search'])) {
-                $query->where(function ($q) use ($filters) {
+                $query->where(function ($q) use ($filters): void {
                     $q->where('title', 'like', '%'.$filters['search'].'%')
                         ->orWhere('category', 'like', '%'.$filters['search'].'%');
                 });

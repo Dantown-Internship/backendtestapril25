@@ -41,7 +41,7 @@ class ExceptionHandler
                 $model = $previous->getModel();
                 $modelname = class_basename($model);
 
-                return $this->notFoundResponse("$modelname not found.");
+                return $this->notFoundResponse("{$modelname} not found.");
             }
 
             if ($previous instanceof ThrottleRequestsException) {
@@ -51,6 +51,7 @@ class ExceptionHandler
             return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
 
         }
+
         if ($exception instanceof ValidationException) {
             return $this->errorResponse(
                 $exception->getMessage(),
@@ -58,11 +59,13 @@ class ExceptionHandler
                 $exception->errors()
             );
         }
+
         if ($exception instanceof AuthenticationException) {
 
             return $this->errorResponse('Authentication required. Login to continue', 401);
 
         }
+
         if ($exception instanceof AuthorizationException) {
             return $this->forbiddenResponse('This action is unauthorized.');
         }

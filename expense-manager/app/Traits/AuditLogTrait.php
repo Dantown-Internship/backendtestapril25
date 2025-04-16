@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 trait AuditLogTrait
 {
-    public function storeAudit(string $action, array $oldData, ?array $newData = null)
+    public function storeAudit(string $action, array $oldData, ?array $newData = null): void
     {
         $user = Auth::user();
         $changes = [
@@ -31,6 +31,7 @@ trait AuditLogTrait
                 }
             }
         }
+
         // create if there are any changes
         if (! empty($changes)) {
             AuditLog::create([

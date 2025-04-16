@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Exception;
 use App\Services\PdfService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -16,9 +17,12 @@ class WeeklyExpenseMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * @var mixed[]
+     */
     public $reportData;
 
-    private $pdfPath;
+    private ?string $pdfPath;
 
     /**
      * Create a new message instance.
@@ -34,8 +38,8 @@ class WeeklyExpenseMail extends Mailable
                 $reportData,
                 'weekly_expense_report'
             );
-        } catch (\Exception $e) {
-            Log::error('Failed to generate PDF: '.$e->getMessage());
+        } catch (Exception $exception) {
+            Log::error('Failed to generate PDF: '.$exception->getMessage());
             $this->pdfPath = null;
         }
     }

@@ -45,8 +45,6 @@ class WeeklyExpenseReportJob implements ShouldQueue
 
     /**
      * Generate and send weekly expense report for a company
-     *
-     * @param  int  $companyId
      */
     protected function generateReportForCompany(string $companyId): void
     {
@@ -65,21 +63,17 @@ class WeeklyExpenseReportJob implements ShouldQueue
         // Calculate statistics
         $totalAmount = $expenses->sum('amount');
         $categoryTotals = $expenses->groupBy('category')
-            ->map(function ($items) {
-                return [
-                    'count' => $items->count(),
-                    'total' => $items->sum('amount'),
-                ];
-            });
+            ->map(fn($items): array => [
+                'count' => $items->count(),
+                'total' => $items->sum('amount'),
+            ]);
 
         $userTotals = $expenses->groupBy('user_id')
-            ->map(function ($items) {
-                return [
-                    'user' => $items->first()->user->name ?? 'Ghost User',
-                    'count' => $items->count(),
-                    'total' => $items->sum('amount'),
-                ];
-            });
+            ->map(fn($items): array => [
+                'user' => $items->first()->user->name ?? 'Ghost User',
+                'count' => $items->count(),
+                'total' => $items->sum('amount'),
+            ]);
 
         // Get all admins for this company
         $admins = User::where('company_id', $companyId)->where('role', Roles::ADMIN->value)->get();

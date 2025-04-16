@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->company = Company::factory()->create();
 
     $this->admin = User::factory()->create([
@@ -29,7 +29,7 @@ beforeEach(function () {
     $this->token = $this->admin->createToken('test-token')->plainTextToken;
 });
 
-test('admin can list expenses', function () {
+test('admin can list expenses', function (): void {
     Expense::factory()->count(3)->create([
         'company_id' => $this->company->id,
         'user_id' => $this->admin->id,
@@ -60,7 +60,7 @@ test('admin can list expenses', function () {
     expect(count($response->json('data')))->toBe(3);
 });
 
-test('employee can only see their own expenses', function () {
+test('employee can only see their own expenses', function (): void {
     // Create expenses for the employee
     Expense::factory()->count(2)->create([
         'company_id' => $this->company->id,
@@ -80,10 +80,11 @@ test('employee can only see their own expenses', function () {
     ])->getJson('/api/expenses');
 
     $response->assertStatus(200);
+
     expect(count($response->json('data')))->toBe(2);
 });
 
-test('admin can create expense', function () {
+test('admin can create expense', function (): void {
     $expenseData = [
         'title' => 'Test Expense',
         'amount' => 100.50,
@@ -115,7 +116,7 @@ test('admin can create expense', function () {
     ]);
 });
 
-test('manager can update expense', function () {
+test('manager can update expense', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->employee->id,
@@ -151,7 +152,7 @@ test('manager can update expense', function () {
     ]);
 });
 
-test('employee cannot update expense', function () {
+test('employee cannot update expense', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->admin->id,
@@ -171,7 +172,7 @@ test('employee cannot update expense', function () {
     $response->assertStatus(403);
 });
 
-test('admin can delete expense', function () {
+test('admin can delete expense', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->employee->id,
@@ -187,7 +188,7 @@ test('admin can delete expense', function () {
     ]);
 });
 
-test('manager cannot delete expense', function () {
+test('manager cannot delete expense', function (): void {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
         'user_id' => $this->employee->id,
@@ -205,7 +206,7 @@ test('manager cannot delete expense', function () {
     ]);
 });
 
-test('user cannot access expenses from other company', function () {
+test('user cannot access expenses from other company', function (): void {
     $otherCompany = Company::factory()->create();
     $otherExpense = Expense::factory()->create([
         'company_id' => $otherCompany->id,

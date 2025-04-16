@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('user can register', function () {
+test('user can register', function (): void {
     $requestData = [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -41,7 +41,7 @@ test('user can register', function () {
     ]);
 });
 
-test('user cannot register with invalid data', function () {
+test('user cannot register with invalid data', function (): void {
     $response = $this->postJson('/api/register', [
         'name' => '',
         'email' => 'invalid-email',
@@ -53,7 +53,7 @@ test('user cannot register with invalid data', function () {
         ->assertJsonValidationErrors(['name', 'email', 'password']);
 });
 
-test('user can login', function () {
+test('user can login', function (): void {
     $company = Company::factory()->create();
     $user = User::factory()->create([
         'company_id' => $company->id,
@@ -77,7 +77,7 @@ test('user can login', function () {
         ]);
 });
 
-test('user cannot login with invalid credentials', function () {
+test('user cannot login with invalid credentials', function (): void {
     $user = User::factory()->create([
         'password' => bcrypt('password123'),
     ]);
@@ -93,7 +93,7 @@ test('user cannot login with invalid credentials', function () {
         ]);
 });
 
-test('user can logout', function () {
+test('user can logout', function (): void {
     $user = User::factory()->create();
     $token = $user->createToken('test-token')->plainTextToken;
 
@@ -112,7 +112,7 @@ test('user can logout', function () {
     ]);
 });
 
-test('unauthenticated user cannot logout', function () {
+test('unauthenticated user cannot logout', function (): void {
     $response = $this->postJson('/api/logout');
 
     $response->assertStatus(401);

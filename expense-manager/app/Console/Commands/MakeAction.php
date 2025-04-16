@@ -12,7 +12,7 @@ class MakeAction extends Command
 
     protected $description = 'Create a new Action class';
 
-    public function handle()
+    public function handle(): void
     {
         $nameInput = $this->argument('name'); // e.g. Auth/RegisterUser
         $className = class_basename($nameInput); // RegisterUser
