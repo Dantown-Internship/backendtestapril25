@@ -26,7 +26,7 @@ class User extends Authenticatable
 
     ];
 
-    
+    public static $Admin = 'Admin';
 
     public function company(){
         return $this->belongsTo(Company::class, 'user_id');
