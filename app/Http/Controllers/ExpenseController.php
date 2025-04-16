@@ -48,9 +48,8 @@ class ExpenseController extends Controller
         }
 
         $validated = $request->validate([
-            'description' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'date' => 'required|date',
             'category' => 'nullable|string|max:255',
         ]);
 
@@ -85,7 +84,7 @@ class ExpenseController extends Controller
         }
 
         $validated = $request->validate([
-            'description' => 'sometimes|required|string|max:255',
+            'title' => 'sometimes|required|string|max:255',
             'amount' => 'sometimes|required|numeric|min:0',
             'date' => 'sometimes|required|date',
             'category' => 'nullable|string|max:255',
