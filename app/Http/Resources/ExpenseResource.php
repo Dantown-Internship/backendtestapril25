@@ -20,8 +20,8 @@ class ExpenseResource extends JsonResource
             'amount' => $this->amount,
             'category' => $this->category,
             'user' => new UserResource($this->whenLoaded('user')),
-            'created_at' => $this->created_at->format('d M, Y'),
-            'updated_at' => $this->updated_at->format('d M, Y'),
+            'created_at' => $this->created_at->format('h:sA d M, Y'),
+            'updated_at' => $this->updated_at->format('h:sA d M, Y'),
         ];
     }
 }

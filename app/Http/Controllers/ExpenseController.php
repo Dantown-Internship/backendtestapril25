@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\ExpenseResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\ExpenseResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ExpenseController extends Controller
@@ -29,7 +30,7 @@ class ExpenseController extends Controller
 
         // One hour (60 minutes) cache
         $expenses = Cache::remember($cacheKey, 60 * 60, function () use ($companyId) {
-            return Expense::where('company_id', $companyId)->paginate(24);
+            return Expense::with('user')->where('company_id', $companyId)->paginate(24);
         });
 
         return $this->success(
@@ -55,7 +56,7 @@ class ExpenseController extends Controller
 
         $validated['company_id'] = $request->user()->company_id;
 
-        $expense = Expense::create($validated);
+        $expense = Auth::user()->expenses()->create($validated);
 
         // Clear cache for this company
         $this->clearExpenseCompanyCache($expense->company_id);
@@ -71,7 +72,7 @@ class ExpenseController extends Controller
         if (Gate::denies('view', $expense)) {
             return $this->failure('You do not have permission to view this expense.', 403);
         }
-        return $this->success(new ExpenseResource($expense), 'Expense fetched successfully.');
+        return $this->success(new ExpenseResource($expense->load('user')), 'Expense fetched successfully.');
     }
 
     /**
