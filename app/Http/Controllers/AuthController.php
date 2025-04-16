@@ -56,8 +56,6 @@ class AuthController extends Controller
 
             Cache::put($cacheKey, $users, now()->addMinutes(10));
         }
-//        $users = User::with(['company', 'expenses'])->where('company_id', $auth_user->company_id)->get();
-
         return response()->json([
             'message' => 'Users retrieved successfully',
             'users' => $users
@@ -74,7 +72,7 @@ class AuthController extends Controller
         $user = User::query()->where('id', $id)->where('company_id', $auth_user->company_id)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'User not found or you are not allowed to update this user details'], 404);
         }
 
         $user->update([
@@ -95,7 +93,7 @@ class AuthController extends Controller
         if(!$user)
         {
             return response()->json([
-                'message' => 'User not found!'
+                'message' => 'User not found or you are not allowed to delete this user details!'
             ], 404);
         }
 
@@ -132,7 +130,7 @@ class AuthController extends Controller
         }
 
         Auth::login($user);
-//        accessToken
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

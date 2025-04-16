@@ -26,7 +26,6 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users',
-//            'company_id' => 'required|exists:companies,id',
             'password' => 'required|min:5',
             'role' => ['required', new Enum(RoleEnum::class)]
         ];

@@ -22,8 +22,6 @@ class ExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-//            'company_id' => 'required|exists:companies,id',
-//            'user_id' => 'required|exists:users,id',
             'title' => 'required',
             'amount' => 'required|numeric',
             'category' => 'required'

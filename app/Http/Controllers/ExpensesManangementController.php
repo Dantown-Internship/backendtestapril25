@@ -44,11 +44,11 @@ class ExpensesManangementController extends Controller
                 'message' => 'Expense saved successfully!',
                 'expense' => $store
             ], 201);
+
         } catch (Exception $e) {
-            // Return error message in case of an exception
             return response()->json([
                 'error_message' => $e->getMessage()
-            ], 500); // Internal server error for unexpected issues
+            ], 500);
         }
     }
 
