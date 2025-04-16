@@ -94,7 +94,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
                 'userTotals' => $userTotals,
             ];
 
-            Mail::to($admin->email)->send(new WeeklyExpenseMail($reportData));
+            Mail::to($admin->email)->queue(new WeeklyExpenseMail($reportData));
         }
     }
 }
