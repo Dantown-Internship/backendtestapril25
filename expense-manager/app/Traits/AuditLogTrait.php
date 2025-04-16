@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 trait AuditLogTrait
 {
-    function storeAudit(string $action,  array $oldData, array $newData =null)
+    public function storeAudit(string $action, array $oldData, ?array $newData = null)
     {
         $user = Auth::user();
         $changes = [
             'old' => $oldData,
-            'new' => $newData
+            'new' => $newData,
         ];
-        if($action == 'update'){
+        if ($action == 'update') {
             // Track if there are actual changes
             $trackedFields = ['title', 'amount', 'category'];
             $changes = [];
@@ -32,7 +32,7 @@ trait AuditLogTrait
             }
         }
         // create if there are any changes
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             AuditLog::create([
                 'user_id' => $user->id,
                 'company_id' => $user->company_id,

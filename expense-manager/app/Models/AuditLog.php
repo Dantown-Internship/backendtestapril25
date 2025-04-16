@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AuditLog extends Model
 {
-    use HasUuids, HasFactory;
+    use HasFactory, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -30,11 +29,13 @@ class AuditLog extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'changes' => 'array'
+        'changes' => 'array',
     ];
+
     protected $hidden = [
         'updated_at',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -44,6 +45,7 @@ class AuditLog extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
     public function expense()
     {
         return $this->belongsTo(Expense::class);

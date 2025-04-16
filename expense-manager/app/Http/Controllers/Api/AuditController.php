@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class AuditController extends Controller
 {
-
     use ApiResponse;
 
     /**

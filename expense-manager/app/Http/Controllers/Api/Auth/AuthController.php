@@ -61,12 +61,11 @@ class AuthController extends Controller
 
     /**
      * User Logout
-     *
      */
-    function logout(Request $request)
+    public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return $this->noContentResponse('Logout Successful');
     }
-
 }

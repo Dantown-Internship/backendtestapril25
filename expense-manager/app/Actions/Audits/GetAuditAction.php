@@ -4,7 +4,6 @@ namespace App\Actions\Audits;
 
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class GetAuditAction
 {

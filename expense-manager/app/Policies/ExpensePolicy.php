@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Enums\Roles;
 use App\Models\Expense;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ExpensePolicy
 {
@@ -14,7 +13,7 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role,  Roles::cases());
+        return in_array($user->role, Roles::cases());
     }
 
     /**
@@ -30,7 +29,7 @@ class ExpensePolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role,  Roles::cases());
+        return in_array($user->role, Roles::cases());
     }
 
     /**

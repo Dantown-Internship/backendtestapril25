@@ -15,7 +15,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::apiResource('expenses', ExpenseController::class)->middleware('auth:sanctum');
 
 // Users Management
-Route::apiResource('users', UserController::class)->middleware(['auth:sanctum','role:admin']);
+Route::apiResource('users', UserController::class)->middleware(['auth:sanctum', 'role:admin']);
 
 // Audit Logs
-Route::apiResource('audits', AuditController::class)->middleware(['auth:sanctum','role:admin']);
+Route::apiResource('audits', AuditController::class)->middleware(['auth:sanctum', 'role:admin']);

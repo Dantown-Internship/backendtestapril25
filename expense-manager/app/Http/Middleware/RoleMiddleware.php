@@ -22,6 +22,7 @@ class RoleMiddleware
                 'message' => 'Unauthorized. Insufficient role.',
             ], 403);
         }
+
         return $next($request);
     }
 }

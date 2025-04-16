@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 class UpdateExpensesAction
 {
     use AuditLogTrait;
+
     public function handle($id, $validated)
     {
         $expense = Expense::findOrFail($id);

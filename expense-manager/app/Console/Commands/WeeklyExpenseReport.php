@@ -27,7 +27,7 @@ class WeeklyExpenseReport extends Command
     public function handle()
     {
         $this->info('Dispatching expense report job...');
-        dispatch(new WeeklyExpenseReportJob());
+        dispatch(new WeeklyExpenseReportJob);
         $this->info('Job dispatched successfully!');
 
         return Command::SUCCESS;
