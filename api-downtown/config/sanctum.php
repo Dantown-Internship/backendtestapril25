@@ -46,7 +46,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    //'expiration' => null,
+    'expiration' => 60 * 24, // Let the token expire after 24 hours
 
     /*
     |--------------------------------------------------------------------------

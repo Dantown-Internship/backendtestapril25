@@ -9,15 +9,15 @@ class Expenses extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'amount', 'category', 'company_id', 'user_id'];
+    protected $fillable = ['company_id', 'user_id', 'title', 'amount', 'category'];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    
-    public function company() {
+    public function company()
+    {
         return $this->belongsTo(Companies::class);
     }
-    
 }

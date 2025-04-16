@@ -2,26 +2,37 @@
 
 namespace App\Jobs;
 
+
+use App\Models\Companies;
+use App\Models\User;
+use App\Models\Expenses;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 class SendWeeklyExpenseReport implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct()
+    public function handle()
     {
-        //
-    }
+        $companies = Companies::all();
 
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
-    {
-        //
+        foreach ($companies as $company) {
+            $admins = User::where('company_id', $company->id)
+                ->where('role', 'Admin')
+                ->get();
+
+            $expenses = Expenses::where('company_id', $company->id)
+                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->get();
+
+            foreach ($admins as $admin) {
+                Mail::to($admin->email)->send(new \App\Mail\WeeklyExpenseReportMail($company, $expenses));
+            }
+        }
     }
 }

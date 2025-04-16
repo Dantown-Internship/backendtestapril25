@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckTokenExpiration;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,9 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // adding my custom middleware
         $middleware->alias([
-            // 'api' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            // 'throttle:api' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
             'role' => RoleMiddleware::class,
+            'token'=> CheckTokenExpiration::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

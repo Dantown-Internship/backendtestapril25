@@ -13,8 +13,14 @@ class Companies extends Model
 
 
 
-    public function users() {
+    public function users()
+    {
         return $this->hasMany(User::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expenses::class);
     }
     
 }
