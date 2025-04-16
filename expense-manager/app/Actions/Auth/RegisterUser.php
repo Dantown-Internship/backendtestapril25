@@ -22,7 +22,7 @@ class RegisterUser
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'company_id' => $company->id,
-            'role' => Roles::ADMIN->value,
+            'role' => Roles::ADMIN,
         ]);
         $token = $user->createToken('api-token')->plainTextToken;
 

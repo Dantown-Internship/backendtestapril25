@@ -32,7 +32,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $companies = User::where('role', Roles::ADMIN->value)
+        $companies = User::where('role', Roles::ADMIN)
             ->select('company_id')
             ->distinct()
             ->get()
@@ -80,7 +80,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
             });
 
         // Get all admins for this company
-        $admins = User::where('company_id', $companyId)->where('role', Roles::ADMIN->value)->get();
+        $admins = User::where('company_id', $companyId)->where('role', Roles::ADMIN)->get();
 
         // Send report email to each admin
         foreach ($admins as $admin) {
