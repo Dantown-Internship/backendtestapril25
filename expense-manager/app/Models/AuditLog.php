@@ -44,4 +44,8 @@ class AuditLog extends Model
     {
         return $this->belongsTo(Company::class);
     }
+    public function expense()
+    {
+        return $this->belongsTo(Expense::class);
+    }
 }
