@@ -37,14 +37,14 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // delete access token
-        $request->user()->currentAccessToken()->delete();
+        // delete all access tokens
+        $request->user()->tokens()->delete();
 
         return ApiResponse::success(null, 'Logged out successfully');
     }
 
     public function profile(Request $request)
     {
-        return ApiResponse::success(new UserResource($request->user()), 'Logged out successfully');
+        return ApiResponse::success(new UserResource($request->user()), 'Profile fetched successfully');
     }
 }
