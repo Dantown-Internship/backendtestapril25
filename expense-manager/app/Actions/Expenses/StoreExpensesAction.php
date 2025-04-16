@@ -3,6 +3,7 @@
 namespace App\Actions\Expenses;
 
 use App\Models\Expense;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,7 +19,9 @@ class StoreExpensesAction
 
         $expense = Expense::Create($data);
 
-        return $expense;
+        // Clear expenses cache for this company
+        CacheService::clearCompanyCache('expenses');
 
+        return $expense;
     }
 }

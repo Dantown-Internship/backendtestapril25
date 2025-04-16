@@ -3,6 +3,7 @@
 namespace App\Actions\Users;
 
 use App\Models\User;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Auth;
 
 class UpdateUserAction
@@ -14,6 +15,9 @@ class UpdateUserAction
             abort(404, 'Unauthorised');
         }
         $user->update($validated);
+
+        // Clear users cache for this company
+        CacheService::clearCompanyCache('users');
 
         return $user;
     }
