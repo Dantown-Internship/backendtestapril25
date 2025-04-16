@@ -22,15 +22,16 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'tenant_id',
-        'is_approved'
+        'company_id',
+
     ];
 
-    public static $tenant = 'tenant';
-    public static $isAdmin = 'admin';
+    public function company(){
+        return $this->belongsTo(Company::class, 'user_id');
+    }
 
-    public function tenant(){
-        return $this->hasOne(Tenant::class, 'tenant_id');
+    public function expenses(){
+        return $this->hasMany(Expense::class, 'user_id');
     }
 
     /**

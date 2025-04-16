@@ -5,20 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tenant extends Model
+class Expense extends Model
 {
     use HasFactory;
-
     protected $fillable = [
+        'company_id',
         'user_id',
-        'tenant_name',
+        'title',
+        'amount',
+        'category',
     ];
 
-    public function user(){
+    public function users(){
         return $this->belongsTo(User::class, 'user_id');
     }
-
-    public function posts(){
-        return $this->hasMany(Post::class, 'tenant_id');
+    public function company(){
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }
