@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Company
+ * Expense
  *
  * @property int id
  * @property int company_id
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string category
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read User owner
+ * @property-read Company company
  */
 class Expense extends Model
 {
@@ -40,5 +43,15 @@ class Expense extends Model
         return [
             'amount' => 'float',
         ];
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }
