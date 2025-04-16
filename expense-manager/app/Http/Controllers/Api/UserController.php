@@ -60,7 +60,7 @@ class UserController extends Controller
                 'message' => 'User updated successfully',
             ])
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode(200);
     }
 
     /**

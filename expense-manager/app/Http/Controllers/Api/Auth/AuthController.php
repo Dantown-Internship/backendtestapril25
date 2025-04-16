@@ -34,7 +34,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Registration successful',
             'data' => $data,
-        ]);
+        ],201);
     }
 
     /**
@@ -66,6 +66,6 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return $this->noContentResponse('Logout Successful');
+        return $this->successResponse('Logout Successful');
     }
 }

@@ -27,12 +27,17 @@ class WeeklyExpenseMail extends Mailable
     {
         $this->reportData = $reportData;
 
-        // Generate PDF
-        $this->pdfPath = PdfService::generatePdf(
-            'pdf.weekly-expense-report',
-            $reportData,
-            'weekly_expense_report'
-        );
+        try {
+            // Generate PDF
+            $this->pdfPath = PdfService::generatePdf(
+                'pdf.weekly-expense-report',
+                $reportData,
+                'weekly_expense_report'
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to generate PDF: ' . $e->getMessage());
+            $this->pdfPath = null;
+        }
     }
 
     /**
@@ -64,13 +69,13 @@ class WeeklyExpenseMail extends Mailable
      */
     public function attachments(): array
     {
-        if (!$this->pdfPath || !Storage::disk('public')->exists($this->pdfPath)) {
+        if (!$this->pdfPath || !Storage::disk('local')->exists($this->pdfPath)) {
             Log::error('PDF file not found at path: ' . $this->pdfPath);
             return [];
         }
 
         return [
-            Attachment::fromPath(Storage::disk('public')->path($this->pdfPath))
+            Attachment::fromPath(Storage::disk('local')->path($this->pdfPath))
                 ->as('weekly_expense_report.pdf')
                 ->withMime('application/pdf'),
         ];
@@ -83,8 +88,8 @@ class WeeklyExpenseMail extends Mailable
     public function __destruct()
     {
         // Delete the PDF file after the email is sent
-        if ($this->pdfPath && Storage::disk('public')->exists($this->pdfPath)) {
-            Storage::disk('public')->delete($this->pdfPath);
+        if ($this->pdfPath && Storage::disk('local')->exists($this->pdfPath)) {
+            Storage::disk('local')->delete($this->pdfPath);
         }
     }
 }

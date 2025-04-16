@@ -12,7 +12,7 @@ class LoginUser
         $credentials = $request->only('email', 'password');
 
         if (! Auth::attempt($credentials)) {
-            throw new \Exception('Invalid credentials provided', 400);
+            throw new \Exception('Invalid credentials provided', 401);
         }
 
         $user = Auth::user();
