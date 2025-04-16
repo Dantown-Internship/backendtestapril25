@@ -12,17 +12,17 @@ beforeEach(function () {
 
     $this->admin = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::ADMIN->value,
+        'role' => Roles::ADMIN->value,
     ]);
 
     $this->manager = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::MANAGER->value,
+        'role' => Roles::MANAGER->value,
     ]);
 
     $this->employee = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::EMPLOYEE->value,
+        'role' => Roles::EMPLOYEE->value,
     ]);
 
     $this->token = $this->admin->createToken('test-token')->plainTextToken;
@@ -30,7 +30,7 @@ beforeEach(function () {
 
 test('admin can list users', function () {
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
+        'Authorization' => 'Bearer '.$this->token,
     ])->getJson('/api/users');
 
     $response->assertStatus(200)
@@ -56,7 +56,7 @@ test('manager cannot list users', function () {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
+        'Authorization' => 'Bearer '.$managerToken,
     ])->getJson('/api/users');
 
     $response->assertStatus(403);
@@ -64,14 +64,14 @@ test('manager cannot list users', function () {
 
 test('admin can create user', function () {
     $userData = [
-        'name'                  => 'New User',
-        'email'                 => 'newuser@example.com',
-        'password'              => 'password123',
-        'role'                  => Roles::EMPLOYEE->value,
+        'name' => 'New User',
+        'email' => 'newuser@example.com',
+        'password' => 'password123',
+        'role' => Roles::EMPLOYEE->value,
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
+        'Authorization' => 'Bearer '.$this->token,
     ])->postJson('/api/users', $userData);
 
     $response->assertStatus(201)
@@ -87,9 +87,9 @@ test('admin can create user', function () {
         ]);
 
     $this->assertDatabaseHas('users', [
-        'name'       => 'New User',
-        'email'      => 'newuser@example.com',
-        'role'       => Roles::EMPLOYEE->value,
+        'name' => 'New User',
+        'email' => 'newuser@example.com',
+        'role' => Roles::EMPLOYEE->value,
         'company_id' => $this->company->id,
     ]);
 });
@@ -98,15 +98,15 @@ test('manager cannot create user', function () {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $userData = [
-        'name'                  => 'New User',
-        'email'                 => 'newuser@example.com',
-        'password'              => 'password123',
+        'name' => 'New User',
+        'email' => 'newuser@example.com',
+        'password' => 'password123',
         'password_confirmation' => 'password123',
-        'role'                  => Roles::EMPLOYEE->value,
+        'role' => Roles::EMPLOYEE->value,
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
+        'Authorization' => 'Bearer '.$managerToken,
     ])->postJson('/api/users', $userData);
 
     $response->assertStatus(403);
@@ -118,8 +118,8 @@ test('admin can update user role', function () {
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
-    ])->putJson('/api/users/' . $this->employee->id, $updateData);
+        'Authorization' => 'Bearer '.$this->token,
+    ])->putJson('/api/users/'.$this->employee->id, $updateData);
 
     $response->assertStatus(200)
         ->assertJsonStructure([
@@ -134,7 +134,7 @@ test('admin can update user role', function () {
         ]);
 
     $this->assertDatabaseHas('users', [
-        'id'   => $this->employee->id,
+        'id' => $this->employee->id,
         'role' => Roles::MANAGER->value,
     ]);
 });
@@ -147,16 +147,16 @@ test('manager cannot update user role', function () {
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
-    ])->putJson('/api/users/' . $this->employee->id, $updateData);
+        'Authorization' => 'Bearer '.$managerToken,
+    ])->putJson('/api/users/'.$this->employee->id, $updateData);
 
     $response->assertStatus(403);
 });
 
 test('admin can delete user', function () {
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
-    ])->deleteJson('/api/users/' . $this->employee->id);
+        'Authorization' => 'Bearer '.$this->token,
+    ])->deleteJson('/api/users/'.$this->employee->id);
 
     $response->assertStatus(204);
     $this->assertDatabaseMissing('users', [
@@ -168,12 +168,11 @@ test('manager cannot delete user', function () {
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
-    ])->deleteJson('/api/users/' . $this->employee->id);
+        'Authorization' => 'Bearer '.$managerToken,
+    ])->deleteJson('/api/users/'.$this->employee->id);
 
     $response->assertStatus(403);
     $this->assertDatabaseHas('users', [
         'id' => $this->employee->id,
     ]);
 });
-

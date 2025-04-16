@@ -46,8 +46,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
     /**
      * Generate and send weekly expense report for a company
      *
-     * @param int $companyId
-     * @return void
+     * @param  int  $companyId
      */
     protected function generateReportForCompany(string $companyId): void
     {
@@ -69,16 +68,16 @@ class WeeklyExpenseReportJob implements ShouldQueue
             ->map(function ($items) {
                 return [
                     'count' => $items->count(),
-                    'total' => $items->sum('amount')
+                    'total' => $items->sum('amount'),
                 ];
             });
 
         $userTotals = $expenses->groupBy('user_id')
             ->map(function ($items) {
                 return [
-                    'user' => $items->first()->user->name ?? "Ghost User",
+                    'user' => $items->first()->user->name ?? 'Ghost User',
                     'count' => $items->count(),
-                    'total' => $items->sum('amount')
+                    'total' => $items->sum('amount'),
                 ];
             });
 

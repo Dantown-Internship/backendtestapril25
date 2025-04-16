@@ -6,7 +6,6 @@ use App\Mail\WeeklyExpenseMail;
 use App\Models\Company;
 use App\Models\Expense;
 use App\Models\User;
-use App\Services\PdfService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -25,18 +24,18 @@ test('weekly expense report job generates pdf and sends email', function () {
 
     $admin = User::factory()->create([
         'company_id' => $company->id,
-        'role'       => Roles::ADMIN->value,
+        'role' => Roles::ADMIN->value,
     ]);
 
     // Create some expenses
     Expense::factory()->count(3)->create([
         'company_id' => $company->id,
-        'user_id'    => $admin->id,
+        'user_id' => $admin->id,
         'created_at' => now()->subDays(5),
     ]);
 
     // Run the job
-    $job = new WeeklyExpenseReportJob();
+    $job = new WeeklyExpenseReportJob;
     $job->handle();
 
     // Assert that the email was sent to admin

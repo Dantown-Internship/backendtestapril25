@@ -13,17 +13,17 @@ beforeEach(function () {
 
     $this->admin = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::ADMIN->value,
+        'role' => Roles::ADMIN->value,
     ]);
 
     $this->manager = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::MANAGER->value,
+        'role' => Roles::MANAGER->value,
     ]);
 
     $this->employee = User::factory()->create([
         'company_id' => $this->company->id,
-        'role'       => Roles::EMPLOYEE->value,
+        'role' => Roles::EMPLOYEE->value,
     ]);
 
     $this->token = $this->admin->createToken('test-token')->plainTextToken;
@@ -32,16 +32,16 @@ beforeEach(function () {
 test('admin can list expenses', function () {
     Expense::factory()->count(3)->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->admin->id,
+        'user_id' => $this->admin->id,
     ]);
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
+        'Authorization' => 'Bearer '.$this->token,
     ])->getJson('/api/expenses');
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data'  => [
+            'data' => [
                 '*' => [
                     'id',
                     'title',
@@ -64,19 +64,19 @@ test('employee can only see their own expenses', function () {
     // Create expenses for the employee
     Expense::factory()->count(2)->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->employee->id,
+        'user_id' => $this->employee->id,
     ]);
 
     // Create some expenses for the admin
     Expense::factory()->count(3)->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->admin->id,
+        'user_id' => $this->admin->id,
     ]);
 
     $employeeToken = $this->employee->createToken('employee-token')->plainTextToken;
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $employeeToken,
+        'Authorization' => 'Bearer '.$employeeToken,
     ])->getJson('/api/expenses');
 
     $response->assertStatus(200);
@@ -85,13 +85,13 @@ test('employee can only see their own expenses', function () {
 
 test('admin can create expense', function () {
     $expenseData = [
-        'title'    => 'Test Expense',
-        'amount'   => 100.50,
+        'title' => 'Test Expense',
+        'amount' => 100.50,
         'category' => 'Food',
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
+        'Authorization' => 'Bearer '.$this->token,
     ])->postJson('/api/expenses', $expenseData);
 
     $response->assertStatus(201)
@@ -107,10 +107,10 @@ test('admin can create expense', function () {
         ]);
 
     $this->assertDatabaseHas('expenses', [
-        'title'      => 'Test Expense',
-        'amount'     => 100.50,
-        'category'   => 'Food',
-        'user_id'    => $this->admin->id,
+        'title' => 'Test Expense',
+        'amount' => 100.50,
+        'category' => 'Food',
+        'user_id' => $this->admin->id,
         'company_id' => $this->company->id,
     ]);
 });
@@ -118,19 +118,19 @@ test('admin can create expense', function () {
 test('manager can update expense', function () {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->employee->id,
+        'user_id' => $this->employee->id,
     ]);
 
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $updateData = [
-        'title'  => 'Updated Expense',
+        'title' => 'Updated Expense',
         'amount' => 200.75,
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
-    ])->putJson('/api/expenses/' . $expense->id, $updateData);
+        'Authorization' => 'Bearer '.$managerToken,
+    ])->putJson('/api/expenses/'.$expense->id, $updateData);
 
     $response->assertStatus(200)
         ->assertJsonStructure([
@@ -145,28 +145,28 @@ test('manager can update expense', function () {
         ]);
 
     $this->assertDatabaseHas('expenses', [
-        'id'    => $expense->id,
+        'id' => $expense->id,
         'title' => 'Updated Expense',
-        'amount'=> 200.75,
+        'amount' => 200.75,
     ]);
 });
 
 test('employee cannot update expense', function () {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->admin->id,
+        'user_id' => $this->admin->id,
     ]);
 
     $employeeToken = $this->employee->createToken('employee-token')->plainTextToken;
 
     $updateData = [
-        'title'  => 'Updated Expense',
+        'title' => 'Updated Expense',
         'amount' => 200.75,
     ];
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $employeeToken,
-    ])->putJson('/api/expenses/' . $expense->id, $updateData);
+        'Authorization' => 'Bearer '.$employeeToken,
+    ])->putJson('/api/expenses/'.$expense->id, $updateData);
 
     $response->assertStatus(403);
 });
@@ -174,12 +174,12 @@ test('employee cannot update expense', function () {
 test('admin can delete expense', function () {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->employee->id,
+        'user_id' => $this->employee->id,
     ]);
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
-    ])->deleteJson('/api/expenses/' . $expense->id);
+        'Authorization' => 'Bearer '.$this->token,
+    ])->deleteJson('/api/expenses/'.$expense->id);
 
     $response->assertStatus(204);
     $this->assertDatabaseMissing('expenses', [
@@ -190,14 +190,14 @@ test('admin can delete expense', function () {
 test('manager cannot delete expense', function () {
     $expense = Expense::factory()->create([
         'company_id' => $this->company->id,
-        'user_id'    => $this->employee->id,
+        'user_id' => $this->employee->id,
     ]);
 
     $managerToken = $this->manager->createToken('manager-token')->plainTextToken;
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $managerToken,
-    ])->deleteJson('/api/expenses/' . $expense->id);
+        'Authorization' => 'Bearer '.$managerToken,
+    ])->deleteJson('/api/expenses/'.$expense->id);
 
     $response->assertStatus(403);
     $this->assertDatabaseHas('expenses', [
@@ -209,12 +209,12 @@ test('user cannot access expenses from other company', function () {
     $otherCompany = Company::factory()->create();
     $otherExpense = Expense::factory()->create([
         'company_id' => $otherCompany->id,
-        'user_id'    => $this->admin->id,
+        'user_id' => $this->admin->id,
     ]);
 
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $this->token,
-    ])->getJson('/api/expenses/' . $otherExpense->id);
+        'Authorization' => 'Bearer '.$this->token,
+    ])->getJson('/api/expenses/'.$otherExpense->id);
 
     $response->assertStatus(403);
 });

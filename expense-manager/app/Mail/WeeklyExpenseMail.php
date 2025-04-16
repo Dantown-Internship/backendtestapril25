@@ -5,19 +5,19 @@ namespace App\Mail;
 use App\Services\PdfService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class WeeklyExpenseMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $reportData;
+
     private $pdfPath;
 
     /**
@@ -35,7 +35,7 @@ class WeeklyExpenseMail extends Mailable
                 'weekly_expense_report'
             );
         } catch (\Exception $e) {
-            Log::error('Failed to generate PDF: ' . $e->getMessage());
+            Log::error('Failed to generate PDF: '.$e->getMessage());
             $this->pdfPath = null;
         }
     }
@@ -47,6 +47,7 @@ class WeeklyExpenseMail extends Mailable
     {
         $startDate = $this->reportData['startDate']->format('M d');
         $endDate = $this->reportData['endDate']->format('M d, Y');
+
         return new Envelope(
             subject: "Weekly Expense Report: {$startDate} - {$endDate}",
         );
@@ -69,8 +70,9 @@ class WeeklyExpenseMail extends Mailable
      */
     public function attachments(): array
     {
-        if (!$this->pdfPath || !Storage::disk('local')->exists($this->pdfPath)) {
-            Log::error('PDF file not found at path: ' . $this->pdfPath);
+        if (! $this->pdfPath || ! Storage::disk('local')->exists($this->pdfPath)) {
+            Log::error('PDF file not found at path: '.$this->pdfPath);
+
             return [];
         }
 

@@ -34,7 +34,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Registration successful',
             'data' => $data,
-        ],201);
+        ], 201);
     }
 
     /**
