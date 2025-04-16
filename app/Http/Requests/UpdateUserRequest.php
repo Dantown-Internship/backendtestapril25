@@ -25,11 +25,7 @@ class UpdateUserRequest extends FormRequest
 
     public function prepareForValidation(): void
     {
-        $this->userToBeUpdated = User::where('uuid', $this->route('user'))->first();
-        if(!$this->userToBeUpdated)
-        {
-            throw new CustomException('User not found',[],  404);
-        }
+        $this->userToBeUpdated = User::where('uuid', $this->route('user'))->firstOrFail();
     }
 
     /**

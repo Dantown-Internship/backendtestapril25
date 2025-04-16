@@ -5,7 +5,9 @@ namespace App\Http\Middleware;
 use App\Enums\Role;
 use App\Http\Controllers\Concerns\HasApiResponse;
 use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
@@ -21,15 +23,16 @@ class RoleMiddleware
         $rolesArray = [];
         foreach ($roles as $role) {
             $roleEnum = Role::tryFrom($role);
-            if (!$role) {
-                return $this->errorResponse("Invalid role: $role", [], 500);
+            if ($roleEnum === null) {
+                throw new RuntimeException("Invalid role: {$role}");
             }
             $rolesArray[] = $roleEnum;
         }
 
-        if (!$request->user() || !in_array($request->user()->role, $rolesArray)) {
-            return $this->errorResponse('Unauthorized', [], 403);
-        }
+        throw_if(
+            !$request->user() || !in_array($request->user()->role, $rolesArray),
+            new AuthorizationException('You do not have the required role to access this resource.')
+        );
 
         return $next($request);
     }

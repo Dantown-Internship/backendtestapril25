@@ -27,8 +27,8 @@ class UserController extends Controller
             ->withQueryString();
 
         return $this->paginatedResponse(
-            'Users retrieved successfully',
-            UserResource::collection($users)
+            message: 'Users retrieved successfully',
+            data: UserResource::collection($users)
         );
     }
 
@@ -46,8 +46,8 @@ class UserController extends Controller
         ]);
 
         return $this->successResponse(
-            'User created successfully',
-            new UserResource($user)
+            message: 'User created successfully',
+            data: new UserResource($user)
         );
     }
 
@@ -59,8 +59,8 @@ class UserController extends Controller
         $user = User::where('uuid', $uuid)->firstOrFail();
 
         return $this->successResponse(
-            'User retrieved successfully',
-            new UserResource($user->load('company'))
+            message: 'User retrieved successfully',
+            data: new UserResource($user->load('company'))
         );
     }
 
@@ -77,8 +77,8 @@ class UserController extends Controller
         ]);
 
         return $this->successResponse(
-            'User updated successfully',
-            new UserResource($request->userToBeUpdated)
+            message: 'User updated successfully',
+            data: new UserResource($request->userToBeUpdated)
         );
     }
 }
