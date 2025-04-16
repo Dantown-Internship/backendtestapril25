@@ -18,13 +18,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Company extends Model
 {
+    /** @use HasFactory<\Database\Factories\CompanyFactory> */
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
         'name',
         'email',
     ];
-
-    /** @use HasFactory<\Database\Factories\CompanyFactory> */
-    use HasFactory;
 }
