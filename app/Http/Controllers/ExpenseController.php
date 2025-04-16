@@ -91,7 +91,11 @@ class ExpenseController extends Controller
             'category' => 'nullable|string|max:255',
         ]);
 
+        // auditing of changes
+        $old = $expense->getOriginal();
         $expense->update($validated);
+        $new = $expense->getAttributes();
+        $expense->auditLog('update', $old, $new);
 
         // Clear cache to ensure fresh data next fetch
         $this->clearExpenseCompanyCache($expense->company_id);
@@ -108,7 +112,9 @@ class ExpenseController extends Controller
             return $this->failure('You do not have permission to delete this expense.', 403);
         }
 
+        $old = $expense->getOriginal();
         $expense->delete();
+        $expense->auditLog('delete', $old);
 
         // Clear cache to ensure fresh data next fetch
         $this->clearExpenseCompanyCache($expense->company_id);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use App\Traits\BelongsToCompany;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Expense extends Model
 {
     //
-    use BelongsToCompany, SoftDeletes;
+    use BelongsToCompany, Auditable, SoftDeletes;
 
     public function user(): BelongsTo
     {
