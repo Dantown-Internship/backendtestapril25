@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -19,20 +20,21 @@ class User extends Authenticatable
      * @var list<string>
      */
 
-     protected static function booted(): void
-     {
-         static::addGlobalScope('company', function (Builder $query) {
-             if (auth()->hasUser()) {
-                 // $query->where('company_id', auth()->user()->company_id);
-                 // or with a `team` relationship defined:
-                 $query->whereBelongsTo(auth()->user()->company);
-             }
-         });
-     }
+    protected static function booted(): void
+    {
+        static::addGlobalScope('company', function (Builder $query) {
+            if (auth()->hasUser()) {
+                // $query->where('company_id', auth()->user()->company_id);
+                // or with a `team` relationship defined:
+                $query->whereBelongsTo(auth()->user()->company);
+            }
+        });
+    }
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**

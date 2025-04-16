@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
+    use ApiHelpers;
     /**
      * Display a listing of the resource.
      */
@@ -29,6 +31,21 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         //
+        // Validate the request data
+        $validatedData = $request->validate([
+            'amount' => 'required|numeric',
+            'title' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+        ]);
+        // Create a new expense
+        $expense = new Expense();
+        $expense->amount = $validatedData['amount'];
+        $expense->title = $validatedData['title'];
+        $expense->category = $validatedData['category'];
+        $expense->user_id = auth()->id(); // Assuming you have a user_id field in your expenses table
+        $expense->save();
+        // Return a response
+        return $this->onSuccess(message: 'Expense created successfully', data: $expense);
     }
 
     /**
