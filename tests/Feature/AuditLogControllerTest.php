@@ -46,7 +46,7 @@ class AuditLogControllerTest extends TestCase
     }
 
     /** @test */
-    public function admin_can_view_audit_logs()
+    public function test_admin_can_view_audit_logs()
     {
         // Create some audit logs
         AuditLog::factory()->count(5)->create([
@@ -59,28 +59,29 @@ class AuditLogControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
+                'status',
+                'message',
                 'data' => [
-                    '*' => [
-                        'id',
-                        'user_id',
-                        'company_id',
-                        'action',
-                        'changes',
-                        'model_type',
-                        'model_id',
-                        'created_at'
-                    ]
-                ],
-                'meta' => [
-                    'current_page',
-                    'per_page',
-                    'total'
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'user_id',
+                            'company_id',
+                            'action',
+                            'changes',
+                            'model_type',
+                            'model_id',
+                            'created_at'
+                        ]
+                    ],
+                    'links',
+                    'meta'
                 ]
             ]);
     }
 
     /** @test */
-    public function manager_can_view_audit_logs()
+    public function test_manager_can_view_audit_logs()
     {
         $managerToken = $this->manager->createToken('test-token')->plainTextToken;
 
@@ -97,7 +98,7 @@ class AuditLogControllerTest extends TestCase
     }
 
     /** @test */
-    public function employee_cannot_view_audit_logs()
+    public function test_employee_cannot_view_audit_logs()
     {
         $employeeToken = $this->employee->createToken('test-token')->plainTextToken;
 
@@ -108,7 +109,7 @@ class AuditLogControllerTest extends TestCase
     }
 
     /** @test */
-    public function admin_can_view_specific_audit_log()
+    public function test_admin_can_view_specific_audit_log()
     {
         $auditLog = AuditLog::factory()->create([
             'company_id' => $this->company->id,
@@ -120,6 +121,8 @@ class AuditLogControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
+                'status',
+                'message',
                 'data' => [
                     'id',
                     'user_id',
@@ -128,12 +131,7 @@ class AuditLogControllerTest extends TestCase
                     'changes',
                     'model_type',
                     'model_id',
-                    'created_at',
-                    'user' => [
-                        'id',
-                        'name',
-                        'email'
-                    ]
+                    'created_at'
                 ]
             ]);
     }
@@ -153,24 +151,25 @@ class AuditLogControllerTest extends TestCase
     }
 
     /** @test */
-    public function admin_can_clear_audit_logs_cache()
+    public function test_admin_can_clear_audit_logs_cache()
     {
         $response = $this->withToken($this->token)
-            ->postJson("/api/companies/{$this->company->id}/clear-audit-logs-cache");
+            ->postJson("/api/audit-logs/{$this->company->id}/clear-cache");
 
         $response->assertStatus(200)
             ->assertJson([
+                'status' => 'success',
                 'message' => 'Audit logs cache cleared successfully'
             ]);
     }
 
     /** @test */
-    public function non_admin_cannot_clear_audit_logs_cache()
+    public function test_non_admin_cannot_clear_audit_logs_cache()
     {
         $managerToken = $this->manager->createToken('test-token')->plainTextToken;
 
         $response = $this->withToken($managerToken)
-            ->postJson("/api/companies/{$this->company->id}/clear-audit-logs-cache");
+            ->postJson("/api/audit-logs/{$this->company->id}/clear-cache");
 
         $response->assertStatus(403);
     }

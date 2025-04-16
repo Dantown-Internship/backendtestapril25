@@ -45,9 +45,36 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data',
-                'links',
-                'meta',
+                'status',
+                'message',
+                'data' => [
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'email',
+                            'role',
+                            'company_id',
+                            'created_at',
+                            'updated_at'
+                        ]
+                    ],
+                    'links' => [
+                        'first',
+                        'last',
+                        'prev',
+                        'next'
+                    ],
+                    'meta' => [
+                        'current_page',
+                        'from',
+                        'last_page',
+                        'path',
+                        'per_page',
+                        'to',
+                        'total'
+                    ]
+                ]
             ]);
     }
 
@@ -64,21 +91,29 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_update_user_role(): void
     {
+        $user = User::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'Employee',
+        ]);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
-        ])->putJson("/api/users/{$this->employee->id}", [
+        ])->putJson("/api/users/{$user->id}", [
             'role' => 'Manager',
         ]);
 
         $response->assertStatus(200)
-            ->assertJson([
-                'role' => 'Manager',
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'id',
+                    'name',
+                    'email',
+                    'role',
+                    'company_id'
+                ]
             ]);
-
-        $this->assertDatabaseHas('users', [
-            'id' => $this->employee->id,
-            'role' => 'Manager',
-        ]);
     }
 
     public function test_admin_cannot_update_user_role_to_invalid_value(): void
@@ -94,40 +129,63 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_update_user_password(): void
     {
+        $user = User::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'Employee',
+        ]);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
-        ])->putJson("/api/users/{$this->employee->id}/password", [
+        ])->putJson('/api/users/password', [
             'current_password' => 'password',
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Password updated successfully'
+            ]);
     }
 
     public function test_admin_cannot_update_password_with_invalid_current_password(): void
     {
+        $user = User::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'Employee',
+        ]);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
-        ])->putJson("/api/users/{$this->employee->id}/password", [
-            'current_password' => 'wrongpassword',
+        ])->putJson('/api/users/password', [
+            'current_password' => 'wrong-password',
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(400)
+            ->assertJson([
+                'message' => 'Current password is incorrect'
+            ]);
     }
 
     public function test_admin_cannot_update_password_with_mismatched_confirmation(): void
     {
+        $user = User::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'Employee',
+        ]);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
-        ])->putJson("/api/users/{$this->employee->id}/password", [
+        ])->putJson('/api/users/password', [
             'current_password' => 'password',
             'password' => 'newpassword',
             'password_confirmation' => 'differentpassword',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
     }
 }

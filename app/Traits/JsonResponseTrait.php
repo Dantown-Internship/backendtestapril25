@@ -17,11 +17,36 @@ trait JsonResponseTrait
      */
     protected function successResponse($data, string $message = 'Success', int $statusCode = Response::HTTP_OK): JsonResponse
     {
-        return response()->json([
+        $response = [
             'status' => 'success',
             'message' => $message,
-            'data' => $data,
-        ], $statusCode);
+        ];
+
+        // Handle paginated responses
+        if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $response['data'] = [
+                'data' => $data->items(),
+                'links' => [
+                    'first' => $data->url(1),
+                    'last' => $data->url($data->lastPage()),
+                    'prev' => $data->previousPageUrl(),
+                    'next' => $data->nextPageUrl(),
+                ],
+                'meta' => [
+                    'current_page' => $data->currentPage(),
+                    'from' => $data->firstItem(),
+                    'last_page' => $data->lastPage(),
+                    'path' => $data->path(),
+                    'per_page' => $data->perPage(),
+                    'to' => $data->lastItem(),
+                    'total' => $data->total(),
+                ]
+            ];
+        } else {
+            $response['data'] = $data;
+        }
+
+        return response()->json($response, $statusCode);
     }
 
     /**

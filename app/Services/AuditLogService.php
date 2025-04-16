@@ -31,9 +31,17 @@ class AuditLogService
 
         $user = Auth::user();
 
+        // For Company model, use the ID that's being created
+        $companyId = null;
+        if ($model instanceof \App\Models\Company) {
+            $companyId = $model->id;
+        } else {
+            $companyId = $model->company_id ?? $user?->company_id;
+        }
+
         return AuditLog::create([
             'user_id' => $user?->id,
-            'company_id' => $model->company_id ?? $user?->company_id,
+            'company_id' => $companyId,
             'action' => $action,
             'changes' => [
                 'old' => $oldValues,

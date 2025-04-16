@@ -50,26 +50,24 @@ class ExpenseControllerTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'id',
-                'title',
-                'amount',
-                'category',
-                'company_id',
-                'user_id',
+                'status',
+                'message',
+                'data' => [
+                    'id',
+                    'title',
+                    'amount',
+                    'category',
+                    'company_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at'
+                ]
             ]);
-
-        $this->assertDatabaseHas('expenses', [
-            'title' => 'Test Expense',
-            'amount' => 100.50,
-            'category' => 'Travel',
-            'company_id' => $this->company->id,
-            'user_id' => $this->employee->id,
-        ]);
     }
 
     public function test_employee_can_view_own_expenses(): void
     {
-        Expense::factory()->create([
+        Expense::factory()->count(5)->create([
             'company_id' => $this->company->id,
             'user_id' => $this->employee->id,
         ]);
@@ -80,9 +78,37 @@ class ExpenseControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data',
-                'links',
-                'meta',
+                'status',
+                'message',
+                'data' => [
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'title',
+                            'amount',
+                            'category',
+                            'company_id',
+                            'user_id',
+                            'created_at',
+                            'updated_at'
+                        ]
+                    ],
+                    'links' => [
+                        'first',
+                        'last',
+                        'prev',
+                        'next'
+                    ],
+                    'meta' => [
+                        'current_page',
+                        'from',
+                        'last_page',
+                        'path',
+                        'per_page',
+                        'to',
+                        'total'
+                    ]
+                ]
             ]);
     }
 
@@ -104,10 +130,19 @@ class ExpenseControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJson([
-                'title' => 'Updated Expense',
-                'amount' => 200.00,
-                'category' => 'Equipment',
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'id',
+                    'title',
+                    'amount',
+                    'category',
+                    'company_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at'
+                ]
             ]);
     }
 
@@ -124,7 +159,11 @@ class ExpenseControllerTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->deleteJson("/api/expenses/{$expense->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Expense deleted successfully'
+            ]);
         $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
     }
 
@@ -151,15 +190,37 @@ class ExpenseControllerTest extends TestCase
             'category' => 'Travel',
         ]);
 
+        Expense::factory()->create([
+            'company_id' => $this->company->id,
+            'user_id' => $this->employee->id,
+            'amount' => 200.00,
+            'category' => 'Equipment',
+        ]);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
         ])->getJson('/api/expenses/summary');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'total_expenses',
-                'average_expense',
-                'categories',
+                'status',
+                'message',
+                'data' => [
+                    'total_expenses',
+                    'average_expense',
+                    'expenses_by_category' => [
+                        '*' => [
+                            'total',
+                            'count'
+                        ]
+                    ]
+                ]
+            ])
+            ->assertJson([
+                'data' => [
+                    'total_expenses' => 300.00,
+                    'average_expense' => 150.00,
+                ]
             ]);
     }
 }

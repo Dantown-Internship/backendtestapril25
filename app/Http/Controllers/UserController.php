@@ -40,10 +40,10 @@ class UserController extends Controller
     public function index(UserIndexRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $user = Auth::user();
         $page = $validated['page'] ?? 1;
         $perPage = $validated['per_page'] ?? 15;
-        $companyId = Auth::user()->company_id;
-        $cacheKey = "users:company:{$companyId}:page:{$page}:per_page:{$perPage}";
+        $cacheKey = "users:company:{$user->company_id}:page:{$page}:per_page:{$perPage}";
 
         if (isset($validated['search'])) {
             $cacheKey .= ":search:{$validated['search']}";
@@ -52,8 +52,8 @@ class UserController extends Controller
             $cacheKey .= ":role:{$validated['role']}";
         }
 
-        $users = Cache::remember($cacheKey, 3600, function () use ($validated, $companyId, $page, $perPage) {
-            $query = User::where('company_id', $companyId);
+        $users = Cache::remember($cacheKey, 3600, function () use ($validated, $user, $page, $perPage) {
+            $query = User::where('company_id', $user->company_id);
 
             if (isset($validated['search'])) {
                 $search = $validated['search'];

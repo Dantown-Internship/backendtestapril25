@@ -57,9 +57,18 @@ class AuditLogController extends Controller
      */
     public function index(AuditLogIndexRequest $request): JsonResponse
     {
+        $user = Auth::user();
+
+        // Check if user has permission to view audit logs
+        if ($user->role !== 'Admin' && $user->role !== 'Manager') {
+            return $this->forbiddenResponse('You do not have permission to view audit logs');
+        }
+
         $validated = $request->validated();
-        $companyId = Auth::user()->company_id;
-        $cacheKey = "audit_logs:company:{$companyId}:page:{$validated['page']}:per_page:{$validated['per_page']}";
+        $companyId = $user->company_id;
+        $page = $validated['page'] ?? 1;
+        $perPage = $validated['per_page'] ?? 15;
+        $cacheKey = "audit_logs:company:{$companyId}:page:{$page}:per_page:{$perPage}";
 
         if (isset($validated['search'])) {
             $cacheKey .= ":search:{$validated['search']}";
@@ -74,7 +83,7 @@ class AuditLogController extends Controller
             $cacheKey .= ":action:{$validated['action']}";
         }
 
-        $logs = Cache::remember($cacheKey, 3600, function () use ($validated, $companyId) {
+        $logs = Cache::remember($cacheKey, 3600, function () use ($validated, $companyId, $page, $perPage) {
             $query = AuditLog::where('company_id', $companyId);
 
             if (isset($validated['search'])) {
@@ -98,7 +107,8 @@ class AuditLogController extends Controller
                 $query->where('action', $validated['action']);
             }
 
-            return $query->paginate($validated['per_page'], ['*'], 'page', $validated['page']);
+            return $query->orderBy('created_at', 'desc')
+                ->paginate($perPage, ['*'], 'page', $page);
         });
 
         return $this->successResponse($logs, 'Audit logs retrieved successfully');
@@ -133,13 +143,25 @@ class AuditLogController extends Controller
      */
     public function clearCompanyAuditLogsCache(int $companyId): JsonResponse
     {
+        $user = Auth::user();
+
+        // Only admins can clear audit logs cache
+        if ($user->role !== 'Admin') {
+            return $this->forbiddenResponse('Only administrators can clear audit logs cache');
+        }
+
         $company = Company::findOrFail($companyId);
 
-        if ($company->id !== Auth::user()->company_id) {
+        if ($company->id !== $user->company_id) {
             return $this->notFoundResponse('Company not found');
         }
 
-        Cache::tags(['audit_logs'])->flush();
+        // Clear all cache keys for this company's audit logs
+        $keys = Cache::get('audit_logs:company:keys:' . $companyId, []);
+        foreach ($keys as $key) {
+            Cache::forget($key);
+        }
+        Cache::forget('audit_logs:company:keys:' . $companyId);
 
         return $this->successMessage('Audit logs cache cleared successfully');
     }

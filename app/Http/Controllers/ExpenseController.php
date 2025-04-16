@@ -45,8 +45,13 @@ class ExpenseController extends Controller
     public function index(ExpenseIndexRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $companyId = Auth::user()->company_id;
-        $cacheKey = "expenses:company:{$companyId}:page:{$validated['page']}:per_page:{$validated['per_page']}";
+        $user = Auth::user();
+
+        // Set default values for pagination
+        $page = $validated['page'] ?? 1;
+        $perPage = $validated['per_page'] ?? 15;
+
+        $cacheKey = "expenses:company:{$user->company_id}:page:{$page}:per_page:{$perPage}";
 
         if (isset($validated['search'])) {
             $cacheKey .= ":search:{$validated['search']}";
@@ -58,8 +63,13 @@ class ExpenseController extends Controller
             $cacheKey .= ":end_date:{$validated['end_date']}";
         }
 
-        $expenses = Cache::remember($cacheKey, 3600, function () use ($validated, $companyId) {
-            $query = Expense::where('company_id', $companyId);
+        $expenses = Cache::remember($cacheKey, 3600, function () use ($validated, $user, $page, $perPage) {
+            $query = Expense::where('company_id', $user->company_id);
+
+            // If user is not admin or manager, only show their own expenses
+            if ($user->role !== 'Admin' && $user->role !== 'Manager') {
+                $query->where('user_id', $user->id);
+            }
 
             if (isset($validated['search'])) {
                 $search = $validated['search'];
@@ -77,7 +87,7 @@ class ExpenseController extends Controller
                 $query->whereDate('created_at', '<=', $validated['end_date']);
             }
 
-            return $query->paginate($validated['per_page'], ['*'], 'page', $validated['page']);
+            return $query->paginate($perPage, ['*'], 'page', $page);
         });
 
         return $this->successResponse($expenses, 'Expenses retrieved successfully');
@@ -93,17 +103,12 @@ class ExpenseController extends Controller
     {
         $user = Auth::user();
 
-        // Check if expense belongs to user's company
-        if ($expense->company_id !== $user->company_id) {
-            return $this->forbiddenResponse('You do not have permission to view this expense');
+        // Check if user has permission to view this expense
+        if ($user->role !== 'Admin' && $user->role !== 'Manager' && $expense->user_id !== $user->id) {
+            return $this->unauthorizedResponse('You do not have permission to view this expense');
         }
 
-        // Allow access if user is Admin, Manager, or owns the expense
-        if ($user->role === 'Admin' || $user->role === 'Manager' || $expense->user_id === $user->id) {
-            return $this->successResponse($expense, 'Expense retrieved successfully');
-        }
-
-        return $this->forbiddenResponse('You do not have permission to view this expense');
+        return $this->successResponse($expense, 'Expense retrieved successfully');
     }
 
     /**
@@ -115,17 +120,19 @@ class ExpenseController extends Controller
     public function store(ExpenseStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $user = Auth::user();
+
         $expense = Expense::create([
-            'user_id' => Auth::id(),
-            'company_id' => Auth::user()->company_id,
             'title' => $validated['title'],
             'amount' => $validated['amount'],
             'category' => $validated['category'],
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
+            'date' => $validated['date'] ?? now(),
         ]);
 
-        // Clear all expense-related caches for this company
-        $companyId = Auth::user()->company_id;
-        Cache::forget("expenses:company:{$companyId}:*");
+        // Clear cache for this company's expenses
+        Cache::forget("expenses:company:{$user->company_id}");
 
         return $this->successResponse($expense, 'Expense created successfully', 201);
     }
@@ -139,27 +146,18 @@ class ExpenseController extends Controller
      */
     public function update(ExpenseUpdateRequest $request, Expense $expense): JsonResponse
     {
-        // Check if expense exists and belongs to user's company
-        if (!$expense->exists) {
-            return $this->errorResponse('Expense not found', 404);
-        }
-
         $user = Auth::user();
-        if ($expense->company_id !== $user->company_id) {
-            return $this->forbiddenResponse('You do not have permission to update this expense');
-        }
 
-        // Check if user has permission to update
-        if ($user->role !== 'Admin' && $user->role !== 'Manager') {
-            return $this->forbiddenResponse('Only Managers and Admins can update expenses');
+        // Check if user has permission to update this expense
+        if ($user->role !== 'Admin' && $user->role !== 'Manager' && $expense->user_id !== $user->id) {
+            return $this->unauthorizedResponse('You do not have permission to update this expense');
         }
 
         $validated = $request->validated();
         $expense->update($validated);
 
-        // Clear all expense-related caches for this company
-        $companyId = $user->company_id;
-        Cache::forget("expenses:company:{$companyId}:*");
+        // Clear cache for this company's expenses
+        Cache::forget("expenses:company:{$user->company_id}");
 
         return $this->successResponse($expense, 'Expense updated successfully');
     }
@@ -172,28 +170,19 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense): JsonResponse
     {
-        // Check if expense exists and belongs to user's company
-        if (!$expense->exists) {
-            return $this->errorResponse('Expense not found', 404);
-        }
-
         $user = Auth::user();
-        if ($expense->company_id !== $user->company_id) {
-            return $this->forbiddenResponse('You do not have permission to delete this expense');
-        }
 
-        // Only Admins can delete expenses
+        // Only admins can delete expenses
         if ($user->role !== 'Admin') {
             return $this->forbiddenResponse('Only administrators can delete expenses');
         }
 
         $expense->delete();
 
-        // Clear relevant caches
-        $companyId = $user->company_id;
-        Cache::forget("expenses:company:{$companyId}:*");
+        // Clear cache for this company's expenses
+        Cache::forget("expenses:company:{$user->company_id}");
 
-        return $this->successResponse(null, 'Expense deleted successfully');
+        return $this->successMessage('Expense deleted successfully');
     }
 
     /**
@@ -203,8 +192,15 @@ class ExpenseController extends Controller
      */
     public function summary(): JsonResponse
     {
-        $companyId = Auth::user()->company_id;
-        $expenses = Expense::where('company_id', $companyId)->get();
+        $user = Auth::user();
+        $query = Expense::where('company_id', $user->company_id);
+
+        // If user is not admin or manager, only show their own expenses
+        if ($user->role !== 'Admin' && $user->role !== 'Manager') {
+            $query->where('user_id', $user->id);
+        }
+
+        $expenses = $query->get();
 
         $summary = [
             'total_expenses' => $expenses->sum('amount'),
@@ -214,7 +210,7 @@ class ExpenseController extends Controller
                     'total' => $items->sum('amount'),
                     'count' => $items->count(),
                 ];
-            }),
+            })->toArray(),
         ];
 
         return $this->successResponse($summary, 'Expense summary retrieved successfully');
