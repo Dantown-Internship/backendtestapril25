@@ -1,0 +1,260 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
+use App\Models\Expense;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class ExpenseController extends Controller
+{
+    /**
+     * Display a listing of expenses for the authenticated user's company.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $query = Expense::with('user')
+            ->where('company_id', $user->company_id);
+
+        // Filter by user if not admin/manager (employees can only see their own expenses)
+        if ($user->isEmployee()) {
+            $query->where('user_id', $user->id);
+        }
+
+        // Handle optional filters
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->has('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->has('min_amount')) {
+            $query->where('amount', '>=', $request->min_amount);
+        }
+
+        if ($request->has('max_amount')) {
+            $query->where('amount', '<=', $request->max_amount);
+        }
+
+        // Handle search term
+        if ($request->has('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // Handle sorting
+        $sortField = $request->sort_by ?? 'created_at';
+        $sortDirection = $request->sort_direction ?? 'desc';
+        $query->orderBy($sortField, $sortDirection);
+
+        $expenses = $query->paginate(10);
+
+        return response()->json($expenses);
+    }
+
+    /**
+     * Store a newly created expense.
+     */
+    public function store(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'category' => 'required|string|max:100',
+        ]);
+
+        // Use a transaction to ensure both expense and audit log are created
+        return DB::transaction(function () use ($request, $user) {
+            // Create expense
+            $expense = Expense::create([
+                'title' => $request->title,
+                'amount' => $request->amount,
+                'category' => $request->category,
+                'user_id' => $user->id,
+                'company_id' => $user->company_id,
+            ]);
+
+            // Create audit log
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $user->company_id,
+                'action' => 'create',
+                'changes' => json_encode([
+                    'expense_id' => $expense->id,
+                    'old' => null,
+                    'new' => $expense->toArray(),
+                ]),
+            ]);
+
+            return response()->json([
+                'message' => 'Expense created successfully',
+                'expense' => $expense->load('user'),
+            ], 201);
+        });
+    }
+
+    /**
+     * Display the specified expense.
+     */
+    public function show(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $expense = Expense::with('user')
+            ->where('id', $id)
+            ->where('company_id', $user->company_id)
+            ->first();
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        // Check if user is authorized to view the expense
+        if ($user->isEmployee() && $expense->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized to view this expense'], 403);
+        }
+
+        return response()->json(['expense' => $expense]);
+    }
+
+    /**
+     * Update the specified expense.
+     */
+    public function update(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $expense = Expense::where('id', $id)
+            ->where('company_id', $user->company_id)
+            ->first();
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        // Check if user is authorized to update the expense
+        // Employees can only update their own expenses, managers and admins can update any
+        if ($user->isEmployee() && $expense->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized to update this expense'], 403);
+        }
+
+        $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'amount' => 'sometimes|required|numeric|min:0',
+            'category' => 'sometimes|required|string|max:100',
+        ]);
+
+        // Use a transaction to ensure both expense and audit log are updated
+        return DB::transaction(function () use ($request, $user, $expense) {
+            // Store old values for audit log
+            $oldValues = $expense->toArray();
+
+            // Update expense
+            $expense->title = $request->title ?? $expense->title;
+            $expense->amount = $request->amount ?? $expense->amount;
+            $expense->category = $request->category ?? $expense->category;
+            $expense->save();
+
+            // Create audit log
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $user->company_id,
+                'action' => 'update',
+                'changes' => json_encode([
+                    'expense_id' => $expense->id,
+                    'old' => $oldValues,
+                    'new' => $expense->toArray(),
+                ]),
+            ]);
+
+            return response()->json([
+                'message' => 'Expense updated successfully',
+                'expense' => $expense->load('user'),
+            ]);
+        });
+    }
+
+    /**
+     * Remove the specified expense.
+     */
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $expense = Expense::where('id', $id)
+            ->where('company_id', $user->company_id)
+            ->first();
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        // Check if user is authorized to delete the expense
+        // Employees can only delete their own expenses, managers and admins can delete any
+        if ($user->isEmployee() && $expense->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized to delete this expense'], 403);
+        }
+
+        // Use a transaction to ensure both expense and audit log are handled correctly
+        return DB::transaction(function () use ($user, $expense) {
+            // Store values for audit log
+            $oldValues = $expense->toArray();
+
+            // Delete expense
+            $expense->delete();
+
+            // Create audit log
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $user->company_id,
+                'action' => 'delete',
+                'changes' => json_encode([
+                    'expense_id' => $expense->id,
+                    'old' => $oldValues,
+                    'new' => null,
+                ]),
+            ]);
+
+            return response()->json(['message' => 'Expense deleted successfully']);
+        });
+    }
+
+    /**
+     * Get audit logs for a specific expense.
+     */
+    public function auditLogs(Request $request, $id)
+    {
+        $user = $request->user();
+
+        // Only managers and admins can view audit logs
+        if ($user->isEmployee()) {
+            return response()->json(['message' => 'Unauthorized to view audit logs'], 403);
+        }
+
+        $expense = Expense::where('id', $id)
+            ->where('company_id', $user->company_id)
+            ->first();
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        $auditLogs = AuditLog::with('user')
+            ->where('company_id', $user->company_id)
+            ->where('changes', 'like', '%"expense_id":' . $expense->id . '%')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json($auditLogs);
+    }
+}
