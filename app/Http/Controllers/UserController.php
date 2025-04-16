@@ -146,7 +146,7 @@ class UserController extends Controller
     protected function clearUserCompanyCache($companyId)
     {
         $usersCount = User::count();
-        $perPage = 24; // or whatever your pagination size is
+        $perPage = 24;
         $maxPages = max(1, ceil($usersCount / $perPage));
 
         for ($page = 1; $page <= $maxPages; $page++) {
