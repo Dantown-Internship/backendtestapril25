@@ -14,8 +14,8 @@ class DeleteExpensesAction
         $expense = Expense::findOrFail($id);
         // get old data for logging
         $oldData = $expense->toArray();
-        $expense->delete();
         // create audit log
         $this->storeAudit('delete', $oldData);
+        $expense->delete();
     }
 }
