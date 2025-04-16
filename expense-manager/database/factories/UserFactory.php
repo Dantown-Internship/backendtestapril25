@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'role' => fake()->randomElement(Roles::cases()),
+            'role' => fake()->randomElement(array_map(fn($role) => $role->value, Roles::cases())),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
@@ -52,7 +52,7 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Roles::ADMIN,
+            'role' => Roles::ADMIN->value,
         ]);
     }
 
@@ -62,7 +62,7 @@ class UserFactory extends Factory
     public function manager(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Roles::MANAGER,
+            'role' => Roles::MANAGER->value,
         ]);
     }
 
@@ -72,7 +72,7 @@ class UserFactory extends Factory
     public function employee(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Roles::EMPLOYEE,
+            'role' => Roles::EMPLOYEE->value,
         ]);
     }
 }

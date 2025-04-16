@@ -16,7 +16,7 @@ class ListExpensesAction
         $query = Expense::with('user')->where('company_id', $user->company_id);
 
         // Show only empoyee expenses
-        if ($user->role === Roles::EMPLOYEE) {
+        if ($user->role === Roles::EMPLOYEE->value) {
             $query->where('user_id', $user->id);
         }
 

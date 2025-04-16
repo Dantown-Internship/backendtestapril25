@@ -18,4 +18,4 @@ Route::apiResource('expenses', ExpenseController::class)->middleware('auth:sanct
 Route::apiResource('users', UserController::class)->middleware(['auth:sanctum','role:admin']);
 
 // Audit Logs
-Route::apiResource('audits', AuditController::class)->middleware(['auth:sanctum','role:admin,manager']);
+Route::apiResource('audits', AuditController::class)->middleware(['auth:sanctum','role:admin']);
