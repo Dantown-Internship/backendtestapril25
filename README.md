@@ -318,3 +318,19 @@ This command will execute all the tests in the `tests` directory.
 - Tests are located in the `tests` directory.
 - You can add new test cases by creating new files in this directory.
 - Follow the existing test structure and naming conventions for consistency.
+
+## Postman Collection
+
+To facilitate API testing and exploration, we have provided a Postman collection.
+
+### Importing the Collection
+
+1. Download the Postman collection file from the repository or the provided link.
+2. Open Postman and click on the `Import` button.
+3. Select the downloaded collection file and import it into Postman.
+
+### Using the Collection
+
+- The collection includes all available API endpoints with pre-configured requests.
+- Ensure you set up the environment variables for authentication tokens and base URLs as needed.
+- You can execute requests directly from the collection to test the API functionality.
