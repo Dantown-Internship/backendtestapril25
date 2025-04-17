@@ -12,9 +12,11 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
+        print_r($request);
         try {
             // Check if the authenticated user is an Admin
             $user = Auth::user();
+            print_r($user);
             if (!$user || $user->role !== 'Admin') {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
