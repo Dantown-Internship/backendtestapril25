@@ -36,7 +36,20 @@ Route::prefix('/v1')->group(function () {
             ->only(['index', 'show', 'update', 'store'])
             ->middleware(sprintf('role:%s', Role::Admin->value));
 
-
+        Route::prefix('expenses')->group(function () {
+            Route::get('/', [ExpenseController::class, 'index'])
+                ->name('expenses.index');
+            Route::post('/', [ExpenseController::class, 'store'])
+                ->name('expenses.store');
+            Route::get('/{uuid}', [ExpenseController::class, 'show'])
+                ->name('expenses.show');
+            Route::put('/{uuid}', [ExpenseController::class, 'update'])
+                ->name('expenses.update')
+                ->middleware(sprintf('role:%s', Role::Admin->value, Role::Manager->value));
+            Route::delete('/{uuid}', [ExpenseController::class, 'destroy'])
+                ->name('expenses.destroy')
+                ->middleware(sprintf('role:%s', Role::Admin->value));
+        });
     });
 });
 

@@ -23,6 +23,13 @@ class Expense extends Model
         'category',
     ];
 
+    protected function casts()
+    {
+        return [
+            'amount' => 'decimal:2',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
