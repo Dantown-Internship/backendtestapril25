@@ -2,7 +2,7 @@
 @contentType = application/json
 
 // Store tokens and variables for use in multiple requests
-@authToken = 4|UPRql5qSjocdkyPD0lD27Lhpc201RT7jYteFQ0Tq03e429d6
+@authToken = 4|nqJ4n1Rooz9OPiNsq64Cvvgv9fWihl26Iw7OFIchcae45924
 @userId = 1
 @expenseId =
 
@@ -12,6 +12,7 @@
 POST {{baseUrl}}/register
 Content-Type: {{contentType}}
 Accept: {{contentType}}
+Authorization: Bearer {{authToken}}
 
 {
   "name": "Test User",
@@ -26,6 +27,7 @@ Accept: {{contentType}}
 POST {{baseUrl}}/register
 Content-Type: {{contentType}}
 Accept: {{contentType}}
+Authorization: Bearer {{authToken}}
 
 {
   "name": "Manager User",
@@ -43,7 +45,7 @@ Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "email": "testuser@example.com",
+  "email": "admin_1@example.com",
   "password": "password123"
 }
 
@@ -123,7 +125,7 @@ Accept: {{contentType}}
 }
 
 ### Delete user
-DELETE {{baseUrl}}/users/{{userId}}
+DELETE {{baseUrl}}/users/17
 Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 

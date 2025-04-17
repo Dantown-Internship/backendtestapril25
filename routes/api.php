@@ -19,12 +19,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
     // Auth routes
+    Route::middleware(['admin'])->post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
@@ -36,11 +36,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/company/statistics', [CompanyController::class, 'statistics']);
 
         // User management routes
-        Route::get('/users', [UserController::class, 'index']);
-        Route::post('/users', [UserController::class, 'store']);
+        Route::middleware(['admin'])->group(function () {
+            Route::get('/users', [UserController::class, 'index']);
+            Route::post('/users', [UserController::class, 'store']);
+        });
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::put('/users/{id}', [UserController::class, 'update']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy']);
+        Route::middleware(['admin'])->delete('/users/{id}', [UserController::class, 'destroy']);
 
         // Expense routes
         Route::get('/expenses', [ExpenseController::class, 'index']);
