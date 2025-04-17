@@ -35,6 +35,6 @@ class FetchExpensesController extends Controller
             'pagination_payload' => $paginationPayload
         ];
 
-        return generateSuccessApiMessage('The list of expenses was retrieved successfully', 201, $responsePayload);
+        return generateSuccessApiMessage('The list of expenses was retrieved successfully', 200, $responsePayload);
     }
 }

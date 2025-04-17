@@ -6,7 +6,7 @@ use App\Http\Controllers\V1\UserManagement\UpdateUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
-    'middleware' => ['auth']
+    'middleware' => ['auth:sanctum']
 ], function () {
     Route::put('/users/{userId}', UpdateUserController::class);
 

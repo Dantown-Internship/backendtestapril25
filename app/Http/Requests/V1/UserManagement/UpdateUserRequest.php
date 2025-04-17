@@ -3,6 +3,7 @@
 namespace App\Http\Requests\V1\UserManagement;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -15,7 +16,12 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'between:1,200'],
-            'email' => ['required', 'string', 'between:1,200', 'unique:users,email'],
+            'email' => [
+                'required',
+                'string',
+                'between:1,200',
+                Rule::unique('users', 'email')->ignore($this->userId),
+            ],
             'role' => ['required', 'string', 'in:Admin,Manager,Employee'],
         ];
     }
@@ -31,7 +37,7 @@ class UpdateUserRequest extends FormRequest
             'email.string' => 'The user email must be a valid string.',
             'email.between' => 'The user email must be between 1 and 200 characters.',
             'email.unique' => 'The user email has already been taken.',
-            
+
             'role.required' => 'The role is required',
             'role.string' => 'The role must be a string',
             'role.in' => 'The role must be either Admin, Manager Or Employee',
