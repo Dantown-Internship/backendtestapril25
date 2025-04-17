@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ExpenseController;
@@ -35,5 +36,7 @@ Route::middleware([ApiAuth::class])->group(function () {
         Route::get('users', [UserController::class, 'index']);
         Route::post('users', [AuthController::class, 'register']);
         Route::put('users/{id}', [UserController::class, 'update']);
+
+        Route::get('audit-logs', [AuditLogController::class, 'index']);
     });
 });

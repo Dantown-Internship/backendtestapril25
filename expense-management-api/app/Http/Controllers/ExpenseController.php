@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendWeeklyExpenseReport;
+use App\Models\AuditLog;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -115,13 +116,28 @@ class ExpenseController extends Controller
                 "message" => "Expense not found",
             ], 404);
         }
+        $originalValues = $expense->getOriginal();
         $validatedData = $validator->validated();
         $expense->update($validatedData);
+
+         $expense->refresh();
+
+          $changedValues = $expense->getChanges();
 
         Cache::forget("expense_" . $id);
         Cache::forget("expense_all");
         Cache::forget("expense_search_" . strtolower($validatedData['title'] ?? ''));
         Cache::forget("expense_search_" . strtolower($validatedData['category'] ?? ''));
+
+        AuditLog::create([
+            'user_id'    => $request->authenticated_user->id,
+            'company_id' => $request->authenticated_user->company_id,
+            'action'     => 'update',
+            'changes'    => json_encode([
+                'old' => $originalValues,
+                'new' => $changedValues,
+            ]),
+        ]);
 
         return response()->json([
             "status"  => true,
@@ -148,6 +164,16 @@ class ExpenseController extends Controller
         Cache::forget("expense_all");
         Cache::forget("expense_search_" . strtolower($expense->title));
         Cache::forget("expense_search_" . strtolower($expense->category));
+
+        AuditLog::create([
+            'user_id'    => request()->authenticated_user->id,
+            'company_id' => request()->authenticated_user->company_id,
+            'action'     => 'delete',
+            'changes'    => json_encode([
+                'old' => $expense->getOriginal(),
+                'new' => null,
+            ]),
+        ]);
         
         return response()->json([
             "status"  => true,
