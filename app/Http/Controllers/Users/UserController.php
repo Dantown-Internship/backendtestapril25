@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\User\CreateUserRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Exception;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\UpdateRoleRequest;
 
 class UserController extends Controller
 {
@@ -77,7 +77,7 @@ class UserController extends Controller
 
 
 
-    public function update(string $userId, UpdateUserRequest $request): JsonResponse
+    public function update(string $userId, UpdateRoleRequest $request): JsonResponse
     {
         try {
             if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
@@ -94,7 +94,6 @@ class UserController extends Controller
             return dantownResponse([], 404, 'No record found!', false);
         }
     }
-
 
     public function delete(string $userId)
     {

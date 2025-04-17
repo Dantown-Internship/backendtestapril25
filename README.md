@@ -26,8 +26,8 @@
   GET users .............................Fetch Users (paginated!)(Admin Authorized)<br>
   POST      users/create .............................Create User (using name, email, password, password_confirmation, company_id, role_name) (Admin authorized) <br>
   DELETE    users/delete/{userId} ....................Delete User using userId (Admin authorized)<br>
-  GET|HEAD  users/{userId?} ..........................Fetch a user using the userId (Admin authorized)<br>
-  PUT   users/{userId} ...............................Update user using the userId.
+  GET       users/{userId?} ..........................Fetch a user using the userId (Admin authorized)<br>
+  PUT       users/{userId} ...............................Update user Role by passing role_name in the JSON body using the userId as a reference.
 
 
 

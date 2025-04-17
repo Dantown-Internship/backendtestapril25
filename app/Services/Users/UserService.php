@@ -8,6 +8,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use App\Services\Auth\RoleService;
 use App\Queries\AuthQuery;
+use Illuminate\Support\Facades\Cache;
+use InvalidArgumentException;
 
 
 
@@ -41,7 +43,14 @@ class UserService implements UserInterface
 
     public function users(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->authQuery->users($perPage);
+        $companyId = auth()->user()->company_id ?? 'default';
+        $cacheKey = "users_{$companyId}_{$perPage}";
+
+        return Cache::remember(
+            $cacheKey,
+            now()->addMinutes(10),
+            fn () => $this->authQuery->users($perPage)
+        );
     }
 
 
@@ -50,19 +59,34 @@ class UserService implements UserInterface
         return $this->authQuery->user($userId);  
     }
 
-    public function update(string $id, array $data): User
-    {
-        $user = User::findOrFail($id);
-        $user->update([
-            'name'       => $data['name'] ?? $user->name,
-            'email'      => $data['email'] ?? $user->email,
-            'password'   => isset($data['password']) ? Hash::make($data['password']) : $user->password,
-            'company_id' => $data['company_id'] ?? $user->company_id,
-            'role_id'    => $data['role_id'] ?? $user->role_id,
-            'status'     => $data['status'] ?? $user->status,
-        ]);
 
-        return $user->refresh();
+
+    public function update(string $userId, array $data): User
+    {
+        $roleName = $data['role_name'] ?? throw new InvalidArgumentException('Role name is required');
+        $role = $this->roleService->getRoleByName($roleName);
+
+        $user = User::findOrFail($userId);
+        $oldRoleName = $user->role_id ? $this->roleService->getRoleById($user->role_id)->name : null;
+
+        $user = $this->authQuery->updateUserRole($userId, $role->id);
+
+        logAudit(
+            userId: auth()->id() ?? $user->id,
+            companyId: $user->company_id,
+            action: 'update_user_role',
+            changes: [
+                'old' => ['role_name' => $oldRoleName],
+                'new' => ['role_name' => $roleName]
+            ]
+        );
+
+      
+        Cache::forget("users_{$user->company_id}");
+
+        $this->roleService->assignRole($user, $roleName);
+
+        return $user;
     }
 
 

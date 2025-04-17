@@ -32,6 +32,14 @@ class AuthQuery
         return User::with('role')->where('id', $userId)->firstOrFail();
     }
 
+    
+    public function updateUserRole(string $userId, string $roleId): User
+    {
+        $user = User::findOrFail($userId);
+        $user->update(['role_id' => $roleId]);
+        return $user->refresh();
+    }
+
 
     public function delete(string $userId): bool
     {

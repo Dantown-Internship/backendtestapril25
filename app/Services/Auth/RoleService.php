@@ -38,4 +38,9 @@ class RoleService
     {
         return Roles::select('name')->get();
     }
+
+    public function getRoleById(string $roleId): Roles
+    {
+        return Roles::findOrFail($roleId);
+    }
 }
