@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\UserController;
@@ -45,18 +46,13 @@ Route::prefix('/v1')->group(function () {
                 ->name('expenses.show');
             Route::put('/{uuid}', [ExpenseController::class, 'update'])
                 ->name('expenses.update')
-                ->middleware(sprintf('role:%s', Role::Admin->value, Role::Manager->value));
+                ->middleware(sprintf('role:%s,%s', Role::Admin->value, Role::Manager->value));
             Route::delete('/{uuid}', [ExpenseController::class, 'destroy'])
                 ->name('expenses.destroy')
                 ->middleware(sprintf('role:%s', Role::Admin->value));
         });
+
+        Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')
+            ->middleware(sprintf('role:%s', Role::Admin->value));
     });
 });
-
-
-
-// Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
-// Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
-// Route::get('/expenses/{expense}', [ExpenseController::class, 'show'])->name('expenses.show');
-// Route::put('/expenses/{expense}', [ExpenseController::class, 'update'])->name('expenses.update');
-// Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
