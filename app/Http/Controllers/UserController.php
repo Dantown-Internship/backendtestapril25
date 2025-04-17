@@ -80,50 +80,51 @@ public function store(Request $request)
         }
     }
 
-    git remote add origin https://github.com/CHI-NONSO1/backendtestapril25.git
     public function login(Request $request)
-    {
-        try {
-            print_r($request);
-            $data = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-        
-            if ($data->fails()) {
-                return response()->json([
-                    'errors' => $data->errors()
-                ], 422);
-            }
-        
-            $credentials = $request->only('email', 'password');
-        
-            if (!Auth::attempt($credentials)) {
-                return response()->json([
-                    'message' => 'Invalid login details'
-                ], 401);
-            }
-        
-            $user = Auth::user();
-            if (!password_verify($request['password'], $user->password)) {
-                return response()->json([
-                    'message' => 'Invalid login details'
-                ], 401);
-            }
-            $token = $user->createToken($request->email)->plainTextToken;
-            $user->update(['refresh_token' => $token]);
-        
+{
+    try {
+        // Validate request input
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ], 200);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ], 422);
         }
-    
+
+        // Attempt login
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Invalid login credentials'
+            ], 401);
+        }
+
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Create a new Sanctum token
+        $token = $user->createToken($request->email)->plainTextToken;
+
+        // Optional: Save token to DB (for refresh, revoke, etc.)
+        $user->update(['refresh_token' => $token]); // Ensure you have this column
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'An error occurred',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 public function update(Request $request, $id)
 {
