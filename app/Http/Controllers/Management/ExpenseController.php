@@ -66,10 +66,9 @@ class ExpenseController extends Controller
             return dantownResponse([], 400, 'You need an expense ID!', false);
         }
 
-        try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!', 403);
-            }
+        try { 
+            authorizeRole('admin');
+            
             $user = $this->expenseService->delete($expenseId);
             return dantownResponse($user, 200, 'Resource deleted!', true);
         } catch (ModelNotFoundException $e) {
@@ -82,22 +81,23 @@ class ExpenseController extends Controller
 
     public function update(ExpenseUpdateRequest $request, string $expenseId): JsonResponse
     {
-
         if (empty($expenseId)) {
             return dantownResponse([], 400, 'You need an expense ID!', false);
         }
-        if (
-            !$this->roleService->userHasRole(auth()->user(), 'admin') &&
-            !$this->roleService->userHasRole(auth()->user(), 'manager')
-        ) {
-            return dantownResponse([], 403, 'Only Admin or Manager authorized action!', false);
+    
+        try {
+            authorizeRole(['admin', 'manager']);
+    
+            $expense = $this->expenseService->update($expenseId, $request->validated());
+    
+            if (!$expense) {
+                return dantownResponse([], 404, 'Expense not found.', false);
+            }
+    
+            return dantownResponse(new ExpenseResource($expense), 200, 'Expense update completed!', true);
+        } catch (AuthorizationException $e) {
+            return dantownResponse([], 403, $e->getMessage(), false);
         }
-        $expense = $this->expenseService->update($expenseId, $request->validated());
-
-        if (!$expense) {
-            return dantownResponse([], 404, 'Expense not found.', false);
-        }
-
-        return dantownResponse(new ExpenseResource($expense), 200, 'Expense updated completed!', true);
     }
+    
 }

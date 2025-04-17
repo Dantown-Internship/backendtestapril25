@@ -23,9 +23,8 @@ class AuthController extends Controller
     public function signup(SignupRequest $request): JsonResponse
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!');
-            }
+
+            authorizeRole('admin');
 
             $data = $request->validated();
             $roleName = $data['role_name'];

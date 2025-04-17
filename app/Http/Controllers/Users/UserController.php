@@ -24,10 +24,8 @@ class UserController extends Controller
     public function create(CreateUserRequest $request): JsonResponse
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!');
-            }
-
+            authorizeRole('admin');
+            
             $data = $request->validated();
             $roleName = $data['role_name'];
             unset($data['role_name']);
@@ -47,9 +45,8 @@ class UserController extends Controller
     public function users()
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!');
-            }
+            authorizeRole('admin');
+            
             $users = $this->userService->users();
             return dantownResponse($users, 200, 'Users retrieved!', true);
         } catch (AuthorizationException $e) {
@@ -63,9 +60,8 @@ class UserController extends Controller
     public function user(string $userId)
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!');
-            }
+            authorizeRole('admin');
+
             $user = $this->userService->user($userId);
             return dantownResponse($user, 200, 'User retrieved!', true);
         } catch (AuthorizationException $e) {
@@ -80,9 +76,7 @@ class UserController extends Controller
     public function update(string $userId, UpdateRoleRequest $request): JsonResponse
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!');
-            }
+            authorizeRole('admin');
 
             $data = $request->validated();
             $user = $this->userService->update($userId, $data);
@@ -98,9 +92,7 @@ class UserController extends Controller
     public function delete(string $userId)
     {
         try {
-            if (!$this->roleService->userHasRole(auth()->user(), 'admin')) {
-                throw new AuthorizationException('Only Admin authorized action!', 403);
-            }
+            authorizeRole('admin');
             $user = $this->userService->delete($userId);
             return dantownResponse($user, 204, 'Resource deleted!', true);
         } catch (ModelNotFoundException $e) {
