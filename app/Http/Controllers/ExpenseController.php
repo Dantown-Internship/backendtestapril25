@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\ExpenseResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Database\Eloquent\Builder;
 
 class ExpenseController extends Controller
 {
     use ApiResponse, AuthorizesRequests;
 
     /**
-     * Display a listing of the expenses, cached by company_id for 1 hour.
+     * Display a listing of the expenses, cached by company_id and search criteria.
      */
     public function index(Request $request)
     {
@@ -26,11 +27,25 @@ class ExpenseController extends Controller
 
         $companyId = $request->user()->company_id;
         $page = $request->get('page', 1);
+        $searchTerm = $request->get('search');
+
+        // Build the cache key based on search parameters
         $cacheKey = "expenses.company.{$companyId}.page.{$page}";
+        if ($searchTerm) {
+            $cacheKey .= ".search.{$searchTerm}";
+        }
 
         // One hour (60 minutes) cache
-        $expenses = Cache::remember($cacheKey, 60 * 60, function () use ($companyId) {
-            return Expense::with('user')->where('company_id', $companyId)->paginate(24);
+        $expenses = Cache::remember($cacheKey, 60 * 60, function () use ($companyId, $searchTerm) {
+            return Expense::with('user')
+                ->where('company_id', $companyId)
+                ->when($searchTerm, function (Builder $query, $searchTerm) {
+                    $query->where(function (Builder $query) use ($searchTerm) {
+                        $query->where('title', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('category', 'LIKE', "%{$searchTerm}%");
+                    });
+                })
+                ->paginate(24);
         });
 
         return $this->success(
@@ -58,7 +73,7 @@ class ExpenseController extends Controller
 
         $expense = Auth::user()->expenses()->create($validated);
 
-        // Clear cache for this company
+        // Clear cache for this company, because new data has been added.
         $this->clearExpenseCompanyCache($expense->company_id);
 
         return $this->success(new ExpenseResource($expense), 'Expense created successfully.', 201);
@@ -127,6 +142,7 @@ class ExpenseController extends Controller
      */
     protected function clearExpenseCompanyCache($companyId)
     {
+        //first we remove the older values without searches
         $expensesCount = Expense::where('company_id', $companyId)->count();
         $perPage = 24;
         $maxPages = max(1, ceil($expensesCount / $perPage));
@@ -134,5 +150,7 @@ class ExpenseController extends Controller
         for ($page = 1; $page <= $maxPages; $page++) {
             Cache::forget("expenses.company.{$companyId}.page.{$page}");
         }
+        //after we remove the keys including searches.
+        Cache::flush();
     }
 }
