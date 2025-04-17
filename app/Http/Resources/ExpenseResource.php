@@ -18,7 +18,7 @@ class ExpenseResource extends JsonResource
             'id' => $this->uuid,
             'title' => $this->title,
             'amount' => (float) $this->amount,
-            'category' => $this->category,
+            'category' => $this->category->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'user' => new UserResource($this->whenLoaded('user')),

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExpenseCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreExpenseRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class StoreExpenseRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0'],
-            'category' => ['required', 'string', 'max:255'],
+            'category' => ['required', Rule::enum(ExpenseCategory::class)],
         ];
     }
 }

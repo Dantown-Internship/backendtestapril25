@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ExpenseCategory;
 use App\Models\Concerns\HasUuid;
 use App\Models\Scopes\CompanyScope;
 use App\Observers\ExpenseObserver;
@@ -28,6 +29,7 @@ class Expense extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'category' => ExpenseCategory::class,
     ];
 
     public function user(): BelongsTo
