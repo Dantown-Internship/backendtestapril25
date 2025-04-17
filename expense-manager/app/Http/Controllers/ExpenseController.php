@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ExpenseController extends Controller
 {
@@ -23,49 +24,38 @@ class ExpenseController extends Controller
 
     $expense = Expense::create($validated);
 
+    // Clear the cache for the list of expenses
+    Cache::forget('expenses_for_company_' . auth()->user()->company_id);
+
     return response()->json($expense, 201);
 }
 
     //List Expense
     public function index(Request $request)
     {
-        $expenses = Expense::where('company_id', $request->user()->company_id)
-                    ->when($request->search, function ($query) use ($request) {
-                        $query->where('title', 'like', "%{$request->search}%")
-                            ->orWhere('category', 'like', "%{$request->search}%");
-                    })
-                    ->paginate(10);
-
-        return response()->json($expenses);
-    }
-
-    //update expense
-    public function update(Request $request, $id)
-{
+        $companyId = auth()->user()->company_id;
     
-    $expense = Expense::find($id);
-    //check expenses is scoped to users company id
-    if (!$expense || $expense->company_id !== $user->company_id) {
-        return response()->json(['message' => 'Expense not found'], 404);
-    }
+        // Check if the expenses for this company are cached
+        $cacheKey = 'expenses_for_company_' . $companyId;
 
-    $oldData = $expense->toArray();
-    $data = $request->only(['title', 'amount', 'category', 'date']);
-    $expense->update($data);
+      // Cache the result if not already cached
+        $expenses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request, $companyId) {
+        $query = Expense::with(['user', 'company']) // Eager load relationships
+            ->where('company_id', $companyId);
 
-    $newData = $expense->fresh()->toArray();
+        // Apply search filter if provided
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('category', 'like', "%$search%");
+            });
+        }
 
-    AuditLog::create([
-        'user_id' => auth()->id(),
-        'company_id' => auth()->user()->company_id,
-        'action' => 'update',
-        'changes' => [
-            'before' => $oldData,
-            'after' => $newData,
-        ],
-    ]);
+        // Paginate the results
+        return $query->paginate(10);
+    });
 
-    return response()->json(['expense' => $expense]);
+    return response()->json([$expenses]);
 }
 
 
@@ -81,6 +71,9 @@ public function destroy($id)
     $oldData = $expense->toArray();
 
     $expense->delete();
+
+    // Clear the cache for the list of expenses
+    Cache::forget('expenses_for_company_' . auth()->user()->company_id);
 
     AuditLog::create([
         'user_id' => auth()->id(),

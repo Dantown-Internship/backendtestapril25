@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -18,10 +19,20 @@ class UserController extends Controller
         if ($user->role !== 'Admin') {
             return response()->json(['message' => 'Forbidden'], 403);
         }
+
+        // Check caching
+        $cacheKey = 'company_' . $user->company_id . '_users';
+        $users = Cache::get($cacheKey);
+
     
-        //scoped to users company id
-        $users = User::where('company_id', $user->company_id)->get();
-    
+        if (!$users) {
+            // company data isolation
+            $users = User::where('company_id', $user->company_id)->get();
+
+            // Cache for 60 minutes
+            Cache::put($cacheKey, $users, now()->addMinutes(60));
+        }
+
         return response()->json($users);
     }
 
@@ -44,6 +55,9 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
+         // Clear the cache 
+         Cache::forget('company_' . $user->company_id . '_users');
+
         return response()->json(['user' => $user], 201);
     }
 
@@ -55,8 +69,7 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])],
         ]);
 
-        $user = User::find($id);
-       
+        
         $user = User::find($id);
 
         //scoped to only users company
@@ -65,6 +78,12 @@ class UserController extends Controller
         }
         $user->role = $request->role;
         $user->save();
+
+        // Clear the cache 
+        Cache::forget('company_' . $user->company_id . '_users');
+
+        // Cache the updated user
+        Cache::put('user_' . $user->id, $user, now()->addMinutes(60));
 
         return response()->json(['user' => $user]);
     }
