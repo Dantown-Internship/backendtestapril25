@@ -14,3 +14,7 @@
 4. The seed data are sample companies 
 5. Create an account (register endpoint is for creating an account for an admin, just like Bento system, where the admin will have to sign up and onboard its members)
 6. To run the job first, you need to trigger your command(wait or the actual day/time: php artisan schedule:run ,for instant test run: php artisan report:process) Also do not forget to run this command php artisan queue:work  . Note: your smtp should be configured on your env.
+
+
+## PostMan API doc
+https://documenter.getpostman.com/view/15914392/2sB2cd4HvT
