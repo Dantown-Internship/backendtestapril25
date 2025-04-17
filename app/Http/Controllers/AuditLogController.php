@@ -17,7 +17,7 @@ class AuditLogController extends Controller
     {
         $user = auth()->user();
 
-        $auditLogs = AuditLog::latest()->with('user')->paginate(10);
+        $auditLogs = AuditLog::where('company_id', $user->company_id)->latest()->with('user')->paginate(10);
 
         return $this->success($auditLogs, 'Fetched audit logs successfully.');
     }
