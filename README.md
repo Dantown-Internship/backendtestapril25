@@ -86,7 +86,12 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-5. Configure your database and Redis in `.env`:
+5. Optimize and dump the autoloader:
+```bash
+composer dump-autoload -o
+```
+
+6. Configure your database and Redis in `.env`:
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -103,12 +108,12 @@ QUEUE_CONNECTION=redis
 CACHE_DRIVER=redis
 ```
 
-6. Run migrations and seeders:
+7. Run migrations and seeders:
 ```bash
 php artisan migrate --seed
 ```
 
-7. Start the queue worker:
+8. Start the queue worker:
 ```bash
 php artisan queue:work
 ```
@@ -206,8 +211,7 @@ Content-Type: application/json
 {
     "title": "Office Supplies",
     "amount": 100.50,
-    "category": "office",
-    "date": "2024-04-16" // optional, defaults to current date
+    "category": "office"
 }
 ```
 
@@ -224,8 +228,7 @@ Content-Type: application/json
 {
     "title": "Updated Title",
     "amount": 150.75,
-    "category": "travel",
-    "date": "2024-04-16"
+    "category": "travel"
 }
 ```
 
@@ -289,91 +292,3 @@ Content-Type: application/json
     "role": "manager"
 }
 ```
-
-Access Control:
-- Only Admins can update users
-- Must be within the same company
-
-### Audit Logs
-
-#### List Audit Logs
-```http
-GET /api/audit-logs
-Authorization: Bearer your-api-token
-```
-
-Query Parameters:
-- `page`: Page number (default: 1)
-- `per_page`: Items per page (default: 15)
-- `search`: Search term
-- `user_id`: Filter by user
-- `model_type`: Filter by model type
-
-Access Control:
-- All authenticated users can view audit logs
-- Results are automatically scoped to the user's company
-
-#### Get Single Audit Log
-```http
-GET /api/audit-logs/{id}
-Authorization: Bearer your-api-token
-```
-
-Access Control:
-- All authenticated users can view audit logs
-- Must be within the same company
-
-#### Clear Company Audit Logs Cache (Admins Only)
-```http
-POST /api/audit-logs/{company}/clear-cache
-Authorization: Bearer your-api-token
-```
-
-Access Control:
-- Only Admins can clear audit log caches
-- Must be within the same company
-
-## Security Notes
-
-- All API endpoints (except login) require authentication using Bearer token
-- The register endpoint is only accessible to admin users
-- All requests are automatically scoped to the user's company
-- Password updates require current password verification
-- Audit logs track all significant changes to the system
-- Role-based access control is enforced at both route and request levels
-- Company data isolation is maintained through middleware and explicit checks
-
-## Background Jobs
-
-The system uses Laravel's queue system for processing background jobs:
-
-1. Weekly Expense Reports
-   - Generated every Monday at 9:00 AM
-   - Sent to company admins
-   - Includes expense summaries and analytics
-
-2. Audit Log Processing
-   - Asynchronous logging of changes
-   - Cached for performance
-   - Automatic cleanup of old logs
-
-## Performance Optimizations
-
-- Redis caching for frequently accessed data
-- Database indexing on commonly queried columns
-- Eager loading to prevent N+1 queries
-- Query optimization through scopes
-- Background job processing for heavy operations
-- Cached audit logs and reports
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
