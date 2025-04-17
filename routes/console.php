@@ -5,4 +5,4 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 
-Schedule::command('app:expense-report')->everyFiveSeconds();
+Schedule::command('app:expense-report')->weekly();

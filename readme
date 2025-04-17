@@ -1,147 +1,87 @@
-# 🧾 Mid-Level Technical Test – Multi-Tenant SaaS-Based Expense Management API
+# Project Assumptions
+- I assume only admin has access to the register enpoint as there was a marking (only admin) in front of the endpoint.
+- I didn't cache because caching paginated data can quickly lead done a rabbit hole if the data changes very often. Query optimization and indexing was enough
 
-Welcome! This is a technical test for laravel backend developers.
+## Installation
 
-Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-based Expense Management System**, where multiple companies can manage their expenses independently. Please follow the instructions below and submit your solution as described.
-
----
-
-## 🚀 Project Requirements
-
-### ✅ Key Features to Implement
-
-- **Multi-Tenant Support** – Companies should have isolated data.
-- **Secure API Authentication** – Use Laravel Sanctum.
-- **Role-Based Access Control (RBAC)** – Admins, Managers, Employees.
-- **Advanced Query Optimization** – Indexing, Eager Loading.
-- **Background Job Processing** – Laravel Queues.
-- **Audit Logging** – Track changes to expenses.
-
----
-
-## 🗂️ Tasks Breakdown
-
-### 🏗️ Task 1: Multi-Tenant Database Structure (Migrations & Models)
-
-#### Companies Table
-- Fields: `id`, `name`, `email`, `created_at`, `updated_at`
-
-#### Users Table (Modified)
-- Add `company_id` (Foreign Key)
-- Add `role` (Enum: `["Admin", "Manager", "Employee"]`)
-
-#### Expenses Table
-- Fields: `id`, `company_id`, `user_id`, `title`, `amount`, `category`, `created_at`, `updated_at`
-- Add an index on `company_id` for performance
-
-#### Relationships
-- A **Company** has many **Users**
-- A **User** belongs to a **Company**
-- A **User** has many **Expenses**
-
----
-
-### 🔐 Task 2: API Authentication & RBAC
-
-- Use **Laravel Sanctum** for token-based authentication
-- Implement Role-Based Access Control:
-  - **Admin**: Manage users & expenses
-  - **Manager**: Manage expenses (cannot delete users)
-  - **Employee**: View and create expenses
-- Ensure users **cannot access data** from other companies
-
----
-
-### 🧾 Task 3: API Endpoints
-
-#### Authentication
-- `POST /api/register` → Admin only
-- `POST /api/login`
-
-#### Expense Management
-- `GET /api/expenses` → List (by company, paginated, searchable by title/category)
-- `POST /api/expenses` → Create (restricted to logged-in user’s company)
-- `PUT /api/expenses/{id}` → Update (Managers & Admins only)
-- `DELETE /api/expenses/{id}` → Delete (Admins only)
-
-#### User Management
-- `GET /api/users` → List users (Admins only)
-- `POST /api/users` → Add user (Admins only)
-- `PUT /api/users/{id}` → Update user role (Admins only)
-
----
-
-### ⚙️ Task 4: Optimization & Performance
-
-- Use **Eager Loading** (`with()`) to avoid N+1 queries
-- Add **indexes** on `company_id` and `user_id` in the expenses table
-- Implement **Redis caching** for frequently accessed queries
-
----
-
-### 🧵 Task 5: Background Job Processing
-
-- Use Laravel Queues (with `database` or `redis` driver)
-- Create a **weekly job** that sends an expense report to all Admins
-- Use Laravel’s **scheduler** (`schedule:run`) to run the job
-
----
-
-### 🕵️‍♀️ Task 6: Audit Logs
-
-#### Audit Logs Table
-- Fields: `id`, `user_id`, `company_id`, `action`, `changes`, `created_at`
-
-#### Requirements
-- Log every **update/delete** action on expenses
-- Store the **old and new values** of each expense before update
-
----
-
-## 🛠️ Tech Stack
-
-- Laravel 10+
-- MySQL or PostgreSQL
-- Laravel Sanctum
-- Redis (optional but recommended)
-- Laravel Queues & Scheduler
-
----
-
-## 📬 How to Submit
-
-1. **Fork** this repository.
-2. **Clone** the forked repository to your local machine.
-3. Create a new **branch** using your full name (e.g., `john-doe`):
-
+1. **Clone the repository**:
    ```bash
-   git checkout -b john-doe
-4. Complete the tasks outlined above.
-5. Push your branch to your forked repository:
+   git clone the repo
+   git checkout soneye-oluwasina
+   ```
 
-   git push origin your-branch-name
+2. **Install dependencies**:
+   Run the following command to install the required PHP packages:
+   ```bash
+   composer install
+   ```
 
-6. Create a Pull Request (PR) to the original repository’s `main` branch.
+3. **Set up your environment**:
+   Copy the `.env.example` file to `.env` and update the environment variables as needed:
+   ```bash
+   cp .env.example .env
+   ```
 
-7. In the PR description, please include:
-   - Your full name
-   - Any notes or assumptions made
-   - Features you implemented or skipped (with reasons)
-   - Any instructions for testing (if applicable)
+4. **Generate the application key**:
+   ```bash
+   php artisan key:generate
+   ```
 
----
+5. **Run Sail (optional)**:
+   If you prefer to use Laravel Sail, you can build and start the containers with:
+   ```bash
+   ./vendor/bin/sail build
+   ./vendor/bin/sail up
+   ```
 
-## ✅ Evaluation Criteria
+## Added Endpoints
 
-- Correctness & completeness of features  
-- Code structure and readability  
-- Proper use of Laravel best practices  
-- Security and role enforcement  
-- Performance optimizations  
-- Bonus: Tests, Redis integration, and proper API responses  
+### Authentication
+- **POST** `/api/login`: Log in a user and return a token.
+- **POST** `/api/register`: Register a new user. (protected)
 
----
+### Expenses
+- **GET** `/api/expenses`: Retrieve a list of expenses. (searchable by category or title)
+- **POST** `/api/expenses`: Create a new expense.
+- **PUT** `/api/expenses/{expense}`: Update a specific expense.
+- **DELETE** `/api/expenses/{expense}`: Delete a specific expense.
 
-Good luck! 🍀 Feel free to reach out if you need clarification on any part of the task.
+### Users
+- **GET** `/api/users`: Retrieve a list of users (Admin only).
+- **POST** `/api/users`: Create a new user (Admin only).
+- **PUT** `/api/users/{user}`: Update a specific user (Admin only).
+
+## Demo Data with Seeder
+``` run sail artisan db:seed //seeds 15expenses with corresponding companies and users
+## Running the Scheduler
+
+To run the Laravel scheduler, you can set up a cron job on your server. Add the following line to your server's crontab:
+```bash
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+```
+
+Alternatively, if you're using Sail and want to run instantly, you can run:
+```bash
+./vendor/bin/sail artisan app:expense-report
+```
+
+## Running Jobs
+
+To run queued jobs, you can use the following command:
+```bash
+php artisan queue:work
+```
+
+If you're using Sail, run:
+```bash
+./vendor/bin/sail artisan queue:work
+```
 
 
+
+## Conclusion
+
+Follow these instructions to set up and run the project. Replace anywhere you find `sail` with `php` is you use laragon, herd, xampp or wamp!
+
+## Package Used
+https://docs.laravel-excel.com/3.1/getting-started/
