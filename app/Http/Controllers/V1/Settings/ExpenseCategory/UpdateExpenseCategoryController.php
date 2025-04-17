@@ -6,6 +6,7 @@ use App\Actions\ExpenseCategory\GetExpenseCategoryByIdAction;
 use App\Actions\ExpenseCategory\UpdateExpenseCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Settings\ExpenseCategory\UpdateExpenseCategoryRequest;
+use App\Jobs\BackgroundProcessing\AuditLog\AuditLogActivityBackgroundProcessingJob;
 
 class UpdateExpenseCategoryController extends Controller
 {
@@ -30,6 +31,23 @@ class UpdateExpenseCategoryController extends Controller
             'id' => $expenseCategoryId,
             'data' => $updateUserPayload
         ]);
+
+        dispatch(
+            new AuditLogActivityBackgroundProcessingJob([
+                'user_id' => $loggedInUser->id,
+                'action' => "{$loggedInUser->name} updated an expense category",
+                'changes' => extractObjectPropertiesToKeyPairValues(
+                    [
+                        'previous_value' => [
+                            'name' => $expenseCategory->name
+                        ],
+                        'current_value' => [
+                            'name' => $request->name
+                        ],
+                    ]
+                )
+            ])
+        );
 
         return generateSuccessApiMessage('Expense category was updated successfully');
     }

@@ -6,6 +6,7 @@ use App\Actions\User\GetUserByEmailAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Authentication\LoginRequest;
 use App\Http\Resources\V1\Authentication\LoginResource;
+use App\Jobs\BackgroundProcessing\AuditLog\AuditLogActivityBackgroundProcessingJob;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
@@ -28,6 +29,12 @@ class LoginController extends Controller
             return generateErrorApiMessage('Invalid login credentials', 400);
         }
 
+        dispatch(
+            new AuditLogActivityBackgroundProcessingJob([
+                'user_id' => $user->id,
+                'action' => "{$user->name} logged into the system"
+            ])
+        );
 
         $responsePayload = new LoginResource($user);
 

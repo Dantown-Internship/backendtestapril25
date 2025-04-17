@@ -7,6 +7,7 @@ use App\Actions\User\CreateUserAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Authentication\OnboardingRequest;
 use App\Http\Resources\V1\Authentication\OnboardingResource;
+use App\Jobs\BackgroundProcessing\AuditLog\AuditLogActivityBackgroundProcessingJob;
 use App\Jobs\BackgroundProcessing\Onboarding\SetupCompanyExpenseCategoriesBackgroundProcessingJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -38,6 +39,17 @@ class OnboardingController extends Controller
 
             return $user;
         });
+
+        dispatch(
+            new AuditLogActivityBackgroundProcessingJob([
+                'user_id' => $createdUser->id,
+                'action' => "{$createdUser->name} created an account",
+                'changes' => extractObjectPropertiesToKeyPairValues([
+                    'user' => $request->user,
+                    'company' => $request->company,
+                ])
+            ])
+        );
 
         dispatch(
             new SetupCompanyExpenseCategoriesBackgroundProcessingJob([

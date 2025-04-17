@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Settings\ExpenseCategory;
 use App\Actions\ExpenseCategory\DeleteExpenseCategoryAction;
 use App\Actions\ExpenseCategory\GetExpenseCategoryByIdAction;
 use App\Http\Controllers\Controller;
+use App\Jobs\BackgroundProcessing\AuditLog\AuditLogActivityBackgroundProcessingJob;
 
 class DeleteExpenseCategoryController extends Controller
 {
@@ -25,6 +26,18 @@ class DeleteExpenseCategoryController extends Controller
 
         $this->deleteExpenseCategoryAction->execute(
             $expenseCategoryId
+        );
+
+        dispatch(
+            new AuditLogActivityBackgroundProcessingJob([
+                'user_id' => $loggedInUser->id,
+                'action' => "{$loggedInUser->name} deleted an expense category",
+                'changes' => extractObjectPropertiesToKeyPairValues(
+                    [
+                        'name' => $expenseCategory->name
+                    ]
+                )
+            ])
         );
 
         return generateSuccessApiMessage('Expense category was deleted successfully');

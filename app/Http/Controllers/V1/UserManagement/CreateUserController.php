@@ -6,6 +6,7 @@ use App\Actions\User\CreateUserAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\UserManagement\CreateUserRequest;
 use App\Http\Resources\V1\UserManagement\GetUserResource;
+use App\Jobs\BackgroundProcessing\AuditLog\AuditLogActivityBackgroundProcessingJob;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUserController extends Controller
@@ -29,6 +30,17 @@ class CreateUserController extends Controller
             $createUserRecordOptions
         );
 
+        dispatch(
+            new AuditLogActivityBackgroundProcessingJob([
+                'user_id' => $loggedInUser->id,
+                'action' => "{$loggedInUser->name} created a user",
+                'changes' => extractObjectPropertiesToKeyPairValues([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'role' => $request->role,
+                ])
+            ])
+        );
         $responsePayload = new GetUserResource($createdUser);
 
         return generateSuccessApiMessage('User was created successfully', 201, $responsePayload);
