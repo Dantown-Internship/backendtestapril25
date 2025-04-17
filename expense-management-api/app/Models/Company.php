@@ -35,4 +35,9 @@ class Company extends Model
     {
         return $this->hasMany(Expense::class);
     }
+
+    public function admins()
+    {
+        return $this->users()->where('role', 'Admin');
+    }
 }

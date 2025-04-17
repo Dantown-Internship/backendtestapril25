@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Jobs\SendWeeklyExpenseReport;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ExpenseController extends Controller

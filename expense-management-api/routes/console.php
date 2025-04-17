@@ -1,8 +1,14 @@
 <?php
 
+use App\Jobs\SendWeeklyExpenseReport;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+Schedule::job(new SendWeeklyExpenseReport)->weekly()->mondays()->at('08:00')->timezone('UTC')->name('weekly-expense-report');
+
