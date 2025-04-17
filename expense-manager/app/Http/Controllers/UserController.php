@@ -12,7 +12,17 @@ class UserController extends Controller
     //list all users
     public function index()
     {
-        return response()->json(User::with('company')->get());
+        $user = auth()->user();
+
+        //handled by middleware but redudancy
+        if ($user->role !== 'Admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+    
+        //scoped to users company id
+        $users = User::where('company_id', $user->company_id)->get();
+    
+        return response()->json($users);
     }
 
     //add users
@@ -46,7 +56,10 @@ class UserController extends Controller
 
         $user = User::find($id);
        
-        if (!$user) {
+        $user = User::find($id);
+
+        //scoped to only users company
+        if (!$user || $user->company_id !== $admin->company_id) {
             return response()->json(['message' => 'User not found'], 404);
         }
         $user->role = $request->role;

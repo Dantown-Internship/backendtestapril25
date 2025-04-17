@@ -11,24 +11,20 @@ class ExpenseController extends Controller
 
     //create expenses
     public function create(Request $request)
-    {
-        $request->validate([
-            'title'=>'required',
-            'amount'=>'required|numeric',
-            'category'=>'required',
-            'company_id'=>'required|exists:companies,id'
-        ]);
+{
+    $validated = $request->validate([
+        'title' => 'required',
+        'amount' => 'required|numeric',
+        'category' => 'required',
+        'date' => 'required|date',
+    ]);
 
-        $expense = Expense::create([
-            'title' => $request->title,
-            'amount' => $request->amount,
-            'category' => $request->category,
-            'company_id' => $request->company_id,
-            'user_id' => auth()->user()->id, 
-        ]);
-    
-        return response()->json(['expense' => $expense], 201);
-    }
+    $validated['company_id'] = $request->user()->company_id;
+
+    $expense = Expense::create($validated);
+
+    return response()->json($expense, 201);
+}
 
     //List Expense
     public function index(Request $request)
@@ -48,7 +44,8 @@ class ExpenseController extends Controller
 {
     
     $expense = Expense::find($id);
-    if (!$expense) {
+    //check expenses is scoped to users company id
+    if (!$expense || $expense->company_id !== $user->company_id) {
         return response()->json(['message' => 'Expense not found'], 404);
     }
 
@@ -76,8 +73,9 @@ public function destroy($id)
 {
     $expense = Expense::find($id);
 
-    if (!$expense) {
-        return response()->json(['message' => 'Expense not found'], 404);
+   //check expenses is scoped to users company id
+   if (!$expense || $expense->company_id !== $user->company_id) {
+     return response()->json(['message' => 'Expense not found'], 404);
     }
 
     $oldData = $expense->toArray();
