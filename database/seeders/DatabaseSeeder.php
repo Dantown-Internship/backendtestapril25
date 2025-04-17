@@ -1,6 +1,5 @@
 <?php
 
-// database/seeders/DatabaseSeeder.php
 namespace Database\Seeders;
 
 use App\Models\Company;
@@ -9,7 +8,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 
-class DatabaseSeeder extends Seeder{
+class DatabaseSeeder extends Seeder
+{
     protected $faker;
 
     public function __construct()
@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder{
     }
 
     public function run()
-    {
     {
         // Create 5 companies
         $companies = Company::factory()
@@ -64,12 +63,29 @@ class DatabaseSeeder extends Seeder{
             'email' => 'test@example.com',
         ]);
 
+        // Create specific test accounts with known credentials
         $testAdmin = User::create([
             'company_id' => $testCompany->id,
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
+            'name' => 'Test Admin',
+            'email' => 'admin@test.com',
+            'password' => bcrypt('admin123'),
             'role' => 'Admin',
+        ]);
+
+        $testManager = User::create([
+            'company_id' => $testCompany->id,
+            'name' => 'Test Manager',
+            'email' => 'manager@test.com',
+            'password' => bcrypt('manager123'),
+            'role' => 'Manager',
+        ]);
+
+        $testEmployee = User::create([
+            'company_id' => $testCompany->id,
+            'name' => 'Test Employee',
+            'email' => 'employee@test.com',
+            'password' => bcrypt('employee123'),
+            'role' => 'Employee',
         ]);
 
         // Create test expenses for the test company
@@ -79,5 +95,20 @@ class DatabaseSeeder extends Seeder{
                 'company_id' => $testCompany->id,
                 'user_id' => $testAdmin->id,
             ]);
+
+        // Create some expenses for manager and employee
+        Expense::factory()
+            ->count(5)
+            ->create([
+                'company_id' => $testCompany->id,
+                'user_id' => $testManager->id,
+            ]);
+
+        Expense::factory()
+            ->count(5)
+            ->create([
+                'company_id' => $testCompany->id,
+                'user_id' => $testEmployee->id,
+            ]);
     }
-}}
+}
