@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enum\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,7 @@ class MangerMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if ($user->role == 'Manager'|| $user->role == 'Admin') {
+        if ($user->role == UserRole::Manager|| $user->role == UserRole::Admin) {
             return $next($request);
         }
         return response()->json([
