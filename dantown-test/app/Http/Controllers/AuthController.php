@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Auth;
 use App\Services\AuthService;
 use App\Exceptions\CustomApiErrorResponseHandler;
+use Log;
 
 class AuthController extends Controller
 {
@@ -18,17 +20,20 @@ class AuthController extends Controller
 
     public function registerUser(Request $request)
     {
+        $authUserCompany = Auth::user()->load('company');
+
+        if (!$authUserCompany) {
+            return response()->json(['success' => false, 'message' => 'Company information not available for the logged-in user.', 'user' => [], 'token' => null], 400);
+        }
     
         $fields = $request->validate([
             "name" => "required|string|max:255",
             "email" => "required|email|unique:users",
             "password" => "required|min:8",
-            "companyName" => "required|string|max:255",
-            "companyEmail" => "required|email|unique:users",
             "role" => "required"
         ]);
-        $responseData = $this->authService->createUser($fields);
-        return response()->json($responseData, $responseData->success ? 200:400);
+        $responseData = $this->authService->createUser($fields, $authUserCompany);
+        return response()->json($responseData, $responseData['success'] ? 200:400);
     }
 
     public function registerAdminUser(Request $request)
@@ -39,11 +44,11 @@ class AuthController extends Controller
             "email" => "required|email|unique:users",
             "password" => "required|min:8",
             "companyName" => "required|string|max:255",
-            "companyEmail" => "required|email|unique:users",
+            "companyEmail" => "required|email",
             "role" => "required"
         ]);
         $responseData = $this->authService->createAdminUser($fields);
-        return response()->json($responseData, $responseData->success ? 200:400);
+        return response()->json($responseData, $responseData['success'] ? 200:400);
     }
 
     public function login(Request $request)
