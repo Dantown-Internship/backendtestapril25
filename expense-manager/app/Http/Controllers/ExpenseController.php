@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -44,31 +45,58 @@ class ExpenseController extends Controller
 
     //update expense
     public function update(Request $request, $id)
-    {
-        $expense = Expense::findOrFail($id);
-
-        $request->validate([
-            'title' => 'required',
-            'amount' => 'required|numeric',
-            'category' => 'required',
-        ]);
-
-        $expense->update([
-            'title' => $request->title,
-            'amount' => $request->amount,
-            'category' => $request->category,
-        ]);
-
-        return response()->json(['expense' => $expense]);
+{
+    
+    $expense = Expense::find($id);
+    if (!$expense) {
+        return response()->json(['message' => 'Expense not found'], 404);
     }
 
-    public function destroy($id)
-    {
-        $expense = Expense::findOrFail($id);
-        $expense->delete();
+    $oldData = $expense->toArray();
+    $data = $request->only(['title', 'amount', 'category', 'date']);
+    $expense->update($data);
 
-        return response()->json(['message' => 'Expense deleted']);
+    $newData = $expense->fresh()->toArray();
+
+    AuditLog::create([
+        'user_id' => auth()->id(),
+        'company_id' => auth()->user()->company_id,
+        'action' => 'update',
+        'changes' => [
+            'before' => $oldData,
+            'after' => $newData,
+        ],
+    ]);
+
+    return response()->json(['expense' => $expense]);
+}
+
+
+public function destroy($id)
+{
+    $expense = Expense::find($id);
+
+    if (!$expense) {
+        return response()->json(['message' => 'Expense not found'], 404);
     }
+
+    $oldData = $expense->toArray();
+
+    $expense->delete();
+
+    AuditLog::create([
+        'user_id' => auth()->id(),
+        'company_id' => auth()->user()->company_id,
+        'action' => 'delete',
+        'changes' => [
+            'before' => $oldData,
+            'after' => null,
+        ],
+    ]);
+
+    return response()->json(['message' => 'Expense deleted']);
+}
+
 
 
 }

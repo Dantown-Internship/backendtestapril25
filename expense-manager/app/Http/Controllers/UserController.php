@@ -44,7 +44,11 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])],
         ]);
 
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+       
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
         $user->role = $request->role;
         $user->save();
 
