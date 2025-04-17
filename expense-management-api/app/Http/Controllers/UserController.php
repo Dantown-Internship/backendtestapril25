@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = Cache::remember('users_all', now()->addMinutes(10), function () {
-            return User::paginate(10);
+        $userCompany = $request->authenticated_user->company_id;
+        $users = Cache::remember('users_all', now()->addMinutes(10), function () use ($userCompany) {
+            return User::where('company_id', $userCompany)->paginate(10);
         });
         
         return response()->json([

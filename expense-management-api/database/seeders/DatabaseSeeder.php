@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
+use App\Models\Expense;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +15,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+         // Create 5 companies
+        Company::factory(5)->create()->each(function ($company) {
+            // Create 5 users for each company
+            $users = User::factory(5)->make(['company_id' => $company->id]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+            // Assign roles: 1 Admin, 1 Manager, and the rest Employees
+            $users[0]->role = 'Admin';
+            $users[1]->role = 'Manager';
+            foreach ($users->slice(2) as $user) {
+                $user->role = 'Employee';
+            }
+
+            // Save users to the database
+            $users->each(function ($user) use ($company) {
+                $user->save();
+
+                // Create 10 expenses for each user
+                Expense::factory(10)->create([
+                    'user_id' => $user->id,
+                    'company_id' => $company->id,
+                ]);
+            });
+        });
     }
 }
