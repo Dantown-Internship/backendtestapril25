@@ -9,4 +9,4 @@ use Illuminate\Support\Facades\Schedule;
 //     $this->comment(Inspiring::quote());
 // })->purpose('Display an inspiring quote');
 
-Schedule::job(new SendWeeklyExpenseReport)->everyFiveMinutes();
+Schedule::job(new SendWeeklyExpenseReport)->weekly();

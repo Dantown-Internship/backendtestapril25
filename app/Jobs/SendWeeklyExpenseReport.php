@@ -34,7 +34,7 @@ class SendWeeklyExpenseReport implements ShouldQueue
         foreach ($admins as $admin) {
             // Fetch only expenses for the admin's company in the previous week
             $expenses = Expense::where('company_id', $admin->company_id)
-                ->whereBetween('date', [$from, $to])
+                ->whereBetween('created_at', [$from, $to])
                 ->get();
 
             // Only send email if there are expenses

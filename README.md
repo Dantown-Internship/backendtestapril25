@@ -1,66 +1,277 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💾 Mid-Level Technical Test – Multi-Tenant SaaS-Based Expense Management API by [Bowofade Oyerinde](https://bowofade.com)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Welcome to the Multi-Tenant SaaS Expense Management API built with **Laravel 12**. This README will guide you through installing, configuring, and running the application, including database setup, caching, queue processing, and scheduled tasks.
 
-## About Laravel
+I built this project as part of a technical interview to demonstrate my understanding of scalable architecture, multi-tenancy, and clean Laravel practices.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🔧 Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   **PHP 8.2+**
+-   **Composer**
+-   **MySQL 5.7+**
+-   **Redis** (optional, recommended for caching & queue)
+-   **SMTP** credentials for email notifications
+-   **Git**
 
-## Learning Laravel
+> **Note:** If you don't have Redis installed, you may use any supported cache/queue driver (e.g., `file`, `database`).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 📅 Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone the repository**
 
-## Laravel Sponsors
+    ```bash
+    https://github.com/Dantown-Internship/backendtestapril25.git Dantown
+    cd Dantown
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Install dependencies**
 
-### Premium Partners
+    ```bash
+    composer install
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3. **Environment setup**
 
-## Contributing
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Configure `.env`**
 
-## Code of Conduct
+    ```dotenv
+    APP_ENV=local
+    APP_DEBUG=true
+    APP_URL=http://localhost:8000
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    # Database
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=expense_db
+    DB_USERNAME=root
+    DB_PASSWORD=
 
-## Security Vulnerabilities
+    # Cache & Queue
+    CACHE_DRIVER=redis        # or file, database, etc.
+    QUEUE_CONNECTION=redis    # or database
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    # Redis (if used)
+    REDIS_HOST=127.0.0.1
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
 
-## License
+    # Mail
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.mailtrap.io
+    MAIL_PORT=2525
+    MAIL_USERNAME=your_username
+    MAIL_PASSWORD=your_password
+    MAIL_ENCRYPTION=null
+    MAIL_FROM_ADDRESS=hello@example.com
+    MAIL_FROM_NAME="Expense API"
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🗂️ Database Setup (Migration & Seeder)
+
+1. **Create the database**
+
+    ```sql
+    CREATE DATABASE expense_db;
+    ```
+
+2. **Run migration and seeders immediately**
+
+    ```bash
+    php artisan migrate --seed
+    ```
+
+    This step will:
+
+    - Migrate the tables
+    - Seed **two companies** and their respective **admin users**:
+        - Email: `admin@company1.com`, `admin@company2.com`
+        - Password: `password`
+
+    > Be sure to replace these emails with functional ones in `DatabaseSeeder.php` to receive the scheduled report emails.
+
+---
+
+## ⚙️ Caching
+
+-   I used Redis to cache frequently accessed data for performance.
+-   Cache is **automatically invalidated** on create, update, and delete.
+-   You can configure the cache driver in `.env`:
+    ```dotenv
+    CACHE_DRIVER=file
+    ```
+
+---
+
+## 🧵 Queue & Scheduler
+
+-   **Queue Driver**: Controlled via `QUEUE_CONNECTION`.
+-   Run the queue worker:
+
+    ```bash
+    php artisan queue:work
+    ```
+
+-   **Scheduled Tasks**:
+    -   I configured a Laravel `schedule:run` job to send **weekly expense reports** to company admins.
+
+### 🔄 Schedule Setup & Implementation Details
+
+To run the weekly expense report scheduler, add this to your server's crontab:
+
+```cron
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+> You can adjust the schedule to run every minute for testing purposes inside `App\Console\Kernel.php`.
+
+The schedule is defined in `console.php`.
+
+---
+
+## 🔐 Authentication & RBAC
+
+-   Used **Laravel Sanctum** for API token authentication.
+-   Implemented **Role-Based Access Control (RBAC)** via policies:
+
+    -   **Admin**: Full access to users and expenses
+    -   **Manager**: Manage expenses
+    -   **Employee**: View and create expenses
+
+-   I used **Global Scopes and Traits** to:
+    -   Filter all fetched data based on both the authenticated user **and their company ID**.
+    -   Automatically attach the authenticated user's `company_id` to any resource being created.
+
+---
+
+## 📜 API Versioning & Routes
+
+All routes are versioned with the prefix `/api/v1`.
+I created a dedicated `routes/v1` file to organize versioned APIs cleanly, ensuring maintainability and scalability for future versions like `v2`.
+
+---
+
+## 📜 API Endpoints
+
+### Authentication
+
+| Method | URI           | Description       |
+| ------ | ------------- | ----------------- |
+| POST   | /api/v1/login | Authenticate user |
+
+> 🛡️ **Why No Register Endpoint?**
+>
+> The register endpoint was intentionally omitted for security reasons:
+>
+> **Security First Approach:**
+>
+> -   In a multi-tenant SaaS application, allowing public registration of admin accounts creates security vulnerabilities
+> -   Anyone could register as an admin and create a company
+>
+> **Proper Implementation Should Have:**
+>
+> -   A super-admin endpoint
+> -   Controlled admin account creation
+>
+> **Current Implementation:**
+>
+> -   Uses database seeding to create initial companies and admin accounts
+> -   Admins can then create other users within their company
+> -   This ensures controlled access and proper data isolation
+
+### Test Credentials
+
+-   Email: `admin@company1.com`
+-   Email: `admin@company2.com`
+-   Password: `password`
+
+### Expenses
+
+| Method | URI                   | Role            | Description                           |
+| ------ | --------------------- | --------------- | ------------------------------------- |
+| GET    | /api/v1/expenses      | Authenticated   | List expenses (paginated, searchable) |
+| POST   | /api/v1/expenses      | Employee+       | Create expense                        |
+| PUT    | /api/v1/expenses/{id} | Manager+, Admin | Update expense                        |
+| DELETE | /api/v1/expenses/{id} | Admin           | Delete expense                        |
+
+### Users
+
+| Method | URI                | Role  | Description      |
+| ------ | ------------------ | ----- | ---------------- |
+| GET    | /api/v1/users      | Admin | List users       |
+| POST   | /api/v1/users      | Admin | Add new user     |
+| PUT    | /api/v1/users/{id} | Admin | Update user role |
+
+---
+
+## 📊 Response Format
+
+All responses follow a standardized structure using a Trait I created:
+
+```json
+// Success
+{
+  "success": true,
+  "data": { /* response data */ },
+  "message": "Operation successful."
+}
+
+// Error
+{
+  "success": false,
+  "message": "Unauthorized access.",
+  "errors": { /* optional validation errors */ }
+}
+```
+
+Proper HTTP status codes are returned, such as `200`, `201`, `403`, `422`, etc.
+
+---
+
+## 🧾 Audit Logs
+
+-   Logs every update/delete action on expenses.
+-   Captures `user_id`, `company_id`, the action, and before/after change details.
+
+---
+
+## 🚀 Running the App
+
+```bash
+php artisan serve
+```
+
+-   Visit: [http://localhost:8000](http://localhost:8000)
+-   Use seeded credentials to log in.
+-   Make sure queue worker and schedule runner are active to see full functionality.
+
+---
+
+## 🆘 Troubleshooting
+
+-   **Redis not installed**: Use `file` or `database` drivers and run:
+
+    ```bash
+    php artisan config:clear && php artisan cache:clear
+    ```
+
+-   **Email not sent**: Check your SMTP settings and try with Mailtrap or another test service.
+
+-   **403 errors**: Confirm that your user has the correct role.
+
+-   **No scheduled emails**: Ensure cron is running and email addresses are valid.
+
+---
+
+Thank you for reviewing my project. I built this with best practices in mind and would love to discuss any part of the implementation!
