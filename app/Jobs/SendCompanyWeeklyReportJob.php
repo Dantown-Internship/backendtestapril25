@@ -43,17 +43,8 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
         $totalExpense = $expenseQuery
             ->sum('amount');
 
-        $expenseByCategory = $expenseQuery
-            ->select('category', DB::raw('SUM(amount) as total'))
-            ->groupBy('category')
-            ->get()
-            ->map(fn ($item) => [
-                'category' => $item->category,
-                'total' => $item->total,
-            ]);
-
-        $topSpenders = $expenseQuery->
-            select('user_id', DB::raw('SUM(amount) as total'))
+        $topSpenders = $expenseQuery
+            ->select('user_id', DB::raw('SUM(amount) as total'))
             ->groupBy('user_id')
             ->with('user:id,name')
             ->orderByDesc('total')
@@ -64,9 +55,19 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
                 'total' => $item->total,
             ]);
 
+        $expenseByCategory = $expenseQuery
+            ->select('category', DB::raw('SUM(amount) as total'))
+            ->groupBy('category')
+            ->get()
+            ->map(fn ($item) => [
+                'category' => $item->category,
+                'total' => $item->total,
+            ]);
+
         $sortedExpenses = collect(ExpenseCategory::cases())
-            ->mapWithKeys(function (ExpenseCategory $category) use($expenseByCategory)  {
-                $expense = $expenseByCategory->where('category', $category) ->first();
+            ->mapWithKeys(function (ExpenseCategory $category) use ($expenseByCategory) {
+                $expense = $expenseByCategory->where('category', $category)->first();
+
                 return [
                     $category->label() => $expense['total'] ?? 0,
                 ];

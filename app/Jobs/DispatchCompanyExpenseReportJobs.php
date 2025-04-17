@@ -29,7 +29,7 @@ class DispatchCompanyExpenseReportJobs implements ShouldQueue
     {
         $batch = Bus::batch([])->name('Weekly Reports to Companies')->dispatch(); // empty start
 
-        Company::chunk(10000, function ($companies) use($batch) {
+        Company::chunk(10000, function ($companies) use ($batch) {
             $batchedJobs = collect();
             $companies->each(function ($company) use ($batchedJobs) {
                 $batchedJobs->push(new SendCompanyWeeklyReportJob($company));
@@ -38,8 +38,6 @@ class DispatchCompanyExpenseReportJobs implements ShouldQueue
                 $batch->add($chunk);
             });
         });
-
-
 
     }
 }

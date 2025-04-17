@@ -22,8 +22,7 @@ class WeeklyExpenseReportNotification extends Notification implements ShouldQueu
         public array $topSpenders,
         public Carbon $startDate,
         public Carbon $endDate,
-    )
-    {
+    ) {
         //
     }
 
@@ -42,7 +41,7 @@ class WeeklyExpenseReportNotification extends Notification implements ShouldQueu
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $message = (new MailMessage)
+        return (new MailMessage)
             ->subject('Weekly Expense Report')
             ->markdown('emails.weekly-report', [
                 'user' => $notifiable,
@@ -53,7 +52,6 @@ class WeeklyExpenseReportNotification extends Notification implements ShouldQueu
                 'startDate' => $this->startDate,
                 'endDate' => $this->endDate,
             ]);
-        return $message;
     }
 
     /**
