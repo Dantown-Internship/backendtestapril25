@@ -18,6 +18,7 @@ class UserResource extends JsonResource
             'id' => $this->uuid,
             'name' => $this->name,
             'email' => $this->email,
+            'role' => $this->role->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'company' => new CompanyResource($this->whenLoaded('company')),

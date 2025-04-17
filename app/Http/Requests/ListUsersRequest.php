@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ListUsersRequest extends FormRequest
 {
@@ -24,6 +25,8 @@ class ListUsersRequest extends FormRequest
     {
         return [
             'per_page' => ['nullable', 'integer'],
+            'search' => ['nullable', 'string'],
+            'role' => ['nullable', Rule::enum(Role::class)]
         ];
     }
 }
