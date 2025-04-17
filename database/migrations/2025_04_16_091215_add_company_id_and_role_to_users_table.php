@@ -24,6 +24,7 @@ return new class extends Migration
             // $table->index('company_id');
 
             $table->index(['company_id', 'role'], 'company_role_index');
+            $table->index(['company_id', 'uuid']);
         });
     }
 

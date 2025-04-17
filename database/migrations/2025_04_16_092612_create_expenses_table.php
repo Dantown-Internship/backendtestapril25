@@ -25,6 +25,8 @@ return new class extends Migration
             $table->decimal('amount', 12, 2);
             $table->string('category');
             $table->timestamps();
+
+            $table->index(['company_id', 'uuid']);
         });
     }
 

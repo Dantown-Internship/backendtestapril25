@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('created_at');
 
             $table->index(['company_id', 'user_id']);
+            $table->index(['company_id', 'uuid']);
         });
     }
 
