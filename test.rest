@@ -2,7 +2,7 @@
 @contentType = application/json
 
 // Store tokens and variables for use in multiple requests
-@authToken = "4|UPRql5qSjocdkyPD0lD27Lhpc201RT7jYteFQ0Tq03e429d6"
+@authToken = 4|UPRql5qSjocdkyPD0lD27Lhpc201RT7jYteFQ0Tq03e429d6
 @userId = 1
 @expenseId =
 
@@ -46,7 +46,7 @@ Accept: {{contentType}}
 
 ### Get company details
 GET {{baseUrl}}/company
-Authorization: Bearer 4|UPRql5qSjocdkyPD0lD27Lhpc201RT7jYteFQ0Tq03e429d6
+Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 
 ### Update company details

@@ -42,8 +42,8 @@ class CompanyController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:companies,email,' . $company->id,
+            'name' => 'string|max:255',
+            'email' => 'email|unique:companies,email,' . $company->id,
         ]);
 
         $company->update($request->only('name', 'email'));
