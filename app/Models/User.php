@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'company_id',
+        'role',
     ];
 
     /**
@@ -48,6 +51,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => RoleEnum::class,
         ];
     }
 
@@ -59,5 +63,37 @@ class User extends Authenticatable
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * Check if the user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === RoleEnum::ADMIN;
+    }
+
+    /**
+     * Check if the user is a manager
+     */
+    public function isManager(): bool
+    {
+        return $this->role === RoleEnum::MANAGER;
+    }
+
+    /**
+     * Check if the user is an employee
+     */
+    public function isEmployee(): bool
+    {
+        return $this->role === RoleEnum::EMPLOYEE;
+    }
+
+    /**
+     * Check if user belongs to the same company as another user
+     */
+    public function isSameCompanyAs(User $user): bool
+    {
+        return $this->company_id === $user->company_id;
     }
 }

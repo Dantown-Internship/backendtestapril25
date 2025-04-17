@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('company_id')->constrained('companies');
             $table->foreignUuid('user_id')->constrained('users');
-            $table->string('title');
-            $table->decimal('amount', 10, 2);
-            $table->text('category');
-            $table->timestamps();
-            $table->index('company_id');
-            $table->index('user_id');
+            $table->foreignUuid('company_id')->constrained('companies');
+            $table->string('action');
+            $table->json('changes')->nullable();
+            $table->timestamp('created_at');
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('logs');
     }
 };

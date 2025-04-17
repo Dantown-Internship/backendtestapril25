@@ -2,28 +2,18 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Enums\RoleEnum;
-use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
         if (!Auth::attempt($request->only('email', 'password'))) {
-           return $this->error('Invalid login credentials');
+            return $this->unauthorized('Invalid login credentials');
         }
-        if(Auth::user()->role != RoleEnum::ADMIN->value) {
-            return $this->unauthorized();
-        }
+        
         $user = Auth::user();
         $token = $user->createToken('api-token')->plainTextToken;
 
