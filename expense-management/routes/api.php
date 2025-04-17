@@ -31,8 +31,9 @@ Route::prefix('user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/', [UserController::class, 'create']);
     
     Route::put('/{user}', [UserController::class, 'update'])->middleware('can:update,user');
+
+    Route::get('/audit-log', [AuditLogController::class, 'index']);
 });
-Route::get('/audit-log', [AuditLogController::class, 'index']);
 
 
 Route::get('/unauthorised_response', function () {
