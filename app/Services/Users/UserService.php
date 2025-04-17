@@ -5,7 +5,6 @@ namespace App\Services\Users;
 use App\Models\User;
 use App\Contracts\UserInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Hash;
 use App\Services\Auth\RoleService;
 use App\Queries\AuthQuery;
 use Illuminate\Support\Facades\Cache;
