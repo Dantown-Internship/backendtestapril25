@@ -25,7 +25,7 @@ class UserRegister extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'company_id' => 'required|string|exists:companies,id',
+            'company_id' => 'required|exists:companies,id',
             'password' => 'required|string|min:6',
             'role'=> 'required'
         ];
