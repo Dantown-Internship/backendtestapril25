@@ -22,7 +22,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
             $table->string('title');
-            $table->decimal('amount', 10, 2);
+            $table->decimal('amount', 12, 2);
             $table->string('category');
             $table->timestamps();
         });
