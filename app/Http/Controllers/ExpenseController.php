@@ -6,6 +6,7 @@ use App\Http\Requests\Expenses\StoreRequest;
 use App\Http\Requests\Expenses\UpdateRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 
 class ExpenseController extends Controller
@@ -16,17 +17,21 @@ class ExpenseController extends Controller
     public function index()
     {
         $term = request('search', '');
-        $expenses = Expense::with('user')->companyExpenses(auth()->user()->company_id)
-            ->search($term)
-            ->paginate();
 
-        return ExpenseResource::collection($expenses)
-            ->additional([
-                'meta' => [
-                    'message' => 'Expenses retrieved successfully',
-                    'status' => 200,
-                ],
-            ]);
+        $key = 'expenses_' . auth()->user()->company_id . '_' . $term;
+
+        return Cache::remember($key, 60, function () use ($term) {
+            $expenses = Expense::with('user')->companyExpenses(auth()->user()->company_id)
+                ->search($term)
+                ->paginate();
+            return ExpenseResource::collection($expenses)
+                ->additional([
+                    'meta' => [
+                        'message' => 'Expenses retrieved successfully',
+                        'status' => 200,
+                    ],
+                ]);
+        });
     }
 
     /**
