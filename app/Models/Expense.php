@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ExpenseCategory;
 use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,10 @@ class Expense extends Model
         'title',
         'amount',
         'category',
+    ];
+
+    protected $casts = [
+        'category' => ExpenseCategory::class,
     ];
 
     public function amount(): Attribute
