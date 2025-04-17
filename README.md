@@ -292,3 +292,29 @@ Content-Type: application/json
     "role": "manager"
 }
 ```
+
+## Running Tests
+
+The project includes a suite of automated tests to ensure the functionality and reliability of the system. We use PHPUnit for testing.
+
+### Prerequisites
+
+- Ensure that you have PHPUnit installed. You can install it via Composer if it's not already included in your dependencies:
+  ```bash
+  composer require --dev phpunit/phpunit
+  ```
+
+### Running Tests
+
+To run the tests, use the following command:
+```bash
+php artisan test
+```
+
+This command will execute all the tests in the `tests` directory.
+
+### Writing Tests
+
+- Tests are located in the `tests` directory.
+- You can add new test cases by creating new files in this directory.
+- Follow the existing test structure and naming conventions for consistency.
