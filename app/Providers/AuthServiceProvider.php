@@ -26,7 +26,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register gates
-        Gate::define('manage-users', fn (User $user) => $user->isAdmin());
+        
     }
 }
