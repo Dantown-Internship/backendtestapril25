@@ -12,6 +12,11 @@ class UserService
         return $user->company->users()->orderBy('name', 'asc');
     }
 
+    public function getAdmins()
+    {
+        return User::where('role', 'Admin')->with('company')->orderBy('company_id', 'asc')->get();
+    }
+
     public function createUser(User $admin, array $data)
     {
         $data['company_id'] = $admin->company_id;
