@@ -16,33 +16,46 @@ use Laravel\Sanctum\TransientToken;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a new user in the admin's company
+     /**
+     * Register a new company and admin user
      */
     public function register(Request $request)
     {
-        $admin = $request->user();
-
         $request->validate([
+            'company_name' => 'required|string|max:255',
+            'company_email' => 'required|email|unique:companies,email',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => ['sometimes', 'string', Rule::in(UserRole::toArray())],
         ]);
 
-        // Create user in the admin's company
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'company_id' => $admin->company_id,
-            'role' => $request->role ?? UserRole::EMPLOYEE->value,
-        ]);
+        // Use a transaction to ensure both company and user are created or none
+        return DB::transaction(function () use ($request) {
+            // Create company
+            $company = Company::create([
+                'name' => $request->company_name,
+                'email' => $request->company_email,
+            ]);
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-        ], 201);
+            // Create admin user for the company
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'company_id' => $company->id,
+                'role' => UserRole::ADMIN->value,
+            ]);
+
+            // Generate token for the user
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Company and admin user registered successfully',
+                'user' => $user,
+                'company' => $company,
+                'token' => $token,
+            ], 201);
+        });
     }
 
     /**
@@ -72,6 +85,7 @@ class AuthController extends Controller
             'token' => $token,
         ]);
     }
+
 
     /**
      * Logout user (revoke token)
