@@ -10,6 +10,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+       
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -18,6 +19,8 @@ class AuthController extends Controller
             'role' => 'required|in:Admin,Manager,Employee',
         ]);
 
+
+          
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -25,6 +28,8 @@ class AuthController extends Controller
             'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
+
+        
 
         return response()->json(['user' => $user], 201);
     }
