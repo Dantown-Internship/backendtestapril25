@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListUsersRequest;
 use App\Http\Requests\StoreUserRequest;
@@ -19,9 +20,11 @@ class UserController extends Controller
     {
         $perPage = $request->validated('per_page', 10) ?? 10;
         $search = $request->validated('search');
+        $role = Role::tryFrom($request->validated('role'));
         $users = User::when(
             ! blank($search),
             fn (Builder $builder) => $builder->where('name', 'LIKE', "%$search%"))
+            ->when(! blank($role), fn(Builder $builder) => $builder->where('role', $role))
             ->paginate($perPage)
             ->withQueryString();
 
@@ -46,7 +49,8 @@ class UserController extends Controller
 
         return $this->successResponse(
             message: 'User created successfully',
-            data: new UserResource($user)
+            data: new UserResource($user),
+            statusCode: 201
         );
     }
 
