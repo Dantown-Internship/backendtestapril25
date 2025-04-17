@@ -1,147 +1,101 @@
-# 🧾 Mid-Level Technical Test – Multi-Tenant SaaS-Based Expense Management API
+# 🧾 Multi-Tenant Expense Management API
 
-Welcome! This is a technical test for laravel backend developers.
-
-Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-based Expense Management System**, where multiple companies can manage their expenses independently. Please follow the instructions below and submit your solution as described.
+A secure, scalable, multi-tenant Expense Management API built with Laravel 10+. Supports company-specific user management, role-based access control (RBAC), expense tracking, audit logging, job queues (Redis), and scheduled weekly reports.
 
 ---
 
-## 🚀 Project Requirements
+## 🚀 Features
 
-### ✅ Key Features to Implement
-
-- **Multi-Tenant Support** – Companies should have isolated data.
-- **Secure API Authentication** – Use Laravel Sanctum.
-- **Role-Based Access Control (RBAC)** – Admins, Managers, Employees.
-- **Advanced Query Optimization** – Indexing, Eager Loading.
-- **Background Job Processing** – Laravel Queues.
-- **Audit Logging** – Track changes to expenses.
-
----
-
-## 🗂️ Tasks Breakdown
-
-### 🏗️ Task 1: Multi-Tenant Database Structure (Migrations & Models)
-
-#### Companies Table
-- Fields: `id`, `name`, `email`, `created_at`, `updated_at`
-
-#### Users Table (Modified)
-- Add `company_id` (Foreign Key)
-- Add `role` (Enum: `["Admin", "Manager", "Employee"]`)
-
-#### Expenses Table
-- Fields: `id`, `company_id`, `user_id`, `title`, `amount`, `category`, `created_at`, `updated_at`
-- Add an index on `company_id` for performance
-
-#### Relationships
-- A **Company** has many **Users**
-- A **User** belongs to a **Company**
-- A **User** has many **Expenses**
+- 🔐 **API Authentication** using Laravel Sanctum
+- 🏢 **Multi-Tenant Architecture** — each user belongs to a company
+- 👥 **Role-Based Access Control (RBAC)** — Admin, Manager, Employee
+- 📊 **Expense Management** — create, update, delete, and view expenses per company
+- 📜 **Audit Logging** — logs updates for accountability
+- ⏰ **Queued Jobs** — Redis-powered queue for background tasks
+- 🗓️ **Scheduled Tasks** — weekly expense report dispatch to company admins
+- 📬 **Email Notifications** — admin reports via Mailpit (or configured SMTP)
+- ⚙️ **API Testing** — Postman collection included for easy testing
 
 ---
 
-### 🔐 Task 2: API Authentication & RBAC
+## 📦 Tech Stack
 
-- Use **Laravel Sanctum** for token-based authentication
-- Implement Role-Based Access Control:
-  - **Admin**: Manage users & expenses
-  - **Manager**: Manage expenses (cannot delete users)
-  - **Employee**: View and create expenses
-- Ensure users **cannot access data** from other companies
+- **Laravel 10+**
+- **Sanctum** for API authentication
+- **MySQL** for data storage
+- **Redis** for queue management
+- **Mailpit** (or any SMTP) for testing emails
+- **Postman** for API testing
 
 ---
 
-### 🧾 Task 3: API Endpoints
+## 📂 Project Structure
+app/ ├── Http/ │ └── Controllers/ │ ├── Api/ │ │ └── AuthController.php │ │ └── ExpenseController.php │ │ └── ... ├── Jobs/ │ └── SendWeeklyExpenseReport.php ├── Models/ │ └── Company.php │ └── Expense.php │ └── User.php │ └── AuditLog.php └── ... routes/ └── api.php
 
-#### Authentication
-- `POST /api/register` → Admin only
-- `POST /api/login`
 
-#### Expense Management
+## ⚙️ Installation
+
+```bash
+git clone https://github.com/yourname/multi-tenant-expense-management.git
+cd multi-tenant-expense-management
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+```
+
+### Start Redis
+```bash```
+```
+brew services start redis
+```
+
+### Run Queue Worker
+In your Terminal, run
+
+```bash```
+```
+php artisan schedule:run
+```
+
+## 🔑 API Authentication (Sanctum)
+- Login via /api/login to receive a token
+- Pass token in Authorization header as Bearer {token} for protected routes
+
+## 📗 API Endpoints Overview
+Method	Endpoint	Description
+- `POST	/api/login` →	User login
+- `POST	/api/register` →	Admin registers new user
+- `GET /api/users` → List users (Admins only)
+- `POST /api/users` → Add user (Admins only)
+- `PUT /api/users/{id}` → Update user role (Admins only)
 - `GET /api/expenses` → List (by company, paginated, searchable by title/category)
 - `POST /api/expenses` → Create (restricted to logged-in user’s company)
 - `PUT /api/expenses/{id}` → Update (Managers & Admins only)
 - `DELETE /api/expenses/{id}` → Delete (Admins only)
 
-#### User Management
-- `GET /api/users` → List users (Admins only)
-- `POST /api/users` → Add user (Admins only)
-- `PUT /api/users/{id}` → Update user role (Admins only)
 
----
+## 📊 Audit Logging
+Every expense update logs:
+- old values
+- new values
+- user_id
+- company_id
+- action (e.g. update)
 
-### ⚙️ Task 4: Optimization & Performance
+Stored in audit_logs table.
 
-- Use **Eager Loading** (`with()`) to avoid N+1 queries
-- Add **indexes** on `company_id` and `user_id` in the expenses table
-- Implement **Redis caching** for frequently accessed queries
 
----
+## 📈 Weekly Report Job
+Fetches expenses for each company from past 7 days
+- Calculates total
+- Emails report to all Admins in the company
+- Runs via Laravel Scheduler
 
-### 🧵 Task 5: Background Job Processing
 
-- Use Laravel Queues (with `database` or `redis` driver)
-- Create a **weekly job** that sends an expense report to all Admins
-- Use Laravel’s **scheduler** (`schedule:run`) to run the job
+## 📝 License
+MIT
 
----
-
-### 🕵️‍♀️ Task 6: Audit Logs
-
-#### Audit Logs Table
-- Fields: `id`, `user_id`, `company_id`, `action`, `changes`, `created_at`
-
-#### Requirements
-- Log every **update/delete** action on expenses
-- Store the **old and new values** of each expense before update
-
----
-
-## 🛠️ Tech Stack
-
-- Laravel 10+
-- MySQL or PostgreSQL
-- Laravel Sanctum
-- Redis (optional but recommended)
-- Laravel Queues & Scheduler
-
----
-
-## 📬 How to Submit
-
-1. **Fork** this repository.
-2. **Clone** the forked repository to your local machine.
-3. Create a new **branch** using your full name (e.g., `john-doe`):
-
-   ```bash
-   git checkout -b john-doe
-4. Complete the tasks outlined above.
-5. Push your branch to your forked repository:
-
-   git push origin your-branch-name
-
-6. Create a Pull Request (PR) to the original repository’s `main` branch.
-
-7. In the PR description, please include:
-   - Your full name
-   - Any notes or assumptions made
-   - Features you implemented or skipped (with reasons)
-   - Any instructions for testing (if applicable)
-
----
-
-## ✅ Evaluation Criteria
-
-- Correctness & completeness of features  
-- Code structure and readability  
-- Proper use of Laravel best practices  
-- Security and role enforcement  
-- Performance optimizations  
-- Bonus: Tests, Redis integration, and proper API responses  
-
----
-
-Good luck! 🍀 Feel free to reach out if you need clarification on any part of the task.
-
+## 👨‍💻 Author
+Jonathan Audu @https://github.com/JonathanAudu
 
