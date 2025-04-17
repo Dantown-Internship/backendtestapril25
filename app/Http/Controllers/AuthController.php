@@ -16,11 +16,11 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $data['company_id'] = Auth::user()->company_id;
+        $data['role'] = 'Admin';
 
-        $newUser = $userService->createUser($data);
+        $newUser = $userService->createUser($request->user(), $data);
 
-        return successJsonResponse('User registered successfully.', $newUser, 201);
+        return successJsonResponse('Admin registered successfully.', $newUser, 201);
     }
 
     public function login(LoginRequest $request, UserService $userService)

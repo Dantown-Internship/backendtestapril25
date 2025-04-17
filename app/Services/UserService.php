@@ -12,8 +12,9 @@ class UserService
         return $user->company->users()->orderBy('name', 'asc');
     }
 
-    public function createUser(array $data)
+    public function createUser(User $admin, array $data)
     {
+        $data['company_id'] = $admin->company_id;
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);

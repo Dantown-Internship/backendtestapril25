@@ -6,17 +6,25 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRoleRequest;
 use App\Models\User;
 use App\Services\UserService;
+use App\Traits\CacheHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    use CacheHandler;
+
     public function index(Request $request, UserService $userService)
     {
         Gate::authorize('viewAny', User::class);
 
-        $users = $userService->getUsersByCompany($request->user())
-            ->paginate(10);
+        $user = $request->user();
+        $baseKey = 'users:company:' . $user->company_id;
+        $cacheKey = $this->makeCacheKey($baseKey, []);
+
+        $users = $this->cache($cacheKey, function () use ($userService, $user) {
+            return $userService->getUsersByCompany($user)->paginate(10);
+        });
 
         return successJsonResponse('Users retrieved successfully.', $users);
     }
@@ -27,7 +35,8 @@ class UserController extends Controller
 
         $data = $request->validated();
 
-        $user = $userService->createUser($data);
+        $admin = $request->user();
+        $user = $userService->createUser($admin, $data);
 
         return successJsonResponse('User created successfully.', ['user' => $user]);
     }

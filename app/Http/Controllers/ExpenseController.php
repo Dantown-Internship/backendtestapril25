@@ -6,18 +6,26 @@ use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Models\Expense;
 use App\Services\ExpenseService;
+use App\Traits\CacheHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ExpenseController extends Controller
 {
+    use CacheHandler;
+
     public function index(Request $request, ExpenseService $expenseService)
     {
         $user = $request->user();
 
-        $expenses = $expenseService->getCompanyExpenses($user, $request->all());
+        $filters = $request->all();
 
-        $expenses = $expenses->paginate(10);
+        $baseKey = 'expenses:company:' . $user->company_id;
+        $cacheKey = $this->makeCacheKey($baseKey, $filters);
+
+        $expenses = $this->cache($cacheKey, function () use ($expenseService, $user, $filters) {
+            return $expenseService->getCompanyExpenses($user, $filters)->paginate(10);
+        });
 
         return successJsonResponse('Expenses retrieved successfully.', $expenses);
     }
