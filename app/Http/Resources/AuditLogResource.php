@@ -19,7 +19,7 @@ class AuditLogResource extends JsonResource
             'action' => $this->action,
             'changes' => $this->changes,
             'created_at' => $this->created_at,
-            'user' => new UserResource($this->whenLoaded('user'))
+            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

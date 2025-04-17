@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\Role;
-use App\Exceptions\CustomException;
 use App\Http\Controllers\Concerns\HasApiResponse;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,6 +13,7 @@ class UpdateUserRequest extends FormRequest
     use HasApiResponse;
 
     public ?User $userToBeUpdated = null;
+
     /**
      * Determine if the user is authorized to make this request.
      */

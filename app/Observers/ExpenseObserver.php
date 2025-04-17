@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Casts\AuditLogChanges;
 use App\DataTransferObjects\AuditLogChangesDto;
 use App\Enums\AuditLogAction;
 use App\Models\AuditLog;

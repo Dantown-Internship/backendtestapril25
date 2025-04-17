@@ -11,7 +11,7 @@ class CustomException extends Exception
 
     public $errors = [];
 
-    public function __construct(string $message = "", array $errors = [], int $statusCode = 400)
+    public function __construct(string $message = '', array $errors = [], int $statusCode = 400)
     {
         $this->errors = $errors;
         parent::__construct($message, $statusCode);

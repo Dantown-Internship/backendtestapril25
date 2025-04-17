@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ListAuditLogsRequest;
 use App\Http\Resources\AuditLogResource;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class AuditLogController extends Controller

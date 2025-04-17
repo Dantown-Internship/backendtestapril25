@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 class UpdateExpenseRequest extends FormRequest
 {
     public Expense $expense;
+
     /**
      * Determine if the user is authorized to make this request.
      */

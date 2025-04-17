@@ -32,14 +32,14 @@ class ListAuditLogsRequest extends FormRequest
                 'nullable',
                 'date_format:Y-m-d',
                 'before_or_equal:to_date',
-                'before_or_equal:today'
+                'before_or_equal:today',
             ],
             'to_date' => [
                 'sometimes',
                 'nullable',
                 'date_format:Y-m-d',
                 'after_or_equal:from_date',
-                'before_or_equal:today'
+                'before_or_equal:today',
             ],
         ];
     }

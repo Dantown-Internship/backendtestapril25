@@ -13,12 +13,13 @@ use Symfony\Component\HttpFoundation\Response;
 class RoleMiddleware
 {
     use HasApiResponse;
+
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next,  ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $allowedRoles = [];
         foreach ($roles as $role) {
@@ -30,7 +31,7 @@ class RoleMiddleware
         }
 
         throw_if(
-            !$request->user() || !in_array($request->user()->role, $allowedRoles),
+            ! $request->user() || ! in_array($request->user()->role, $allowedRoles),
             new AuthorizationException('You do not have the required role to access this resource.')
         );
 

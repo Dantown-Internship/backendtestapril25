@@ -19,7 +19,7 @@ class AuthenticatedSessionController extends Controller
         $user = auth()->user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->successResponse("Login successful", [
+        return $this->successResponse('Login successful', [
             'user' => new UserResource($user->load('company')),
             'token' => [
                 'access_token' => $token,

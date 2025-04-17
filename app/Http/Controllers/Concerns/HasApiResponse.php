@@ -8,14 +8,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 trait HasApiResponse
 {
-    protected function successResponse(string $message = 'Success', Responsable | array | null $data = null,  int $statusCode = 200)
+    protected function successResponse(string $message = 'Success', Responsable|array|null $data = null, int $statusCode = 200)
     {
         $response = [
             'status' => true,
             'message' => $message,
         ];
-        if (!blank($data))
-        {
+        if (! blank($data)) {
             $response['data'] = $data;
         }
 
@@ -30,14 +29,14 @@ trait HasApiResponse
             'message' => $message,
         ];
 
-        if (!blank($errors))
-        {
+        if (! blank($errors)) {
             $response['errors'] = $errors;
         }
 
         return response()->json($response, $statusCode);
     }
-    protected function paginatedResponse(string $message = 'Success', LengthAwarePaginator | AnonymousResourceCollection $data,  int $statusCode = 200)
+
+    protected function paginatedResponse(string $message, LengthAwarePaginator|AnonymousResourceCollection $data, int $statusCode = 200)
     {
         return response()->json([
             'status' => true,

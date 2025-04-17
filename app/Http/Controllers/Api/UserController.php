@@ -9,7 +9,6 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -21,8 +20,8 @@ class UserController extends Controller
         $perPage = $request->validated('per_page', 10) ?? 10;
         $search = $request->validated('search');
         $users = User::when(
-                !blank($search),
-                fn(Builder $builder) => $builder->where('name', 'LIKE', "%$search%"))
+            ! blank($search),
+            fn (Builder $builder) => $builder->where('name', 'LIKE', "%$search%"))
             ->paginate($perPage)
             ->withQueryString();
 
@@ -63,7 +62,6 @@ class UserController extends Controller
             data: new UserResource($user->load('company'))
         );
     }
-
 
     /**
      * Update the specified resource in storage.

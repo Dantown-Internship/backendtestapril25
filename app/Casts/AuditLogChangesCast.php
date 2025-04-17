@@ -26,7 +26,7 @@ class AuditLogChangesCast implements CastsAttributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): string
     {
-        if (!$value instanceof AuditLogChangesDto) {
+        if (! $value instanceof AuditLogChangesDto) {
             throw new RuntimeException('The value must be an instance of AuditLogChangesDto.');
         }
 

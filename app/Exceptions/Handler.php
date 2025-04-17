@@ -56,18 +56,17 @@ class Handler extends ExceptionHandler
             );
         }
 
-        if ($exception instanceof NotFoundHttpException)
-        {
-            $previous = $exception->getPrevious();
-            // Handle model not found exceptions
-            if ($previous instanceof ModelNotFoundException) {
-                $modelName = strtolower(class_basename($previous->getModel()));
-                return $this->errorResponse(
-                    message: "Unable to find {$modelName} with the specified identifier",
-                    statusCode: 404,
-                );
-            }
+        $previous = $exception->getPrevious();
+        // Handle model not found exceptions
+        if ($previous instanceof ModelNotFoundException) {
+            $modelName = strtolower(class_basename($previous->getModel()));
+            return $this->errorResponse(
+                message: "Unable to find {$modelName} with the specified identifier",
+                statusCode: 404,
+            );
+        }
 
+        if ($exception instanceof NotFoundHttpException) {
             return $this->errorResponse($exception->getMessage(), 404);
         }
 
@@ -119,7 +118,7 @@ class Handler extends ExceptionHandler
             errors: config('app.debug') ? [
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
-                'trace' => $exception->getTrace()
+                'trace' => $exception->getTrace(),
             ] : null
         );
     }

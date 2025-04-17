@@ -22,7 +22,7 @@ class ExpenseController extends Controller
         $search = $request->validated('search');
         $role = $request->user()->role;
         $query = Expense::query()
-            ->when(!blank($search), function ($query) use ($search) {
+            ->when(! blank($search), function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('title', 'like', "%{$search}%")
                         ->orWhere('category', 'like', "%{$search}%");
@@ -41,7 +41,6 @@ class ExpenseController extends Controller
         );
     }
 
-
     public function store(StoreExpenseRequest $request)
     {
         $expense = Expense::create([
@@ -57,7 +56,6 @@ class ExpenseController extends Controller
             data: new ExpenseResource($expense)
         );
     }
-
 
     /**
      * Display the specified resource.
@@ -78,7 +76,6 @@ class ExpenseController extends Controller
             data: new ExpenseResource($expense)
         );
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -101,14 +98,14 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,string $uid)
+    public function destroy(Request $request, string $uuid)
     {
         abort_if(
             $request->user()->role !== Role::Admin,
             403,
             'You are not authorized to delete this expense.'
         );
-        $expense = Expense::where('uuid', $uid)->firstOrFail();
+        $expense = Expense::where('uuid', $uuid)->firstOrFail();
         $expense->delete();
 
         return $this->successResponse(
