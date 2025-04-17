@@ -50,6 +50,7 @@ class UserController extends Controller
     //update users
     public function update(Request $request, $id)
     {
+        $admin = auth()->user();
         $request->validate([
             'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])],
         ]);
