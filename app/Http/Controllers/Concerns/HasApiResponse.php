@@ -44,14 +44,20 @@ trait HasApiResponse
             'message' => $message,
             'data' => $data->items(),
             'meta' => [
-                'current_page' => $data->currentPage(),
-                'last_page' => $data->lastPage(),
-                'per_page' => $data->perPage(),
-                'total' => $data->total(),
-                'from' => $data->firstItem(),
-                'to' => $data->lastItem(),
-                'has_more_pages' => $data->hasMorePages()
-            ]
+                'pagination' => [
+                    'current_page' => $data->currentPage(),
+                    'last_page' => $data->lastPage(),
+                    'per_page' => $data->perPage(),
+                    'total' => $data->total(),
+                    'from' => $data->firstItem(),
+                    'to' => $data->lastItem(),
+                    'has_more_pages' => $data->hasMorePages(),
+                    'next_page_url' => $data->nextPageUrl(),
+                    'prev_page_url' => $data->previousPageUrl(),
+                    'current_page_url' => $data->url($data->currentPage()),
+                    'path' => $data->path(),
+                ],
+            ],
         ], $statusCode);
     }
 }
