@@ -4,34 +4,35 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
+use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ExpenseReportMail extends Mailable
+class ExpenseReportMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $expenses;
-    public $from;
-    public $to;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Collection $expenses, $from, $to)
+    public function __construct(public Collection $expenses, public $from, public $to) {}
+
+    public function envelope(): Envelope
     {
-        $this->expenses = $expenses;
-        $this->from = $from;
-        $this->to = $to;
+        return new Envelope(
+            from: new Address(env('MAIL_FROM_ADDRESS'), 'contact@bowofade.com'),
+            subject: "Weekly Expense Report: {$this->from} - {$this->to}",
+        );
     }
 
-    /**
-     * Build the message.
-     */
-    public function build()
+    public function content(): Content
     {
-        return $this->subject("Weekly Expense Report: {$this->from->format('Y-m-d')} - {$this->to->format('Y-m-d')}")
-            ->view('emails.expense_report');
+        return new Content(
+            view: 'emails.expense_report',
+        );
     }
 }

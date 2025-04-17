@@ -143,7 +143,7 @@ class ExpenseController extends Controller
     protected function clearExpenseCompanyCache($companyId)
     {
         //first we remove the older values without searches
-        $expensesCount = Expense::where('company_id', $companyId)->count();
+        $expensesCount = Expense::count();
         $perPage = 24;
         $maxPages = max(1, ceil($expensesCount / $perPage));
 
