@@ -58,6 +58,11 @@ class ExpenseController extends Controller
         $user = auth()->user();
         $validated = $request->validated();
 
+// check if the user is tied tothe comapny
+        if ($user->company_id != $validated['company_id']) {
+            return $this->badRequest('User does not belong to the provided company.');
+        }
+
         $expense = $user->expenses()->create([
             'amount' => $validated['amount'],
             'title' => $validated['title'],
@@ -74,6 +79,20 @@ class ExpenseController extends Controller
     public function show(Expense $expense)
     {
         //
+
+        $user = auth()->user();
+
+        try {
+
+            if ($user->company_id != $expense->company_id) {
+                return $this->badRequest('User does not belong to the provided company.');
+            }
+
+
+            return $this->success($expense, "expense fetched successfully");
+        } catch (\Throwable $th) {
+            $this->error($th->getMessage());
+        }
     }
 
     /**
@@ -94,9 +113,6 @@ class ExpenseController extends Controller
         $validated = $request->validated();
 
 
-        if (!$expense) {
-            return $this->notFound('expense not found');
-        }
 
         if ((!$user->hasRole(RoleEnum::ADMIN) || !$user->hasRole(RoleEnum::MANAGER)) && $expense->company_id != $user->company_id) {
             return $this->forbidden('You do not have permission to update this expense');
@@ -114,9 +130,7 @@ class ExpenseController extends Controller
         $user = auth()->user();
 
         try {
-            if (!$expense) {
-                return $this->notFound('expense not found');
-            }
+
             if (!$user->hasRole(RoleEnum::ADMIN)) {
                 return $this->forbidden('You do not have permission to delete this expense.');
             }
