@@ -41,14 +41,13 @@ class UserService implements UserInterface
 
     public function users(int $perPage = 10): LengthAwarePaginator
     {
-        return User::with('role')->paginate($perPage);
+        return $this->authQuery->users($perPage);
     }
 
 
     public function user(string $userId): User
     {
-
-        return User::with('role')->where('id', $userId)->firstOrFail();
+        return $this->authQuery->user($userId);  
     }
 
     public function update(string $id, array $data): User

@@ -3,6 +3,7 @@
 namespace App\Queries;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AuthQuery
 {
@@ -18,6 +19,17 @@ class AuthQuery
             'status'     => 'active',
             'role_id'    => $roleId,
         ]);
+    }
+
+
+    public function users(int $perPage = 10): LengthAwarePaginator
+    {
+        return User::with('role')->paginate($perPage);
+    }
+
+    public function user(string $userId): User
+    {
+        return User::with('role')->where('id', $userId)->firstOrFail();
     }
 
 
