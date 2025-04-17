@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Services\Users\UserService;
-use App\Services\Auth\RoleService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\User\CreateUserRequest;
@@ -15,17 +14,14 @@ use App\Http\Requests\User\UpdateRoleRequest;
 class UserController extends Controller
 {
 
-    public function __construct(
-        public UserService $userService,
-        protected RoleService $roleService
-    ) {}
+    public function __construct(public UserService $userService) {}
 
 
     public function create(CreateUserRequest $request): JsonResponse
     {
         try {
             authorizeRole('admin');
-            
+
             $data = $request->validated();
             $roleName = $data['role_name'];
             unset($data['role_name']);

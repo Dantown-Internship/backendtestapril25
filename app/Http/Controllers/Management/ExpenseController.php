@@ -7,7 +7,6 @@ use App\Services\Management\ExpenseService;
 use App\Http\Requests\Management\ExpenseRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\Auth\RoleService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Resources\ExpenseResource;
@@ -17,8 +16,7 @@ class ExpenseController extends Controller
 {
 
     public function __construct(
-        protected ExpenseService $expenseService,
-        protected RoleService $roleService
+        protected ExpenseService $expenseService
     ) {}
 
 

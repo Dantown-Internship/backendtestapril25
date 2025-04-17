@@ -9,15 +9,11 @@ use App\Http\Requests\Auth\SignInRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use App\Services\Auth\RoleService;
 use Exception;
 
 class AuthController extends Controller
 {
-    public function __construct(
-        public AuthService $authService,
-        protected RoleService $roleService
-    ){}
+    public function __construct(public AuthService $authService){}
 
 
     public function signup(SignupRequest $request): JsonResponse
