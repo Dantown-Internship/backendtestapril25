@@ -60,6 +60,7 @@ class Handler extends ExceptionHandler
         // Handle model not found exceptions
         if ($previous instanceof ModelNotFoundException) {
             $modelName = strtolower(class_basename($previous->getModel()));
+
             return $this->errorResponse(
                 message: "Unable to find {$modelName} with the specified identifier",
                 statusCode: 404,
