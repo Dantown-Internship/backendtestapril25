@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +25,7 @@ class CompanyTest extends TestCase
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'Admin'
+            'role' => UserRole::ADMIN
         ]);
 
         // Generate token for authenticated requests

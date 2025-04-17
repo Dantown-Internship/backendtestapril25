@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -48,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
@@ -72,7 +74,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'Admin';
+        return $this->role === UserRole::ADMIN;
     }
 
     /**
@@ -80,7 +82,7 @@ class User extends Authenticatable
      */
     public function isManager(): bool
     {
-        return $this->role === 'Manager';
+        return $this->role === UserRole::MANAGER;
     }
 
     /**
@@ -88,6 +90,6 @@ class User extends Authenticatable
      */
     public function isEmployee(): bool
     {
-        return $this->role === 'Employee';
+        return $this->role === UserRole::EMPLOYEE;
     }
 }

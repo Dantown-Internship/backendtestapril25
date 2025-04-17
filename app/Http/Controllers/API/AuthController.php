@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Company;
@@ -41,7 +42,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'company_id' => $company->id,
-                'role' => 'Admin',
+                'role' => UserRole::EMPLOYEE,
             ]);
 
             // Generate token for the user

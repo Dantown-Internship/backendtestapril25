@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\UserRole;
 use App\Mail\WeeklyExpenseReport;
 use App\Models\Company;
 use App\Models\Expense;
@@ -36,7 +37,7 @@ class SendWeeklyExpenseReport implements ShouldQueue
         foreach ($companies as $company) {
             // Get admin users for each company
             $admins = User::where('company_id', $company->id)
-                ->where('role', 'Admin')
+                ->where('role', UserRole::ADMIN->value)
                 ->get();
 
             // Get weekly expenses for this company

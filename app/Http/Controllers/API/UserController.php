@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])],
+            'role' => ['required', Rule::in(UserRole::toArray())],
         ]);
 
         $user = User::create([
@@ -112,7 +113,7 @@ class UserController extends Controller
 
         // Only admin can update roles
         if ($currentUser->isAdmin()) {
-            $rules['role'] = ['sometimes', 'required', Rule::in(['Admin', 'Manager', 'Employee'])];
+            $rules['role'] = ['sometimes', 'required', Rule::in(UserRole::toArray())];
         }
 
         // Add password validation if it's being updated

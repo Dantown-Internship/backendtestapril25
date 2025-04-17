@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +25,7 @@ class UserManagementTest extends TestCase
         $this->company = Company::factory()->create();
         $this->admin = User::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'Admin'
+            'role' => UserRole::ADMIN
         ]);
 
         // Generate token for authenticated requests
@@ -53,7 +54,7 @@ class UserManagementTest extends TestCase
             'email' => 'newuser@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'Employee'
+            'role' => UserRole::EMPLOYEE->value
         ];
 
         $response = $this->actingAs($this->admin)
@@ -95,7 +96,7 @@ class UserManagementTest extends TestCase
         $updatedData = [
             'name' => 'Updated User Name',
             'email' => 'updated@example.com',
-            'role' => 'Manager'
+            'role' => UserRole::MANAGER->value
         ];
 
         $response = $this->actingAs($this->admin)

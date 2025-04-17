@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -24,7 +25,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin_' . $company->id . '@example.com',
                 'password' => Hash::make('password123'),
                 'company_id' => $company->id,
-                'role' => 'Admin',
+                'role' => UserRole::ADMIN,
             ]);
 
             // Create manager user for each company
@@ -33,7 +34,7 @@ class UserSeeder extends Seeder
                 'email' => 'manager_' . $company->id . '@example.com',
                 'password' => Hash::make('password123'),
                 'company_id' => $company->id,
-                'role' => 'Manager',
+                'role' => UserRole::MANAGER,
             ]);
 
             // Create multiple employee users for each company
@@ -43,7 +44,7 @@ class UserSeeder extends Seeder
                     'email' => 'employee' . $i . '_' . $company->id . '@example.com',
                     'password' => Hash::make('password123'),
                     'company_id' => $company->id,
-                    'role' => 'Employee',
+                    'role' => UserRole::EMPLOYEE,
                 ]);
             }
         }

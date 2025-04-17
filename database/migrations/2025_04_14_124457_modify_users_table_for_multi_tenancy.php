@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,8 +16,8 @@ return new class extends Migration
             // Add company_id foreign key
             $table->foreignId('company_id')->nullable()->after('id')->constrained()->onDelete('cascade');
 
-            // Add role enum column
-            $table->enum('role', ['Admin', 'Manager', 'Employee'])->default('Employee')->after('password');
+            // Add role column using values from UserRole enum
+            $table->string('role')->default(UserRole::EMPLOYEE->value)->after('password');
         });
     }
 
