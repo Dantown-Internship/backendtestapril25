@@ -16,8 +16,7 @@
 ## 🛠️ Setup Guide
 ```bash
 # Clone & install
-git clone https://github.com/your-repo/expense-management.git
-cd expense-management
+
 composer install
 cp .env.example .env
 php artisan key:generate
