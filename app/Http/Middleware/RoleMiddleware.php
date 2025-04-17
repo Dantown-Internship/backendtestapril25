@@ -20,17 +20,17 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next,  ...$roles): Response
     {
-        $rolesArray = [];
+        $allowedRoles = [];
         foreach ($roles as $role) {
             $roleEnum = Role::tryFrom($role);
             if ($roleEnum === null) {
                 throw new RuntimeException("Invalid role: {$role}");
             }
-            $rolesArray[] = $roleEnum;
+            $allowedRoles[] = $roleEnum;
         }
 
         throw_if(
-            !$request->user() || !in_array($request->user()->role, $rolesArray),
+            !$request->user() || !in_array($request->user()->role, $allowedRoles),
             new AuthorizationException('You do not have the required role to access this resource.')
         );
 
