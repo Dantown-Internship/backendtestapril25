@@ -15,7 +15,7 @@ class ExpenseObserver
     public function updated(Expense $expense): void
     {
         $changes = new AuditLogChangesDto(
-            old: $expense->getOriginal(),
+            old: $expense->getRawOriginal(),
             new: $expense->getAttributes(),
         );
         AuditLog::create([

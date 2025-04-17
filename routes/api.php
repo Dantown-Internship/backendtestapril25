@@ -32,18 +32,18 @@ Route::prefix('/v1')->as('api.v1.')->group(function () {
             ->only(['index', 'show', 'update', 'store'])
             ->middleware(sprintf('role:%s', Role::Admin->value));
 
-        Route::prefix('expenses')->group(function () {
+        Route::prefix('expenses')->as('expenses.')->group(function () {
             Route::get('/', [ExpenseController::class, 'index'])
-                ->name('expenses.index');
+                ->name('index');
             Route::post('/', [ExpenseController::class, 'store'])
-                ->name('expenses.store');
+                ->name('store');
             Route::get('/{uuid}', [ExpenseController::class, 'show'])
-                ->name('expenses.show');
+                ->name('show');
             Route::put('/{uuid}', [ExpenseController::class, 'update'])
-                ->name('expenses.update')
+                ->name('update')
                 ->middleware(sprintf('role:%s,%s', Role::Admin->value, Role::Manager->value));
             Route::delete('/{uuid}', [ExpenseController::class, 'destroy'])
-                ->name('expenses.destroy')
+                ->name('destroy')
                 ->middleware(sprintf('role:%s', Role::Admin->value));
         });
 

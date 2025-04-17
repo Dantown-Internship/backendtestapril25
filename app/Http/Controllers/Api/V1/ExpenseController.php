@@ -53,7 +53,8 @@ class ExpenseController extends Controller
 
         return $this->successResponse(
             message: 'Expense created successfully.',
-            data: new ExpenseResource($expense)
+            data: new ExpenseResource($expense),
+            statusCode: 201
         );
     }
 
