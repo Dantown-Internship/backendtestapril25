@@ -27,23 +27,25 @@ class AuthService
             'company_id' => $company->id,
             'role' => $body['role']
         ]);
+        // send notification email to company Admin
         
         $token = $user->createToken('auth_token', ['server:'.$body['role']])->plainTextToken;
         return ['success'=> true, 'message' => 'Company registered successfully','data'=>['company'=> $company, 'user'=> $user],'token' => $token];
         
     }
 
-    public function createUser(array $body, $authUserCompany)
+    public function createUser(array $body, $authUser)
     {
 
         $user = User::create([
             'name' => $body['name'],
             'email' => $body['email'],
             'password' => bcrypt($body['password']),
-            'company_id' => $authUserCompany->id,
+            'company_id' => $authUser->company_id,
             'role' => $body['role'],
         ]);
 
+         // send notification email to onboarded user
         $token = $user->createToken('auth_token', ['server:' . $body['role']])->plainTextToken;
 
         return [
