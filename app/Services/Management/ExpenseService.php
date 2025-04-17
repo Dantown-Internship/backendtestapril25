@@ -5,6 +5,8 @@ namespace App\Services\Management;
 use App\Models\Management\Expenses;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use App\Queries\ExpenseQuery;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseService
 {
@@ -27,18 +29,11 @@ class ExpenseService
     public function expenses(array $filters, int $perPage = 10): LengthAwarePaginator
     {
         $cacheKey = $this->generateCacheKey($filters, $perPage);
-    
+
         return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($filters, $perPage) {
-            return Expenses::with('company')
-                ->when(!empty($filters['title']), fn($q) =>
-                    $q->where('title', 'like', '%' . $filters['title'] . '%')
-                )
-                ->when(!empty($filters['company']), fn($q) =>
-                    $q->whereHas('company', fn($q2) =>
-                        $q2->where('name', 'like', '%' . $filters['company'] . '%')
-                    )
-                )
-                ->latest()
+            return (new ExpenseQuery($filters))
+                ->applyFilters()
+                ->orderByLatest()
                 ->paginate($perPage);
         });
     }
@@ -70,26 +65,39 @@ class ExpenseService
 
 
 
-    public function delete(string $expenseId)
+    public function delete(string $expenseId): bool
     {
         $expense = Expenses::where('id', $expenseId)->first();
         if (!$expense) {
             return false;
         }
         $data = $expense->only(['title', 'category', 'amount']);
+
         logAudit(
-            userId: $expense->user_id,
+            userId:    $expense->user_id,
             companyId: $expense->company_id,
-            action: 'delete_expense',
+            action:  'delete_expense',
             changes: ['deleted' => $data]
         );
 
-        return $expense->delete();
+        return (new ExpenseQuery())->delete($expenseId);
     }
 
 
     protected function generateCacheKey(array $filters, int $perPage): string
     {
-        return 'expenses_' . md5(json_encode($filters) . "_$perPage");
+        $userId = Auth::id() ?? 'guest';
+        $filterHash = $this->hashFilters($filters);
+        return "expenses_{$userId}_{$filterHash}_{$perPage}";
     }
+
+    protected function hashFilters(array $filters): string
+    {
+        $normalized = [
+            'title' => $filters['title'] ?? '',
+            'company' => $filters['company'] ?? '',
+        ];
+        return hash('sha256', json_encode($normalized));
+    }
+
 }

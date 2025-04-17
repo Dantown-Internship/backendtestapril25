@@ -25,9 +25,8 @@ class ExpenseController extends Controller
     public function expenses(Request $request): JsonResponse
     {
         $filters = $request->only(['title', 'company']);
-        $perPage = $request->integer('per_page', 10);
 
-        $expenses = $this->expenseService->expenses($filters, $perPage);
+        $expenses = $this->expenseService->expenses($filters);
 
         if ($expenses->isEmpty()) {
             return dantownResponse(null, 404, "No record found");
@@ -72,7 +71,7 @@ class ExpenseController extends Controller
                 throw new AuthorizationException('Only Admin authorized action!', 403);
             }
             $user = $this->expenseService->delete($expenseId);
-            return dantownResponse($user, 204, 'Resource deleted!', true);
+            return dantownResponse($user, 200, 'Resource deleted!', true);
         } catch (ModelNotFoundException $e) {
             return dantownResponse([], 404, "No record found!", false);
         } catch (AuthorizationException $e) {

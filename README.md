@@ -32,7 +32,7 @@
 
 
 ## Setup
- <p>Setup your project base Url i.e {{baseUrl}} on postman. Import the API collection in collections/ directory in the project root folder into your postman. Set your authorization header to accept application/json, and Authorization as bearer token which the auth token</p>
+ <p>Setup your project base Url i.e {{baseUrl}} on postman. Import the API collection in collections/ directory in the project root folder into your postman. Set your authorization header to accept application/json, and Authorization as bearer token which is your auth token</p>
  <p>Set your mail stmp credentials on your .env</p>
 
 ### Clone the Repository
