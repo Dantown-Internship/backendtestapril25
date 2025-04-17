@@ -4,15 +4,16 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Services\Auth\RoleService;
+use App\Queries\AuthQuery;
 use App\Contracts\AuthInterface;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\AuthenticationException;
 
 class AuthService implements AuthInterface
 {
 
     public function __construct(
-        public RoleService $roleService
+        public RoleService $roleService,
+        protected AuthQuery $authQuery
     ) {}
 
 
@@ -20,16 +21,8 @@ class AuthService implements AuthInterface
     {
 
         $role =  $this->roleService->getRoleByName($roleName);
-
-        $user = User::create([
-            'name'       => $data['name'],
-            'email'      => $data['email'],
-            'password'   => Hash::make($data['password']),
-            'company_id' => $data['company_id'],
-            'status'     => 'active',
-            'role_id'    => $role->id
-
-        ]);
+        
+        $user =  $this->authQuery->create($data, $role->id);
 
         $this->roleService->assignRole($user, $roleName);
 

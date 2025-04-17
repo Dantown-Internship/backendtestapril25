@@ -62,6 +62,6 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         $user = $this->authService->me();
-        return dantownResponse($user, 200, 'User retrieved successfully!', true);
+        return dantownResponse($user, 200, 'Request completed!', true);
     }
 }

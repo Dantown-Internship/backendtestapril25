@@ -7,6 +7,7 @@ use App\Contracts\UserInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use App\Services\Auth\RoleService;
+use App\Queries\AuthQuery;
 
 
 
@@ -14,7 +15,8 @@ class UserService implements UserInterface
 {
 
     public function __construct(
-        public RoleService $roleService
+        public RoleService $roleService,
+        protected AuthQuery $authQuery
     ) {}
 
 
@@ -22,15 +24,8 @@ class UserService implements UserInterface
     {
 
         $role =  $this->roleService->getRoleByName($roleName);
-        $user = User::create([
-            'name'       => $data['name'],
-            'email'      => $data['email'],
-            'password'   => Hash::make($data['password']),
-            'company_id' => $data['company_id'],
-            'status'     => 'active',
-            'role_id'    => $role->id
 
-        ]);
+        $user =  $this->authQuery->create($data, $role->id);
 
         logAudit(
             userId: auth()->id() ?? $user->id,
@@ -72,13 +67,18 @@ class UserService implements UserInterface
     }
 
 
-
     public function delete(string $userId): bool
     {
-        $user = User::where('id', $userId)->first();
-        if (!$user) {
-            return false;
-        }
-        return $user->delete();
+        $user = User::findOrFail($userId);
+        $data = $user->only(['name', 'email', 'role_id']);
+
+        logAudit(
+            userId: auth()->id() ?? $user->id,
+            companyId: $user->company_id,
+            action: 'delete_user',
+            changes: ['deleted' => $data]
+        );
+
+        return $this->authQuery->delete($userId);
     }
 }
