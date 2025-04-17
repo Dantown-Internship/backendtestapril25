@@ -20,11 +20,7 @@ class ExpenseController extends Controller
     {
         $perPage = $request->validated('per_page', 10);
         $search = $request->validated('search');
-        /**
-         * @var Role $role
-         */
         $role = $request->user()->role;
-
         $query = Expense::query()
             ->when(!blank($search), function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
