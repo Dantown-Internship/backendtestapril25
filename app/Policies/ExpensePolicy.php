@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Expense;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class ExpensePolicy
 {
@@ -12,39 +13,47 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_MANAGER]);
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Expense $expense): bool
+    public function view(User $user, Expense $expense): Response
     {
-        return $this->canManageExpenses($user, $expense) || $this->belongsToEmployee($user, $expense);
+        return $this->canManageExpenses($user, $expense) || $this->belongsToEmployee($user, $expense)
+            ? Response::allow() :
+            Response::deny('You do not have permission to view this expense.');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user): Response
     {
-        return $this->canCreateExpenses($user);
+        return $this->canCreateExpenses($user)? 
+            Response::allow() :
+            Response::deny('You do not have permission to create expenses.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Expense $expense): bool
+    public function update(User $user, Expense $expense): Response
     {
-        return $this->canManageExpenses($user, $expense);
+        return $this->canManageExpenses($user, $expense) ?
+            Response::allow() :
+            Response::deny('You do not have permission to update this expense.');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Expense $expense): bool
+    public function delete(User $user, Expense $expense): Response
     {
-        return $this->canManageExpenses($user, $expense);
+        return $this->canDeleteExpenses($user, $expense) ?
+            Response::allow() :
+            Response::deny('You do not have permission to delete this expense.');
     }
 
     /**
@@ -60,9 +69,8 @@ class ExpensePolicy
      */
     public function forceDelete(User $user, Expense $expense): bool
     {
-        return $this->canManageExpenses($user, $expense);
+        return $this->canDeleteExpenses($user, $expense);
     }
-
 
     private function belongsToEmployee(User $user, Expense $expense): bool
     {
@@ -77,5 +85,10 @@ class ExpensePolicy
     private function canManageExpenses(User $user, Expense $expense): bool
     {
         return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_MANAGER]) && $user->company_id === $expense->company_id;
+    }
+   
+    private function canDeleteExpenses(User $user, Expense $expense): bool
+    {
+        return in_array($user->role, [User::ROLE_ADMIN]) && $user->company_id === $expense->company_id;
     }
 }

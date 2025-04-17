@@ -26,6 +26,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'company_id',
+        'role',
     ];
 
     /**
@@ -65,15 +67,22 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
-    }   
+    }
 
     public function isManager(): bool
     {
         return $this->role === self::ROLE_MANAGER;
-    }   
+    }
 
     public function isEmployee(): bool
     {
         return $this->role === self::ROLE_EMPLOYEE;
-    }   
+    }
+
+    public function getCompanyUsers()
+    {
+        return $this->company->users()
+            ->where('id', '<>', $this->id)
+            ->get();
+    }
 }
