@@ -80,7 +80,7 @@ public function store(Request $request)
         }
     }
 
-
+    git remote add origin https://github.com/CHI-NONSO1/backendtestapril25.git
     public function login(Request $request)
     {
         try {
