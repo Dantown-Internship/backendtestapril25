@@ -1,0 +1,43 @@
+<?php
+
+use App\Models\Logging\AuditLog;
+
+if (!function_exists('dantownResponse')) {
+    /**
+     * Generate a JSON response.
+     *
+     * @param mixed $data
+     * @param int $statusCode
+     * @param string|null $message
+     * @param array $headers
+     * @param bool $status
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function dantownResponse($data, int $statusCode = 200, string $message = null, bool $status = true, array $headers = []): \Illuminate\Http\JsonResponse
+    {
+        $response = [
+            'status'  => $status,
+            'message' => $message,
+            'data'    => $data,
+        ];
+
+        return response()->json($response, $statusCode, $headers);
+    }
+}
+
+
+
+if (!function_exists('logAudit')) {
+
+    function logAudit(string $userId, string $companyId, string $action, array $changes): void
+    {
+        AuditLog::create(
+            [
+                'user_id'    => $userId,
+                'company_id' => $companyId,
+                'action'     => $action,
+                'changes'    => json_encode($changes),
+            ]
+        );
+    }
+}
