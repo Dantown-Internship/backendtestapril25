@@ -27,7 +27,7 @@ services:
       dockerfile: Dockerfile  # Use the custom Dockerfile for PHP
     container_name: php-fpm
     ports:
-      - "9000:9000"
+      - "8000:8000"
     volumes:
       - ./expense-manager:/var/www/html
     depends_on:
