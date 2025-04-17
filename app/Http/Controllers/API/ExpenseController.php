@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AuditLogResource;
+use App\Http\Resources\ExpenseResource;
 use App\Models\AuditLog;
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
@@ -16,48 +19,55 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $query = Expense::with('user')
-            ->where('company_id', $user->company_id);
 
-        // Filter by user if not admin/manager (employees can only see their own expenses)
-        if ($user->isEmployee()) {
-            $query->where('user_id', $user->id);
-        }
+        // Create a unique cache key based on user and request parameters
+        $cacheKey = 'expenses_' . $user->id . '_' . $user->company_id . '_' . md5(json_encode($request->all()));
 
-        // Handle optional filters
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
+        // Get data from cache or run the query
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($request, $user) {
+            $query = Expense::with('user')
+                ->where('company_id', $user->company_id);
 
-        if ($request->has('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
+            // Filter by user if not admin/manager (employees can only see their own expenses)
+            if ($user->isEmployee()) {
+                $query->where('user_id', $user->id);
+            }
 
-        if ($request->has('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
+            // Handle optional filters
+            if ($request->has('category')) {
+                $query->where('category', $request->category);
+            }
 
-        if ($request->has('min_amount')) {
-            $query->where('amount', '>=', $request->min_amount);
-        }
+            if ($request->has('start_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            }
 
-        if ($request->has('max_amount')) {
-            $query->where('amount', '<=', $request->max_amount);
-        }
+            if ($request->has('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+            }
 
-        // Handle search term
-        if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
-        }
+            if ($request->has('min_amount')) {
+                $query->where('amount', '>=', $request->min_amount);
+            }
 
-        // Handle sorting
-        $sortField = $request->sort_by ?? 'created_at';
-        $sortDirection = $request->sort_direction ?? 'desc';
-        $query->orderBy($sortField, $sortDirection);
+            if ($request->has('max_amount')) {
+                $query->where('amount', '<=', $request->max_amount);
+            }
 
-        $expenses = $query->paginate(10);
+            // Handle search term
+            if ($request->has('search')) {
+                $query->where('title', 'like', '%' . $request->search . '%');
+            }
 
-        return response()->json($expenses);
+            // Handle sorting
+            $sortField = $request->sort_by ?? 'created_at';
+            $sortDirection = $request->sort_direction ?? 'desc';
+            $query->orderBy($sortField, $sortDirection);
+
+            $expenses = $query->paginate(10);
+
+            return ExpenseResource::collection($expenses);
+        });
     }
 
     /**
@@ -96,9 +106,12 @@ class ExpenseController extends Controller
                 ]),
             ]);
 
+            // Clear list caches with a pattern
+            $this->clearExpenseListCache($user);
+
             return response()->json([
                 'message' => 'Expense created successfully',
-                'expense' => $expense->load('user'),
+                'expense' => new ExpenseResource($expense->load('user')),
             ], 201);
         });
     }
@@ -110,21 +123,28 @@ class ExpenseController extends Controller
     {
         $user = $request->user();
 
-        $expense = Expense::with('user')
-            ->where('id', $id)
-            ->where('company_id', $user->company_id)
-            ->first();
+        // Create a unique cache key for this specific expense
+        $cacheKey = 'expense_' . $id . '_' . $user->id;
 
-        if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($user, $id) {
+            $expense = Expense::with('user')
+                ->where('id', $id)
+                ->where('company_id', $user->company_id)
+                ->first();
 
-        // Check if user is authorized to view the expense
-        if ($user->isEmployee() && $expense->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized to view this expense'], 403);
-        }
+            if (!$expense) {
+                return response()->json(['message' => 'Expense not found'], 404);
+            }
 
-        return response()->json(['expense' => $expense]);
+            // Check if user is authorized to view the expense
+            if ($user->isEmployee() && $expense->user_id !== $user->id) {
+                return response()->json(['message' => 'Unauthorized to view this expense'], 403);
+            }
+
+            return response()->json([
+                'expense' => new ExpenseResource($expense)
+            ]);
+        });
     }
 
     /**
@@ -155,7 +175,7 @@ class ExpenseController extends Controller
         ]);
 
         // Use a transaction to ensure both expense and audit log are updated
-        return DB::transaction(function () use ($request, $user, $expense) {
+        return DB::transaction(function () use ($request, $user, $expense, $id) {
             // Store old values for audit log
             $oldValues = $expense->toArray();
 
@@ -177,9 +197,15 @@ class ExpenseController extends Controller
                 ]),
             ]);
 
+            // Forget cache for this expense to ensure fresh data
+            Cache::forget('expense_' . $id . '_' . $user->id);
+
+            // Clear list caches with a pattern
+            $this->clearExpenseListCache($user);
+
             return response()->json([
                 'message' => 'Expense updated successfully',
-                'expense' => $expense->load('user'),
+                'expense' => new ExpenseResource($expense->load('user')),
             ]);
         });
     }
@@ -206,7 +232,7 @@ class ExpenseController extends Controller
         }
 
         // Use a transaction to ensure both expense and audit log are handled correctly
-        return DB::transaction(function () use ($user, $expense) {
+        return DB::transaction(function () use ($user, $expense, $id) {
             // Store values for audit log
             $oldValues = $expense->toArray();
 
@@ -225,7 +251,16 @@ class ExpenseController extends Controller
                 ]),
             ]);
 
-            return response()->json(['message' => 'Expense deleted successfully']);
+            // Forget cache for this expense
+            Cache::forget('expense_' . $id . '_' . $user->id);
+
+            // Clear list caches with a pattern
+            $this->clearExpenseListCache($user);
+
+            return response()->json([
+                'message' => 'Expense deleted successfully',
+                'status' => 'success'
+            ]);
         });
     }
 
@@ -255,6 +290,18 @@ class ExpenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return response()->json($auditLogs);
+        return AuditLogResource::collection($auditLogs);
+    }
+
+    /**
+     * Helper to clear expense list cache after updates and deletes
+     */
+    private function clearExpenseListCache($user)
+    {
+        // Clear all cached expense lists associated with this user's company
+        $pattern = 'expenses_*_' . $user->company_id . '_*';
+        foreach (Cache::get($pattern, []) as $key) {
+            Cache::forget($key);
+        }
     }
 }

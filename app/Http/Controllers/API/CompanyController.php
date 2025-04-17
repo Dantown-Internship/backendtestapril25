@@ -16,6 +16,7 @@ class CompanyController extends Controller
     {
         $company = $request->user()->company;
 
+
         if (!$company) {
             return response()->json(['message' => 'Company not found'], 404);
         }
