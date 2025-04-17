@@ -8,7 +8,7 @@
 
 // ==================== Authentication Tests ====================
 
-### Register a new user
+### Register a new user with default Employee role
 POST {{baseUrl}}/register
 Content-Type: {{contentType}}
 Accept: {{contentType}}
@@ -20,6 +20,21 @@ Accept: {{contentType}}
   "password_confirmation": "password123",
   "company_name": "Test Company",
   "company_email": "testcompany@company.com"
+}
+
+### Register a user with Manager role
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "Manager User",
+  "email": "manager@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "company_name": "Manager Company",
+  "company_email": "managercompany@company.com",
+  "role": "Manager"
 }
 
 ### Login
