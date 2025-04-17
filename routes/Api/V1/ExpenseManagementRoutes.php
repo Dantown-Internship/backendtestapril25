@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'middleware' => ['auth:sanctum']
 ], function () {
-    Route::delete('/expenses/{expenseId}', DeleteExpenseController::class);
+    Route::delete('/expenses/{expenseId}', DeleteExpenseController::class)->middleware('adminOnlyAuthorization');
 
-    Route::put('/expenses/{expenseId}', UpdateExpenseController::class);
+    Route::put('/expenses/{expenseId}', UpdateExpenseController::class)->middleware('adminAndManagerAuthorization');
 
     Route::get('/expenses/{expenseId}', GetExpenseController::class);
 

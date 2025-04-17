@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class EnforceAdminAndManagerAuthorizationMiddleware
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $loggedInUser = auth('sanctum')->user();
+
+        if (in_array($loggedInUser->role, ['Admin', 'Manager']) === false) {
+            return generateErrorApiMessage('Only Admins and Managers can perform this action', 403);
+        }
+
+        return $next($request);
+    }
+}
