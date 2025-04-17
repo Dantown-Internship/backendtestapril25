@@ -17,16 +17,18 @@ class FetchExpensesController extends Controller
     {
         $loggedInUser = auth('sanctum')->user();
 
+        $relationships = ['expenseCategory'];
         ['expense_payload' => $expenses, 'pagination_payload' => $paginationPayload] = $this->listExpensesAction->execute([
             'filter_record_options_payload' => [
                 'company_id' => $loggedInUser->company_id,
+                'expense_category_id' => $request->expense_category_id ?? null,
                 'search_query' => $request->search_query,
             ],
             'pagination_payload' => [
                 'page' => $request->page ?? 1,
                 'limit' => $request->per_page ?? 20,
             ]
-        ]);
+        ], $relationships);
 
         $mutatedExpenses = FetchExpensesResource::collection($expenses);
 

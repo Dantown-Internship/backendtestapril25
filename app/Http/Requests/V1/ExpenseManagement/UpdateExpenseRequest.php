@@ -14,27 +14,25 @@ class UpdateExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'between:1,200'],
-            'email' => ['required', 'string', 'between:1,200', 'unique:users,email'],
-            'role' => ['required', 'string', 'in:Admin,Manager,Employee'],
+            'expense_category_id' => ['required', 'uuid', 'exists:expense_categories,id'],
+            'title' => ['required', 'string', 'between:1,200'],
+            'amount' => ['required', 'integer', "min:0"],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'The user name is required.',
-            'name.string' => 'The user name must be a string.',
-            'name.between' => 'The user name must be between 1 and 200 characters.',
+            'expense_category_id.required' => 'Please select an expense category.',
+            'expense_category_id.uuid' => 'The expense category ID must be a valid UUID.',
+            'expense_category_id.exists' => 'The selected expense category does not exist.',
 
-            'email.required' => 'The user email is required.',
-            'email.string' => 'The user email must be a valid string.',
-            'email.between' => 'The user email must be between 1 and 200 characters.',
-            'email.unique' => 'The user email has already been taken.',
-            
-            'role.required' => 'The role is required',
-            'role.string' => 'The role must be a string',
-            'role.in' => 'The role must be either Admin, Manager Or Employee',
+            'title.required' => 'The title is required.',
+            'title.string' => 'The title must be a valid string.',
+            'title.between' => 'The title must be between 1 and 200 characters.',
+
+            'amount.required' => 'The amount is required.',
+            'amount.integer' => 'The amount must be an integer number.',
         ];
     }
 }

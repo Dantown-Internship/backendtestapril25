@@ -22,8 +22,6 @@ class CreateExpenseController extends Controller
             'user_id' => $loggedInUser->id,
         ])->all();
 
-        unset($createExpenseRecordOptions['password_confirmation']);
-
         $createdExpense = $this->createExpenseAction->execute(
             $createExpenseRecordOptions
         );

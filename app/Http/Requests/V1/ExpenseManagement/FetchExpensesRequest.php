@@ -15,6 +15,7 @@ class FetchExpensesRequest extends FormRequest
     {
         return [
             'search_query' => ['nullable', 'string'],
+            'expense_category_id' => ['nullable', 'uuid'],
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'between:1,100'],
         ];

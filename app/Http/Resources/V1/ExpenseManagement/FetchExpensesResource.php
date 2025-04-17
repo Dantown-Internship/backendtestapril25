@@ -16,9 +16,9 @@ class FetchExpensesResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
+            'expense_category' => $this->expenseCategory->name,
+            'title' => $this->title,
+            'amount' => $this->amount,
         ];
     }
 }

@@ -17,10 +17,18 @@ class ListExpensesAction
 
         $query = $this->expense->query()
             ->with($relationships)
-            ->orderBy('name', 'asc');
+            ->orderBy('created_at', 'desc');
 
         if (!empty($filterRecordOptionsPayload['company_id'])) {
             $query->where('company_id', $filterRecordOptionsPayload['company_id']);
+        }
+
+        if (!empty($filterRecordOptionsPayload['expense_category_id'])) {
+            $query->where('expense_category_id', $filterRecordOptionsPayload['expense_category_id']);
+        }
+
+        if (!empty($filterRecordOptionsPayload['search_query'])) {
+            $query->where('title', 'LIKE', $filterRecordOptionsPayload['search_query'] . '%');
         }
 
         if ($paginationPayload) {
