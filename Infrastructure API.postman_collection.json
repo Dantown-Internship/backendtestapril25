@@ -1,0 +1,3163 @@
+{
+	"info": {
+		"_postman_id": "2fd5b851-13a1-4dac-95cf-51d622844cbc",
+		"name": "Infrastructure API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29299544",
+		"_collection_link": "https://red-crescent-903344.postman.co/workspace/Dontown-Test~8c186357-e52b-4a5e-9a14-fe3d814f207c/collection/29299544-2fd5b851-13a1-4dac-95cf-51d622844cbc?action=share&source=collection_link&creator=29299544"
+	},
+	"item": [
+		{
+			"name": "V1",
+			"item": [
+				{
+					"name": "Authentication",
+					"item": [
+						{
+							"name": "Onboarding",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 201) {",
+											"    const response = pm.response.json()",
+											"",
+											"    const accessCredentials = response.data.access_credentials.token",
+											"",
+											"    pm.environment.set('accessToken', accessCredentials)",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"company\": {\n        \"name\": \"Dontown Corp\",\n        \"email\": \"info@godontown.com\"\n    },\n    \"user\": {\n        \"name\": \"Admin Admin\",\n        \"email\": \"admin@godontown.com\",\n        \"password\": \"password\",\n        \"password_confirmation\": \"password\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/authentication/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"authentication",
+										"register"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"company\": {\n        \"name\": \"\",\n        \"email\": \"\"\n    },\n    \"user\": {\n        \"name\": \"\",\n        \"email\": \"\",\n        \"password\": \"\",\n        \"password_confirmation\": \"\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/authentication/register",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"authentication",
+												"register"
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 14 Apr 2025 11:55:51 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"The company.name field is required. (and 4 more errors)\",\n    \"errors\": {\n        \"company.name\": [\n            \"The company.name field is required.\"\n        ],\n        \"company.email\": [\n            \"The company.email field is required.\"\n        ],\n        \"user.name\": [\n            \"The user.name field is required.\"\n        ],\n        \"user.email\": [\n            \"The user.email field is required.\"\n        ],\n        \"user.password\": [\n            \"The user.password field is required.\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "201 - Created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"company\": {\n        \"name\": \"Dontown Corp\",\n        \"email\": \"info1@godontown.com\"\n    },\n    \"user\": {\n        \"name\": \"Admin Admin\",\n        \"email\": \"admin1@godontown.com\",\n        \"password\": \"password\",\n        \"password_confirmation\": \"password\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/authentication/register",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"authentication",
+												"register"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 14 Apr 2025 12:14:24 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 201,\n    \"message\": \"User onboarding was successful\",\n    \"data\": {\n        \"id\": \"01963438-dfd7-7133-9513-51618d714229\",\n        \"company\": {\n            \"id\": \"01963438-deed-7186-8afc-16a887d61a2d\",\n            \"name\": \"Dontown Corp\",\n            \"email\": \"info1@godontown.com\"\n        },\n        \"user\": {\n            \"id\": \"01963438-dfd7-7133-9513-51618d714229\",\n            \"name\": \"Admin Admin\",\n            \"email\": \"admin1@godontown.com\",\n            \"role\": \"Admin\"\n        },\n        \"access_credentials\": {\n            \"token\": \"1|9hqpdCqwkieRsvUsDxA0CjoZWj0m1Q60p3NKP11S77d54968\",\n            \"type\": \"bearer\"\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 200) {",
+											"    const response = pm.response.json()",
+											"",
+											"    const accessCredentials = response.data.access_credentials.token",
+											"",
+											"    pm.environment.set('accessToken', accessCredentials)",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@godontown.com\",\n    \"password\": \"password\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/authentication/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"authentication",
+										"login"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"\",\n    \"password\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/authentication/login",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"authentication",
+												"login"
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 14 Apr 2025 12:39:55 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"The user email is required. (and 1 more error)\",\n    \"errors\": {\n        \"email\": [\n            \"The user email is required.\"\n        ],\n        \"password\": [\n            \"The password is required.\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "400 - Invalid Login Credentials",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"admin@godontown.com\",\n    \"password\": \"password123\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/authentication/login",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"authentication",
+												"login"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 14 Apr 2025 12:40:16 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 400,\n    \"message\": \"Invalid login credentials\"\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"admin@godontown.com\",\n    \"password\": \"password\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/authentication/login",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"authentication",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 14 Apr 2025 12:41:17 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Logged in successfully\",\n    \"data\": {\n        \"id\": \"01963449-0833-730e-a29a-7dae464813e8\",\n        \"company\": {\n            \"id\": \"01963449-0748-7144-b3eb-662820138036\",\n            \"name\": \"Dontown Corp\",\n            \"email\": \"info@godontown.com\"\n        },\n        \"user\": {\n            \"id\": \"01963449-0833-730e-a29a-7dae464813e8\",\n            \"name\": \"Admin Admin\",\n            \"email\": \"admin@godontown.com\",\n            \"role\": \"Admin\"\n        },\n        \"access_credentials\": {\n            \"token\": \"3|gvWR25Srpg6WDb0wNOfaHTmGRg80qPK2cUftwYo59d6ac7fd\",\n            \"type\": \"bearer\"\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "User Management",
+					"item": [
+						{
+							"name": "Fetch Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/v1/user-management/users?page=1&per_page=100&search_query=",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"user-management",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "100"
+										},
+										{
+											"key": "search_query",
+											"value": "",
+											"description": "Optional search query to search for users by name or email"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users?page=1&per_page=100&search_query=",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "per_page",
+													"value": "100"
+												},
+												{
+													"key": "search_query",
+													"value": "",
+													"description": "Optional search query to search for users by name or email"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 15 Apr 2025 12:15:43 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 201,\n    \"message\": \"The list of users was retrieved successfully\",\n    \"data\": {\n        \"users\": [],\n        \"pagination_payload\": {\n            \"meta\": {\n                \"current_page\": 1,\n                \"from\": null,\n                \"last_page\": 1,\n                \"path\": \"http://localhost/api/v1/user-management/users\",\n                \"per_page\": 100,\n                \"to\": null,\n                \"total\": 0\n            },\n            \"links\": {\n                \"first\": \"http://localhost/api/v1/user-management/users?page=1\",\n                \"last\": \"http://localhost/api/v1/user-management/users?page=1\",\n                \"prev\": null,\n                \"next\": null\n            }\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Create User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dauda Pona\",\n    \"email\": \"daudapona2@gmail.com\",\n    \"role\": \"Manager\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/user-management/users",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"user-management",
+										"users"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"\",\n    \"email\": \"\",\n    \"role\": \"\",\n    \"password\": \"\"   \n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users"
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 15 Apr 2025 12:16:51 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"The user name is required. (and 3 more errors)\",\n    \"errors\": {\n        \"name\": [\n            \"The user name is required.\"\n        ],\n        \"email\": [\n            \"The user email is required.\"\n        ],\n        \"role\": [\n            \"The role is required\"\n        ],\n        \"password\": [\n            \"The password is required.\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "201 - Created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dauda Pona\",\n    \"email\": \"daudapona2@gmail.com\",\n    \"role\": \"Manager\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 15 Apr 2025 12:17:36 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 201,\n    \"message\": \"User was created successfully\",\n    \"data\": {\n        \"id\": \"01963962-29a3-721d-a376-a724b6aec4eb\",\n        \"name\": \"Dauda Pona\",\n        \"email\": \"daudapona2@gmail.com\",\n        \"role\": \"Manager\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dauda Pona\",\n    \"email\": \"daudapona21@gmail.com\",\n    \"role\": \"Manager\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/user-management/users/:userId",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"user-management",
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "01963962-29a3-721d-a376-a724b6aec4eb"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"\",\n    \"email\": \"\",\n    \"role\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users/:userId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 15 Apr 2025 12:18:47 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"The user name is required. (and 2 more errors)\",\n    \"errors\": {\n        \"name\": [\n            \"The user name is required.\"\n        ],\n        \"email\": [\n            \"The user email is required.\"\n        ],\n        \"role\": [\n            \"The role is required\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dauda Pona\",\n    \"email\": \"daudapona21@gmail.com\",\n    \"role\": \"Manager\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users/:userId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "01963962-29a3-721d-a376-a724b6aec4eb"
+												}
+											]
+										}
+									},
+									"status": "OK2",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:12:03 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"User was updated successfully\"\n}"
+								},
+								{
+									"name": "404 - Not Found",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dauda Pona\",\n    \"email\": \"daudapona21@gmail.com\",\n    \"role\": \"Manager\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/user-management/users/:userId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"user-management",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:13:20 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"User record does not exists\"\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{accessToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Expense Management",
+					"item": [
+						{
+							"name": "Create Expense",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"expense_category_id\": \"01964391-628b-707d-b342-b006d9629b06\",\n    \"title\": \"Papers\",\n    \"amount\": \"10000\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/expense-management/expenses",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"expense-management",
+										"expenses"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"expense_category_id\": \"\",\n    \"title\": \"\",\n    \"amount\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses"
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:38:24 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Please select an expense category. (and 2 more errors)\",\n    \"errors\": {\n        \"expense_category_id\": [\n            \"Please select an expense category.\"\n        ],\n        \"title\": [\n            \"The title is required.\"\n        ],\n        \"amount\": [\n            \"The amount is required.\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "201 - Created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"expense_category_id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n    \"title\": \"Papers\",\n    \"amount\": \"10000\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:42:29 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 201,\n    \"message\": \"Expense was created successfully\",\n    \"data\": {\n        \"id\": \"01964357-cd4d-7204-ab19-d06e4048a397\",\n        \"expense_category\": {\n            \"id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n            \"name\": \"Office Utilities\"\n        },\n        \"title\": \"Papers\",\n        \"amount\": \"10000\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Update Expense",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"expense_category_id\": \"01964391-628b-707d-b342-b006d9629b06\",\n    \"title\": \"Papers\",\n    \"amount\": \"10000\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"expense-management",
+										"expenses",
+										":exenseId"
+									],
+									"variable": [
+										{
+											"key": "exenseId",
+											"value": "01964391-db9e-7260-9583-80dd25b2f2f9"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "422 - Validation Error",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"expense_category_id\": \"\",\n    \"title\": \"\",\n    \"amount\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Unprocessable Content",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:38:24 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Please select an expense category. (and 2 more errors)\",\n    \"errors\": {\n        \"expense_category_id\": [\n            \"Please select an expense category.\"\n        ],\n        \"title\": [\n            \"The title is required.\"\n        ],\n        \"amount\": [\n            \"The amount is required.\"\n        ]\n    }\n}"
+								},
+								{
+									"name": "404 - Not Found",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"expense_category_id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n    \"title\": \"Papers\",\n    \"amount\": \"10000\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:50:10 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"Expense record does not exists\"\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"expense_category_id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n    \"title\": \"Papers\",\n    \"amount\": \"10000\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": "01964357-cd4d-7204-ab19-d06e4048a397"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:50:31 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Expense was updated successfully\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Expense",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"expense-management",
+										"expenses",
+										":exenseId"
+									],
+									"variable": [
+										{
+											"key": "exenseId",
+											"value": "01964357-cd4d-7204-ab19-d06e4048a397"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "404 - Not Found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:49:08 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"Expense record does not exists\"\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": "01964357-cd4d-7204-ab19-d06e4048a397"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:49:26 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Expense was retrieved successfully\",\n    \"data\": {\n        \"id\": \"01964357-cd4d-7204-ab19-d06e4048a397\",\n        \"expense_category\": {\n            \"id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n            \"name\": \"Office Utilities\"\n        },\n        \"title\": \"Papers\",\n        \"amount\": 10000\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Fetch Expenses",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/v1/expense-management/expenses?page=1&per_page=20&expense_category_id=&search_query=",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"expense-management",
+										"expenses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "20"
+										},
+										{
+											"key": "expense_category_id",
+											"value": ""
+										},
+										{
+											"key": "search_query",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses?page=1&per_page=20&expense_category_id=0196395d-a137-73fe-8211-284501d86010&search_query=",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "per_page",
+													"value": "20"
+												},
+												{
+													"key": "expense_category_id",
+													"value": "0196395d-a137-73fe-8211-284501d86010"
+												},
+												{
+													"key": "search_query",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:47:27 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"The list of expenses was retrieved successfully\",\n    \"data\": {\n        \"expenses\": [\n            {\n                \"id\": \"01964357-cd4d-7204-ab19-d06e4048a397\",\n                \"expense_category\": \"Office Utilities\",\n                \"title\": \"Papers\",\n                \"amount\": 10000\n            },\n            {\n                \"id\": \"01964356-5754-72d9-bcd0-c69666320c9b\",\n                \"expense_category\": \"Office Utilities\",\n                \"title\": \"Papers\",\n                \"amount\": 10000\n            }\n        ],\n        \"pagination_payload\": {\n            \"meta\": {\n                \"current_page\": 1,\n                \"from\": 1,\n                \"last_page\": 1,\n                \"path\": \"http://localhost:30000/api/v1/expense-management/expenses\",\n                \"per_page\": 20,\n                \"to\": 2,\n                \"total\": 2\n            },\n            \"links\": {\n                \"first\": \"http://localhost:30000/api/v1/expense-management/expenses?page=1\",\n                \"last\": \"http://localhost:30000/api/v1/expense-management/expenses?page=1\",\n                \"prev\": null,\n                \"next\": null\n            }\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete Expense",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"expense-management",
+										"expenses",
+										":exenseId"
+									],
+									"variable": [
+										{
+											"key": "exenseId",
+											"value": "01964357-cd4d-7204-ab19-d06e4048a397"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "404 - Not Found",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:51:28 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"Expense record does not exists\"\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/expense-management/expenses/:exenseId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"expense-management",
+												"expenses",
+												":exenseId"
+											],
+											"variable": [
+												{
+													"key": "exenseId",
+													"value": "01964357-cd4d-7204-ab19-d06e4048a397"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 10:51:43 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Expense was deleted successfully\"\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{accessToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Settings",
+					"item": [
+						{
+							"name": "Expense Categories",
+							"item": [
+								{
+									"name": "Create Expense Category",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Toiletries\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/settings/expense-categories",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"settings",
+												"expense-categories"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "422 - Validation Error",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories"
+													]
+												}
+											},
+											"status": "Unprocessable Content",
+											"code": 422,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:28:22 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"message\": \"The expense category name is required.\",\n    \"errors\": {\n        \"name\": [\n            \"The expense category name is required.\"\n        ]\n    }\n}"
+										},
+										{
+											"name": "201 Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"Toiletries\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories"
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:31:06 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 201,\n    \"message\": \"Expense Category was created successfully\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Expense Category",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Toiletries\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"settings",
+												"expense-categories",
+												":expenseCategoryId"
+											],
+											"variable": [
+												{
+													"key": "expenseCategoryId",
+													"value": "01964391-628b-707d-b342-b006d9629b06"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "422 - Validation Error",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories",
+														":expenseCategoryId"
+													],
+													"variable": [
+														{
+															"key": "expenseCategoryId",
+															"value": ""
+														}
+													]
+												}
+											},
+											"status": "Unprocessable Content",
+											"code": 422,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:28:22 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"message\": \"The expense category name is required.\",\n    \"errors\": {\n        \"name\": [\n            \"The expense category name is required.\"\n        ]\n    }\n}"
+										},
+										{
+											"name": "200 - OK",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"Toiletries\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories",
+														":expenseCategoryId"
+													],
+													"variable": [
+														{
+															"key": "expenseCategoryId",
+															"value": ""
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:31:06 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Expense category was updated successfully\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Fetch Expense Categories",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/settings/expense-categories",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"settings",
+												"expense-categories"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "200 - OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:30:07 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"The list of expenses was retrieved successfully\",\n    \"data\": {\n        \"expense_categories\": [\n            {\n                \"id\": \"0196395d-a137-73fe-8211-284501d86010\",\n                \"name\": \"Gifts\"\n            },\n            {\n                \"id\": \"0196395d-a136-70be-82b4-ed6e331cfefa\",\n                \"name\": \"Office Utilities\"\n            },\n            {\n                \"id\": \"0196395d-a136-70be-82b4-ed6e33d9a209\",\n                \"name\": \"Transportation\"\n            },\n            {\n                \"id\": \"0196395d-a135-7287-96b6-5641c11e2583\",\n                \"name\": \"Wages & Salaries\"\n            }\n        ]\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Expense Category",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"settings",
+												"expense-categories",
+												":expenseCategoryId"
+											],
+											"variable": [
+												{
+													"key": "expenseCategoryId",
+													"value": "0196434d-5f5c-7182-b4f7-2efb3b074323"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "404 - Not Found",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories",
+														":expenseCategoryId"
+													],
+													"variable": [
+														{
+															"key": "expenseCategoryId",
+															"value": ""
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:33:46 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"Expense category record does not exists\"\n}"
+										},
+										{
+											"name": "200 - OK",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"type": "text"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{baseURL}}/v1/settings/expense-categories/:expenseCategoryId",
+													"host": [
+														"{{baseURL}}"
+													],
+													"path": [
+														"v1",
+														"settings",
+														"expense-categories",
+														":expenseCategoryId"
+													],
+													"variable": [
+														{
+															"key": "expenseCategoryId",
+															"value": "0196434d-5f5c-7182-b4f7-2efb3b074323"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Host",
+													"value": "localhost:30000"
+												},
+												{
+													"key": "Connection",
+													"value": "close"
+												},
+												{
+													"key": "X-Powered-By",
+													"value": "PHP/8.4.6"
+												},
+												{
+													"key": "Cache-Control",
+													"value": "no-cache, private"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 17 Apr 2025 10:34:03 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Expense category was deleted successfully\"\n}"
+										}
+									]
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{accessToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Audit Logs",
+					"item": [
+						{
+							"name": "Fetch Audit Logs",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/v1/audit-log-management/audit-logs?user_id=&page=1&per_page=100&search_query=",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"audit-log-management",
+										"audit-logs"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": ""
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "100"
+										},
+										{
+											"key": "search_query",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseURL}}/v1/audit-log-management/audit-logs?user_id=&page=1&per_page=100&search_query=",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"audit-log-management",
+												"audit-logs"
+											],
+											"query": [
+												{
+													"key": "user_id",
+													"value": ""
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "per_page",
+													"value": "100"
+												},
+												{
+													"key": "search_query",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 11:46:27 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"The list of audit logs were retrieved successfully\",\n    \"data\": {\n        \"audit_logs\": [\n            {\n                \"id\": \"01964392-2bc3-7095-8715-86bd4d4bda47\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin updated an expense\",\n                \"created_at\": \"2025-04-17T11:46:15.000000Z\"\n            },\n            {\n                \"id\": \"01964391-dba4-72d5-9f90-5bacbf766d62\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin created an expense\",\n                \"created_at\": \"2025-04-17T11:45:54.000000Z\"\n            },\n            {\n                \"id\": \"01964391-aacf-71e5-96f8-b9afe5cf0753\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin updated an expense category\",\n                \"created_at\": \"2025-04-17T11:45:42.000000Z\"\n            },\n            {\n                \"id\": \"01964391-6295-7079-ac13-22f1def6bbee\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin created an expense category\",\n                \"created_at\": \"2025-04-17T11:45:23.000000Z\"\n            },\n            {\n                \"id\": \"0196438f-4c6f-727b-8468-3f8e76f12f16\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin logged into the system\",\n                \"created_at\": \"2025-04-17T11:43:06.000000Z\"\n            },\n            {\n                \"id\": \"0196438e-589b-714e-8d9b-674d73903ddb\",\n                \"user\": \"Admin Admin\",\n                \"action\": \"Admin Admin created an account\",\n                \"created_at\": \"2025-04-17T11:42:04.000000Z\"\n            }\n        ],\n        \"pagination_payload\": {\n            \"meta\": {\n                \"current_page\": 1,\n                \"from\": 1,\n                \"last_page\": 1,\n                \"path\": \"http://localhost:30000/api/v1/audit-log-management/audit-logs\",\n                \"per_page\": 100,\n                \"to\": 6,\n                \"total\": 6\n            },\n            \"links\": {\n                \"first\": \"http://localhost:30000/api/v1/audit-log-management/audit-logs?page=1\",\n                \"last\": \"http://localhost:30000/api/v1/audit-log-management/audit-logs?page=1\",\n                \"prev\": null,\n                \"next\": null\n            }\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Audit Log",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/v1/audit-log-management/audit-logs/:auditLogId",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v1",
+										"audit-log-management",
+										"audit-logs",
+										":auditLogId"
+									],
+									"variable": [
+										{
+											"key": "auditLogId",
+											"value": "01964392-2bc3-7095-8715-86bd4d4bda47"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "404 - Not Found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/v1/audit-log-management/audit-logs/:auditLogId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"audit-log-management",
+												"audit-logs",
+												":auditLogId"
+											],
+											"variable": [
+												{
+													"key": "auditLogId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 11:47:05 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Error\",\n    \"status_code\": 404,\n    \"message\": \"Audit log record does not exists\"\n}"
+								},
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/v1/audit-log-management/audit-logs/:auditLogId",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"v1",
+												"audit-log-management",
+												"audit-logs",
+												":auditLogId"
+											],
+											"variable": [
+												{
+													"key": "auditLogId",
+													"value": "01964392-2bc3-7095-8715-86bd4d4bda47"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:30000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.6"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Apr 2025 11:47:14 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"Success\",\n    \"status_code\": 200,\n    \"message\": \"Audit log was retrieved successfully\",\n    \"data\": {\n        \"id\": \"01964392-2bc3-7095-8715-86bd4d4bda47\",\n        \"user\": {\n            \"id\": \"0196438e-5885-72eb-a2ee-f2aa5cf9726d\",\n            \"name\": \"Admin Admin\"\n        },\n        \"action\": \"Admin Admin updated an expense\",\n        \"changes\": [\n            {\n                \"details_key\": \"Previous value\",\n                \"details_value\": {\n                    \"expense_category\": \"Toiletries\",\n                    \"title\": \"Papers\",\n                    \"amount\": 10000\n                }\n            },\n            {\n                \"details_key\": \"Current value\",\n                \"details_value\": {\n                    \"expense_category\": \"Toiletries\",\n                    \"title\": \"Papers\",\n                    \"amount\": \"10000\"\n                }\n            }\n        ],\n        \"created_at\": \"2025-04-17T11:46:15.000000Z\"\n    }\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{accessToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
