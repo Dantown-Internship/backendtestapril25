@@ -23,6 +23,10 @@ class ListUsersAction
             $query->where('company_id', $filterRecordOptionsPayload['company_id']);
         }
 
+        if (!empty($filterRecordOptionsPayload['role'])) {
+            $query->where('role', $filterRecordOptionsPayload['role']);
+        }
+
         if (!empty($filterRecordOptionsPayload['search_query'])) {
             $query->where('name', 'LIKE', $filterRecordOptionsPayload['search_query'] . '%')->orWhere('email', 'LIKE', $filterRecordOptionsPayload['search_query'] . '%');
         }

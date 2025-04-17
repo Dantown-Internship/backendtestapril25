@@ -1,8 +1,11 @@
 <?php
 
+use App\Jobs\BackgroundProcessing\Expenses\SendWeeklyExpenseReportBackgroundProcessingJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Artisan::command('cronjob:send-weekly-expense-report', function() {
+    dispatch(
+        new SendWeeklyExpenseReportBackgroundProcessingJob()
+    );
+})->purpose('Cronjob to send weekly expense reports');
