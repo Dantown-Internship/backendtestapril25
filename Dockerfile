@@ -3,9 +3,14 @@
 FROM php:8.2-fpm
 
 # Install system dependencies
+# RUN apt-get update && apt-get install -y \
+#     libzip-dev zip unzip git curl sqlite3 \
+#     && docker-php-ext-install pdo pdo_sqlite zip
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip git curl sqlite3 \
+    libzip-dev zip unzip git curl \
+    sqlite3 libsqlite3-dev pkg-config \
     && docker-php-ext-install pdo pdo_sqlite zip
+
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
