@@ -20,7 +20,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): Response
     {
-        return $this->canManageUsers($user, $model) || $this->belongsToUser($user, $model) ? 
+        return $user->isAdmin() || $this->belongsToUser($user, $model) ?
             Response::allow() :
             Response::deny('You do not have permission to view this user.');
     }
@@ -36,44 +36,38 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, User $model): Response
+    public function update(User $user): Response
     {
-        return $this->canManageUsers($user, $model) ? Response::allow() : Response::deny('You do not have permission to update this user.');
+        return $user->isAdmin() ? Response::allow() : Response::deny('You do not have permission to update this user.');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, User $model): Response
+    public function delete(User $user): Response
     {
-        return $this->canManageUsers($user, $model) ? Response::allow() : Response::deny('You do not have permission to delete this user.');
-
+        return $user->isAdmin() ? Response::allow() : Response::deny('You do not have permission to delete this user.');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, User $model): bool
+    public function restore(User $user): bool
     {
-        return $this->canManageUsers($user, $model);
+        return $user->isAdmin();
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, User $model): bool
+    public function forceDelete(User $user): bool
     {
-        return $this->canManageUsers($user, $model);
+        return $user->isAdmin();
     }
 
     private function belongsToUser(User $user, User $model): bool
     {
 
         return $model->id === $user->id;
-    }
-
-    private function canManageUsers(User $user, User $model): bool
-    {
-        return $user->isAdmin() && $user->company->id == $model->company->id;
     }
 }

@@ -7,13 +7,14 @@ use App\Http\Requests\Users\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    private $authGuard;
     public function __construct(private readonly UserService $userService)
     {
+        $this->authGuard = auth('sanctum');
     }
 
     /**
@@ -23,8 +24,11 @@ class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
+        /** @var \App\Models\User $user */
+        $user = $this->authGuard->user();
         return UserResource::collection(
-            auth()->user()->getCompanyUsers()
+
+            $user->getCompanyUsers()
         )->additional([
             'meta' => [
                 'message' => 'Users retrieved successfully',
@@ -39,7 +43,7 @@ class UserController extends Controller
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
-        $user = $this->userService->createUser([...$validated, 'company_id' => auth()->user()->company_id]);
+        $user = $this->userService->createUser([...$validated, 'company_id' => $this->authGuard->user()->company_id]);
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
 

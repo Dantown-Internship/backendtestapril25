@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Gate;
 
 class ExpenseController extends Controller
 {
+    private $authGuard;
+
+    public function __construct()
+    {
+        $this->authGuard = auth('sanctum');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -18,10 +24,10 @@ class ExpenseController extends Controller
     {
         $term = request('search', '');
 
-        $key = 'expenses_' . auth()->user()->company_id . '_' . $term;
+        $key = 'expenses_' . $this->authGuard->user()->company_id . '_' . $term;
 
         return Cache::remember($key, 60, function () use ($term) {
-            $expenses = Expense::with('user')->companyExpenses(auth()->user()->company_id)
+            $expenses = Expense::with('user')->companyExpenses($this->authGuard->user()->company_id)
                 ->search($term)
                 ->paginate();
             return ExpenseResource::collection($expenses)
@@ -45,8 +51,8 @@ class ExpenseController extends Controller
             'title' => $request->title,
             'amount' => $request->amount,
             'category' => $request->category,
-            'user_id' => auth()->user()->id,
-            'company_id' => auth()->user()->company_id,
+            'user_id' => $this->authGuard->user()->id,
+            'company_id' => $this->authGuard->user()->company_id,
         ]);
 
         return (new ExpenseResource($expense))

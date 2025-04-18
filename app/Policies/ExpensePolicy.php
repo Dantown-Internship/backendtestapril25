@@ -31,7 +31,7 @@ class ExpensePolicy
      */
     public function create(User $user): Response
     {
-        return $this->canCreateExpenses($user)? 
+        return $this->canCreateExpenses($user) ?
             Response::allow() :
             Response::deny('You do not have permission to create expenses.');
     }
@@ -49,9 +49,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Expense $expense): Response
+    public function delete(User $user): Response
     {
-        return $this->canDeleteExpenses($user, $expense) ?
+        return $user->isAdmin() ?
             Response::allow() :
             Response::deny('You do not have permission to delete this expense.');
     }
@@ -67,9 +67,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Expense $expense): bool
+    public function forceDelete(User $user): bool
     {
-        return $this->canDeleteExpenses($user, $expense);
+        return $user->isAdmin();
     }
 
     private function belongsToEmployee(User $user, Expense $expense): bool
@@ -82,13 +82,8 @@ class ExpensePolicy
         return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_MANAGER, User::ROLE_EMPLOYEE]);
     }
 
-    private function canManageExpenses(User $user, Expense $expense): bool
+    private function canManageExpenses(User $user): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_MANAGER]) && $user->company_id === $expense->company_id;
-    }
-   
-    private function canDeleteExpenses(User $user, Expense $expense): bool
-    {
-        return in_array($user->role, [User::ROLE_ADMIN]) && $user->company_id === $expense->company_id;
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_MANAGER]);
     }
 }

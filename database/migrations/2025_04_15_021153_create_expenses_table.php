@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('company_id')->unsigned();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title', 100);
-            $table->decimal('amount', 10, 2);
+            $table->integer('amount');
             $table->string('category', 100);
             $table->timestamps();
         });

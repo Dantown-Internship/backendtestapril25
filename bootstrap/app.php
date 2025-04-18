@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCompanyMatch;
 use App\Http\Middleware\EnsureJsonRequest;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->prepend(EnsureJsonRequest::class);
+        $middleware->alias([
+            'ensure.company.match' => EnsureCompanyMatch::class,
+        ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:prune-tmp-storage')->daily();
