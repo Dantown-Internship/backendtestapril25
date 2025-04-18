@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Manager – Dev Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4">🧾 Expense Manager</h1>
+
+        <!-- Login Form -->
+        <div id="loginSection" class="card p-4 mb-4">
+            <h4>Login</h4>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+
+        <!-- Main App Section -->
+        <div id="appSection" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Dashboard</h4>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="dashboardTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#expensesTab" data-bs-toggle="tab">Expenses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#usersTab" data-bs-toggle="tab">User Management</a>
+                </li>
+            </ul>
+
+            <div class="tab-content pt-3">
+                <!-- Expenses Tab -->
+                <div class="tab-pane fade show active" id="expensesTab">
+                    <div id="expensesLoader" class="text-center py-3 d-none">
+                        <div class="spinner-border" role="status"></div>
+                    </div>
+
+                    <form id="addExpenseForm" class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <input type="text" id="expenseTitle" class="form-control" placeholder="Title" required />
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" step="0.01" id="expenseAmount" class="form-control"
+                                placeholder="Amount" required />
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="expenseCategory" class="form-control" placeholder="Category"
+                                required />
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-success w-100">Add</button>
+                        </div>
+                    </form>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- User Management Tab -->
+                <div class="tab-pane fade" id="usersTab">
+                    <div id="usersLoader" class="text-center py-3 d-none">
+                        <div class="spinner-border" role="status"></div>
+                    </div>
+
+                    <form id="addUserForm" class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <input type="text" id="userName" class="form-control" placeholder="Name" required />
+                        </div>
+                        <div class="col-md-3">
+                            <input type="email" id="userEmail" class="form-control" placeholder="Email" required />
+                        </div>
+                        <div class="col-md-3">
+                            <select id="userRole" class="form-select" required>
+                                <option value="">Select Role</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Employee">Employee</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="password" id="userPassword" class="form-control" placeholder="Password"
+                                required />
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary">Add User</button>
+                        </div>
+                    </form>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiBase = "http://localhost:8000/api";
+        const token = localStorage.getItem("token");
+        const loginSection = document.getElementById("loginSection");
+        const appSection = document.getElementById("appSection");
+
+        if (token) {
+            loginSection.classList.add("d-none");
+            appSection.classList.remove("d-none");
+            fetchProfile().then(profile => {
+                window.currentUserRole = profile.role;
+                if (profile.role !== 'Admin' && profile.role !== 'Administrator') {
+                    document.querySelector("a[href='#usersTab']")?.closest('li')?.classList.add("d-none");
+                    document.getElementById("usersTab")?.classList.add("d-none");
+                }
+                fetchExpenses();
+                fetchUsers();
+            });
+        }
+
+
+        // ✅ Login functionality
+        /**
+   * Handles user login form submission.
+   */
+        document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch(`${apiBase}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("token", data.access_token);
+                loginSection.classList.add("d-none");
+                appSection.classList.remove("d-none");
+                fetchProfile().then(profile => {
+                    window.currentUserRole = profile.role;
+                    if (profile.role !== 'Admin' && profile.role !== 'Administrator') {
+                        document.querySelector("a[href='#usersTab']")?.closest('li')?.classList.add("d-none");
+                        document.getElementById("usersTab")?.classList.add("d-none");
+                    }
+                    fetchExpenses();
+                    fetchUsers();
+                });
+            } else {
+                showToast("Login failed. Please check your credentials.", true);
+            }
+        });
+
+        /**
+         * Fetches the authenticated user's profile.
+         * @returns {Promise<Object>} The user profile.
+         */
+        async function fetchProfile() {
+            const response = await fetch(`${apiBase}/user`, { headers: buildAuthHeaders() });
+            return response.ok ? await response.json() : { role: "Employee" };
+        }
+
+        /**
+         * Fetches and renders expenses.
+         */
+        async function fetchExpenses() {
+            toggleLoader("expensesLoader", true);
+            const response = await fetch(`${apiBase}/expenses`, { headers: buildAuthHeaders() });
+            toggleLoader("expensesLoader", false);
+
+            if (response.ok) {
+                const data = await response.json();
+                const tbody = document.getElementById("expensesTableBody");
+                tbody.innerHTML = "";
+                data.data.forEach(exp => tbody.innerHTML += renderExpenseRow(exp));
+            }
+        }
+
+        /**
+         * Renders a single expense row.
+         * @param {Object} expense - The expense object.
+         * @returns {string} The HTML string for the expense row.
+         */
+        function renderExpenseRow(expense) {
+            return `
+        <tr>
+            <td contenteditable onblur="updateExpenseField(${expense.id}, 'title', this.innerText)">${expense.title}</td>
+            <td contenteditable onblur="updateExpenseField(${expense.id}, 'amount', this.innerText)">${expense.amount}</td>
+            <td contenteditable onblur="updateExpenseField(${expense.id}, 'category', this.innerText)">${expense.category}</td>
+            <td>${new Date(expense.created_at).toLocaleString()}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteExpense(${expense.id})">Delete</button></td>
+        </tr>`;
+        }
+
+        // ✅ Fetch Users
+        /**
+         * Fetches and renders users.
+         */
+        async function fetchUsers() {
+            toggleLoader("usersLoader", true);
+            const response = await fetch(`${apiBase}/users`, { headers: buildAuthHeaders() });
+            toggleLoader("usersLoader", false);
+
+            if (response.ok) {
+                const data = await response.json();
+                const tbody = document.getElementById("usersTableBody");
+                tbody.innerHTML = "";
+                data.data.forEach(user => {
+                    tbody.innerHTML += `
+            <tr>
+                <td contenteditable onblur="updateUserField(${user.id}, 'name', this.innerText)">${user.name}</td>
+                <td>${user.email}</td>
+                <td contenteditable onblur="updateUserField(${user.id}, 'role', this.innerText)">${user.role}</td>
+                <td> </td>
+                </tr>`;
+                // Uncomment the following line if you want to add a delete button for each user. For now, it's commented out since the delete endpoint is not created.
+                // <td>
+                //     <button class='btn btn-danger btn-sm' onclick='deleteUser(${user.id})'>Delete</button>
+                // </td>
+                });
+            }
+        }
+
+        // ✅ Add User
+        /**
+         * Sends a request to add a new user.
+         */
+        document.getElementById("addUserForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("userName").value;
+            const email = document.getElementById("userEmail").value;
+            const password = document.getElementById("userPassword").value;
+            const role = document.getElementById("userRole").value;
+
+            const response = await fetch(`${apiBase}/users`, {
+                method: "POST",
+                headers: buildAuthHeaders(),
+                body: JSON.stringify({ name, email, password, password_confirmation: password, role })
+            });
+
+            if (response.ok) {
+                e.target.reset();
+                fetchUsers();
+                showToast("User added successfully.");
+            } else {
+                showToast("Failed to add user. You may not have permission.", true);
+            }
+        });
+
+        /**
+         * Sends a request to delete a user.
+         * @param {number} id
+         */
+        async function deleteUser(id) {
+            if (!confirm("Are you sure you want to delete this user?")) return;
+            const response = await fetch(`${apiBase}/users/${id}`, {
+                method: "DELETE",
+                headers: buildAuthHeaders()
+            });
+            if (response.ok) {
+                fetchUsers();
+                showToast("User deleted.");
+            } else {
+                showToast("Failed to delete user.", true);
+            }
+        }
+
+        // ✅ Update User
+        /**
+         * Sends a request to update a user field.
+         * @param {number} id
+         * @param {string} field
+         * @param {string} value
+         */
+        async function updateUserField(id, field, value) {
+            const response = await fetch(`${apiBase}/users/${id}`, {
+                method: 'PUT',
+                headers: buildAuthHeaders(),
+                body: JSON.stringify({ [field]: value })
+            });
+            if (!response.ok) {
+                showToast("Failed to update user.", true);
+            } else {
+                showToast("User updated.");
+            }
+        }
+
+        // ✅ Add Expense
+        /**
+         * Sends a request to add a new expense.
+         */
+        document.getElementById("addExpenseForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const title = document.getElementById("expenseTitle").value;
+            const amount = document.getElementById("expenseAmount").value;
+            const category = document.getElementById("expenseCategory").value;
+
+            const response = await fetch(`${apiBase}/expenses`, {
+                method: "POST",
+                headers: buildAuthHeaders(),
+                body: JSON.stringify({ title, amount, category })
+            });
+
+            if (response.ok) {
+                e.target.reset();
+                fetchExpenses();
+                showToast("Expense added successfully.");
+            } else {
+                showToast("Failed to add expense.", true);
+            }
+        });
+
+        // ✅ Delete Expense
+        /**
+         * Sends a request to delete an expense.
+         * @param {number} id
+         */
+        async function deleteExpense(id) {
+            if (!confirm("Are you sure you want to delete this expense?")) return;
+            const response = await fetch(`${apiBase}/expenses/${id}`, {
+                method: "DELETE",
+                headers: buildAuthHeaders()
+            });
+            if (response.ok) {
+                fetchExpenses();
+                showToast("Expense deleted.");
+            } else {
+                showToast("Failed to delete expense.", true);
+            }
+        }
+
+        /**
+         * Sends a request to update an expense field.
+         * @param {number} id
+         * @param {string} field
+         * @param {string|number} value
+         */
+        async function updateExpenseField(id, field, value) {
+            const response = await fetch(`${apiBase}/expenses/${id}`, {
+                method: 'PUT',
+                headers: buildAuthHeaders(),
+                body: JSON.stringify({ [field]: value })
+            });
+            if (!response.ok) {
+                showToast("Failed to update expense.", true);
+            } else {
+                showToast("Expense updated.");
+            }
+        }
+
+        /**
+         * Changes the loader visibility.
+         * @param {string} id - The ID of the loader element.
+         * @param {boolean} show - Whether to show or hide the loader.
+        */
+        function toggleLoader(id, show) {
+            document.getElementById(id).classList.toggle("d-none", !show);
+        }
+
+        /**
+         * Builds the authorization headers with the token.
+         * @returns {Object}
+         */
+        function buildAuthHeaders() {
+            return {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+            };
+        }
+
+        /**
+         * Logs out the user and resets the UI.
+         */
+        function logout() {
+            localStorage.removeItem("token");
+            location.reload();
+        }
+
+        /**
+         * Displays a toast message.
+         * @param {string} message
+         * @param {boolean} [isError=false]
+         */
+        function showToast(message, isError = false) {
+            const toast = document.createElement("div");
+            toast.className = `toast align-items-center text-bg-${isError ? "danger" : "success"} border-0 show position-fixed top-0 end-0 m-3`;
+            toast.setAttribute("role", "alert");
+            toast.setAttribute("aria-live", "assertive");
+            toast.setAttribute("aria-atomic", "true");
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

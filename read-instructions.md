@@ -24,17 +24,21 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 ### 🏗️ Task 1: Multi-Tenant Database Structure (Migrations & Models)
 
 #### Companies Table
+
 - Fields: `id`, `name`, `email`, `created_at`, `updated_at`
 
 #### Users Table (Modified)
+
 - Add `company_id` (Foreign Key)
 - Add `role` (Enum: `["Admin", "Manager", "Employee"]`)
 
 #### Expenses Table
+
 - Fields: `id`, `company_id`, `user_id`, `title`, `amount`, `category`, `created_at`, `updated_at`
 - Add an index on `company_id` for performance
 
 #### Relationships
+
 - A **Company** has many **Users**
 - A **User** belongs to a **Company**
 - A **User** has many **Expenses**
@@ -55,16 +59,19 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 ### 🧾 Task 3: API Endpoints
 
 #### Authentication
+
 - `POST /api/register` → Admin only
 - `POST /api/login`
 
 #### Expense Management
+
 - `GET /api/expenses` → List (by company, paginated, searchable by title/category)
 - `POST /api/expenses` → Create (restricted to logged-in user’s company)
 - `PUT /api/expenses/{id}` → Update (Managers & Admins only)
 - `DELETE /api/expenses/{id}` → Delete (Admins only)
 
 #### User Management
+
 - `GET /api/users` → List users (Admins only)
 - `POST /api/users` → Add user (Admins only)
 - `PUT /api/users/{id}` → Update user role (Admins only)
@@ -90,9 +97,11 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 ### 🕵️‍♀️ Task 6: Audit Logs
 
 #### Audit Logs Table
+
 - Fields: `id`, `user_id`, `company_id`, `action`, `changes`, `created_at`
 
 #### Requirements
+
 - Log every **update/delete** action on expenses
 - Store the **old and new values** of each expense before update
 
@@ -116,14 +125,16 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 
    ```bash
    git checkout -b john-doe
+   ```
 4. Complete the tasks outlined above.
 5. Push your branch to your forked repository:
 
+   ```bash
    git push origin your-branch-name
-
+   ```
 6. Create a Pull Request (PR) to the original repository’s `main` branch.
-
 7. In the PR description, please include:
+
    - Your full name
    - Any notes or assumptions made
    - Features you implemented or skipped (with reasons)
@@ -133,15 +144,13 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 
 ## ✅ Evaluation Criteria
 
-- Correctness & completeness of features  
-- Code structure and readability  
-- Proper use of Laravel best practices  
-- Security and role enforcement  
-- Performance optimizations  
-- Bonus: Tests, Redis integration, and proper API responses  
+- Correctness & completeness of features
+- Code structure and readability
+- Proper use of Laravel best practices
+- Security and role enforcement
+- Performance optimizations
+- Bonus: Tests, Redis integration, and proper API responses
 
 ---
 
 Good luck! 🍀 Feel free to reach out if you need clarification on any part of the task.
-
-
