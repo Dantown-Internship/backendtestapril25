@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\WeeklyExpenseReport;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test-mail', function () {
+    $user = \App\Models\User::first();
+    $expenses = \App\Models\Expense::where('company_id', $user->company_id)->get();
+
+    Mail::to($user->email)->send(new WeeklyExpenseReport($user, $expenses));
+
+    return 'Mail sent';
 });
