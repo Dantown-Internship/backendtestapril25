@@ -23,4 +23,10 @@ class ExpenseFactory extends Factory
             'company_id' => $user->company_id,
         ];
     }
+    public function forUser(User $user)
+    {
+        return $this->state(fn(array $attributes) => [
+            'user_id' => $user->id,
+        ]);
+    }
 }

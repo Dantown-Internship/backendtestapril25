@@ -24,13 +24,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // Create a single company instance first
+        $company = Company::factory()->create();
+
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'email_verified_at' => now(),
-            'password' => Hash::make('password'), // default password
+            'password' => Hash::make('1234567'),
             'remember_token' => Str::random(10),
-            'company_id' => Company::factory(),
+            'company_id' => $company->id,
+            'role' => 'Admin',
         ];
     }
 

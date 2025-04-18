@@ -76,6 +76,7 @@ class ExpenseController extends Controller
                 'user_id' => userID(),
                 'company_id' => companyID(),
             ]);
+            audit_log('create expenses', userID(), companyID(), 'expenses', [], $expense->toArray());
             // Clear cache to reflect changes
             Cache::tags(['expenses'])->flush();
             return $this->respones("Expense created successfully.", compact("expense"), 201);
@@ -107,7 +108,7 @@ class ExpenseController extends Controller
 
             Cache::tags(['expenses'])->flush();
 
-            // Optional: log audit
+
             audit_log('updated', userID(), companyID(), 'expenses', $old, $expense->toArray());
 
             return response()->json([
