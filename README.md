@@ -53,8 +53,8 @@ To set up the project on your local environment, follow these steps:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/your-repository-name.git
-cd your-repository-name
+git clone https://github.com/FavourOladeji/backendtestapril25.git
+cd backendtestapril25
 ```
 
 ### 2. Install Dependencies
@@ -237,6 +237,8 @@ The **Weekly Expense Report** summarizes weekly expenses, showing:
 -   **Total Amount**: Displays the total expenses incurred.
 -   **Expense Breakdown by Categories**: Provides a detailed breakdown of expenses by category.
 -   **Top 5 Spenders**: Lists the top 5 users with the highest expenses for the week.
+
+![alt text](https://github.com/FavourOladeji/backendtestapril25/blob/favour-oladeji/public/report.png?raw=true)
 
 ### **Weekly Expense Report via Batching**
 
