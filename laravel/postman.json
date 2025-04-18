@@ -1,0 +1,183 @@
+{
+    "info": {
+        "name": "Multi-Tenant Expense Management API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Register a New Admin",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/register",
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"company_name\": \"Example Corp\",\n  \"company_email\": \"corp@example.com\"\n}"
+                },
+                "description": "Registers a new admin user for a company."
+            },
+            "response": []
+        },
+        {
+            "name": "Login",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/login",
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "description": "Authenticates a user and issues an API token."
+            },
+            "response": []
+        },
+        {
+            "name": "List Expenses",
+            "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/expenses",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "query": [
+                    {
+                        "key": "page",
+                        "value": "1"
+                    },
+                    {
+                        "key": "search",
+                        "value": "lunch"
+                    }
+                ],
+                "description": "Lists all expenses for the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "Create an Expense",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/expenses",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Lunch Meeting\",\n  \"amount\": 30.50,\n  \"category\": \"Food\"\n}"
+                },
+                "description": "Creates a new expense for the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "Update an Expense",
+            "request": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/expenses/{{expenseId}}",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Dinner Meeting\",\n  \"amount\": 45.00,\n  \"category\": \"Food\"\n}"
+                },
+                "description": "Updates an existing expense for the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "Delete an Expense",
+            "request": {
+                "method": "DELETE",
+                "url": "{{baseUrl}}/expenses/{{expenseId}}",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "description": "Deletes an existing expense for the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "List Users",
+            "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/users",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "description": "Lists all users within the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "Add a User",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/users",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"janesmith@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"Employee\"\n}"
+                },
+                "description": "Adds a new user to the authenticated user's company."
+            },
+            "response": []
+        },
+        {
+            "name": "Update a User's Role",
+            "request": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/users/{{userId}}",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"role\": \"Manager\"\n}"
+                },
+                "description": "Updates the role of an existing user within the authenticated user's company."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "expenseId",
+            "value": ""
+        },
+        {
+            "key": "userId",
+            "value": ""
+        }
+    ]
+}
