@@ -25,9 +25,10 @@ class ExpenseService
         return $user->company->expenses()->create($data);
     }
 
-    public function updateExpense(User $user, array $data)
+    public function updateExpense(Expense $expense, array $data)
     {
-        return $user->expenses()->update($data);
+        $expense->update($data);
+        return $expense->fresh();
     }
 
     public function deleteExpense(Expense $expense)

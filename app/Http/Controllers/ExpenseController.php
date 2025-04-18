@@ -6,13 +6,14 @@ use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Models\Expense;
 use App\Services\ExpenseService;
+use App\Traits\Auditable;
 use App\Traits\CacheHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ExpenseController extends Controller
 {
-    use CacheHandler;
+    use CacheHandler, Auditable;
 
     public function index(Request $request, ExpenseService $expenseService)
     {
@@ -49,9 +50,19 @@ class ExpenseController extends Controller
 
         $user = $request->user();
 
-        $expense = $expenseService->updateExpense($user, $data);
+        if (isset($data['amount'])) {
+            $data['amount'] = number_format($data['amount'], 2, '.', '');
+        }
 
-        return successJsonResponse('Expense updated successfully.');
+        $old = clone $expense;
+        $expense->fill($data);
+
+        // audit log if any of the relevant fields were changed
+        if ($expense->isDirty()) {
+            $new = $expenseService->updateExpense($expense, $data);
+            $this->logAudit($user, 'update', $old, $new);
+        }
+        return successJsonResponse('Expense updated successfully.', ['expense' => $expense]);
     }
 
     public function destroy(Request $request, Expense $expense, ExpenseService $expenseService)
@@ -59,6 +70,8 @@ class ExpenseController extends Controller
         Gate::authorize('delete', $expense);
 
         $expenseService->deleteExpense($expense);
+
+        $this->logAudit($request->user(), 'delete', $expense);
 
         return successJsonResponse('Expenses deleted successfully.');
     }
