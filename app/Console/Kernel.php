@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('expense:report')
-            ->weekly();
+            ->weeklyOn(1, '08:00')
+            ->appendOutputTo(storage_path('logs/expense-report.log'));
     }
 
     /**

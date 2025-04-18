@@ -17,7 +17,7 @@ test('weekly expense report is scheduled to run weekly', function () {
 
     expect($weeklyReportEvents)->not->toBeEmpty('Weekly report job is not scheduled');
     $event = $weeklyReportEvents->first();
-    expect($event->expression)->toBe('0 0 * * 0');
+    expect($event->expression)->toBe('0 8 * * 1');
 });
 
 test('weekly expense report notification is sent to all the admins of the company', function () {
