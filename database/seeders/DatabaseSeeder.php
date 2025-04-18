@@ -18,28 +18,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $companyCount = Company::count();
-        Log::info("Companies before seeding: $companyCount");
-
         $companies = Company::factory(5)->create();
-        Log::info("Companies after creating 5: " . Company::count());
 
         foreach ($companies as $company) {
             foreach (Role::cases() as $role) {
-                Log::info("Creating user for company {$company->id} with role {$role->value}");
                 // Create user with the role and associated with the company
                 $user = User::factory()->create([
                     'company_id' => $company->id,
                     'role' => $role->value,
-                    'name' => $role->name,  // Consider using a more realistic name for users
                     'email' => $role->value.$company->id.'@mail.com',
                     'password' => bcrypt('password'),
                 ]);
-                Log::info("Companies after creating user: " . Company::count());
 
                 // Create expenses for this user
                 Expense::factory(5)->forUser($user)->create();
-                Log::info("Companies after creating expenses: " . Company::count());
             }
         }
 
