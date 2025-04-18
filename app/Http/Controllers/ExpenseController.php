@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpenseEditRequest;
 use App\Http\Requests\ExpensePostRequest;
+use App\Models\AuditLog;
 use App\Models\Expense;
 use App\utility\Util;
 use Illuminate\Http\Request;
@@ -50,12 +51,15 @@ class ExpenseController extends Controller
     public function update(ExpenseEditRequest $request, Expense $expense)
     {
         $this->authorize('update', $expense);
+        $oldData = $expense->toArray();
 
         try {
             $expense->title = $request->title ?? $expense->title;
             $expense->category = $request->category ?? $expense->category;
             $expense->amount = $request->amount ?? $expense->amount;
             $expense->update();
+
+            Expense::logAudit('updated', $oldData, $expense);
 
             // clear first pegination
             Cache::forget("expenses_{$expense->company_id}_page_1_search_");
@@ -68,11 +72,14 @@ class ExpenseController extends Controller
     public function delete(Expense $expense)
     {
         $this->authorize('delete', $expense);
+        $oldData = $expense->toArray();
 
         try {
             $expense->delete();
             // clear first pegination
             Cache::forget("expenses_{$expense->company_id}_page_1_search_");
+            Expense::logAudit('deleted', $oldData);
+  
             return response()->json(['success' => true, 'message' => 'Expense Deleted Successfully']);
         } catch (\Throwable $th) {
             return response()->json(['sucess' => false, 'message' => $th->getMessage()]);

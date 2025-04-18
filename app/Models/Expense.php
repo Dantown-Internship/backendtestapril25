@@ -33,6 +33,8 @@ class Expense extends Model
         $expense->user_id = $params['user_id'];
         $expense->company_id = $companyId;
         $expense->save();
+
+        self::logAudit('created', [], $expense);
         return $expense;
     }
 }
