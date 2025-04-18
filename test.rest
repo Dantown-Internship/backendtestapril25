@@ -2,7 +2,7 @@
 @contentType = application/json
 
 // Store tokens and variables for use in multiple requests
-@authToken = 7|jJbmNSui7JQdZXU1zwqRynefXNyVTtPQwCq4TlA248813df8
+@authToken = 3|O2MAniz6JgVTxtBDCDDb4SyHT245iLzJEgVJvkiB2619069b
 @userId = 1
 @expenseId =
 
