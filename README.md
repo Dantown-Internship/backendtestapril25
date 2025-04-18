@@ -64,6 +64,12 @@ composer install
 php artisan migrate --seed && php artisan migrate  --env=testing
 ```
 
+6. You can run your local server
+
+```
+php artisan serve
+```
+
 #### TESTING
 
 1. After setting up, you can run the tests by running:
@@ -78,6 +84,16 @@ php artisan test
 php artisan test --coverage
 ```
 
+### DOCUMENTATION
+
+1. To generate the documentation, you can run
+
+```
+php artisan scribe:generate
+```
+
+2. You can visit the documentation at [/docs][documentation-link]
+
 ### CONFIGURATION
 
 Please modify these values in the `.env` file.
@@ -91,3 +107,4 @@ Please modify these values in the `.env.testing` file.
 -   DB_PASSWORD=**\*\*\*\*** (Put your password here, leave blank if your mysql root uses no password)
 
 [xdebug-url]: https://xdebug.org/docs/install
+[documentation-link]: http://localhost:8000/docs
