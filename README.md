@@ -15,6 +15,15 @@
 
 * Database seed (php artisan db:seed)
 
+## Cron Job
+
+php artisan schedule:run
+
+## Default Admin
+
+email: john.doe@example.com
+password: securePass123
+
 ## Test
 
 php artisan test
