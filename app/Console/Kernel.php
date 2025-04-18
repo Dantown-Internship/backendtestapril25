@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new SendWeeklyExpenseReportJob)
-        ->everyMinute(); // 0 = Sunday, 19:00 = 7PM
+             ->weeklyOn(0, '19:00'); // 0 = Sunday, 19:00 = 7PM
     }
 
     /**
