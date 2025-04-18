@@ -41,7 +41,9 @@ test('employee can view their own expenses', function () {
 
 test('employee can not view expenses that do not belong to them', function () {
     $employee = User::factory()->employee()->create();
-    $expense = Expense::factory()->create();
+    $expense = Expense::factory()->create([
+        'company_id' => $employee->company_id
+    ]);
 
     actingAs($employee)
         ->getJson(route('api.v1.expenses.show', $expense->uuid))
@@ -57,6 +59,19 @@ test('admin and managers can view any expense that belongs to the company', func
     $this->actingAs($admin)
         ->getJson(route('api.v1.expenses.show', $expense->uuid))
         ->assertOk()
+        ->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                'id',
+                'title',
+                'amount',
+                'category',
+                'created_at',
+                'updated_at',
+                'user',
+            ],
+        ])
         ->assertJson([
             'data' => [
                 'id' => $expense->uuid,
@@ -65,7 +80,7 @@ test('admin and managers can view any expense that belongs to the company', func
                 'category' => $expense->category->value,
                 'created_at' => $expense->created_at->toISOString(),
                 'updated_at' => $expense->updated_at->toISOString(),
-            ]
+            ],
         ]);
 
     $manager = User::factory()->manager()->create(['company_id'  => $admin->company_id]);
