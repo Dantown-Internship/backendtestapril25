@@ -38,14 +38,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => ['required', Rule::in(UserRole::toArray())],
+            'role' => ['nullable', Rule::in(UserRole::toArray())],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => $request->role ?? UserRole::EMPLOYEE->value,
             'company_id' => $currentUser->company_id,
         ]);
 

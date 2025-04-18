@@ -50,7 +50,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/expenses', [ExpenseController::class, 'index']);
         Route::post('/expenses', [ExpenseController::class, 'store']);
         Route::get('/expenses/{id}', [ExpenseController::class, 'show']);
-        Route::middleware(['adminOrManager'])->put('/expenses/{id}', [ExpenseController::class, 'update']);
+        Route::middleware(['adminOrmanager'])->put('/expenses/{id}', [ExpenseController::class, 'update']);
         Route::middleware(['admin'])->delete('/expenses/{id}', [ExpenseController::class, 'destroy']);
         Route::get('/expenses/{id}/audit-logs', [ExpenseController::class, 'auditLogs']);
     });
