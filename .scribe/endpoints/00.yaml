@@ -4,70 +4,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/v1/register
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        name: name
-        description: 'Must not be greater than 255 characters.'
-        required: true
-        example: vmqeopfuudtdsufvyvddq
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      email:
-        name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
-        required: true
-        example: kunde.eloisa@example.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      password:
-        name: password
-        description: 'Must be at least 8 characters.'
-        required: true
-        example: '4[*UyPJ"}6'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      name: vmqeopfuudtdsufvyvddq
-      email: kunde.eloisa@example.com
-      password: '4[*UyPJ"}6'
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/v1/login
+    uri: api/login
     metadata:
       groupName: Endpoints
       groupDescription: ''
@@ -119,7 +56,7 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/v1/logout
+    uri: api/register
     metadata:
       groupName: Endpoints
       groupDescription: ''
@@ -136,8 +73,52 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      email:
+        name: email
+        description: 'Must be a valid email address.'
+        required: true
+        example: carolyne.luettgen@example.org
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      password:
+        name: password
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      company_id:
+        name: company_id
+        description: 'The <code>id</code> of an existing record in the companies table.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: consequatur
+      email: carolyne.luettgen@example.org
+      password: consequatur
+      company_id: consequatur
     fileParameters: []
     responses: []
     responseFields: []
@@ -149,13 +130,13 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: api/v1/tasks
+    uri: api/expenses
     metadata:
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Display a listing of the resource.'
+      title: ''
       description: ''
       authenticated: false
       custom: []
@@ -188,13 +169,13 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/v1/tasks
+    uri: api/expenses
     metadata:
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Store a newly created resource in storage.'
+      title: ''
       description: ''
       authenticated: false
       custom: []
@@ -208,6 +189,80 @@ endpoints:
     bodyParameters:
       title:
         name: title
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      amount:
+        name: amount
+        description: ''
+        required: true
+        example: 11613.31890586
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      category:
+        name: category
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      title: consequatur
+      amount: 11613.31890586
+      category: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: 'api/expenses/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the expense.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      title:
+        name: title
         description: 'Must not be greater than 255 characters.'
         required: true
         example: vmqeopfuudtdsufvyvddq
@@ -216,55 +271,71 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      description:
-        name: description
-        description: ''
-        required: false
-        example: 'Dolores dolorum amet iste laborum eius est dolor.'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      status:
-        name: status
-        description: ''
+      amount:
+        name: amount
+        description: 'Must be at least 0.'
         required: true
-        example: pending
-        type: string
-        enumValues:
-          - pending
-          - in_progress
-          - completed
+        example: 1
+        type: number
+        enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      due_date:
-        name: due_date
-        description: 'Must be a valid date.'
-        required: false
-        example: '2025-04-13T09:33:34'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      priority:
-        name: priority
-        description: 'Must be at least 1. Must not be greater than 5.'
+      category:
+        name: category
+        description: 'Must not be greater than 255 characters.'
         required: true
-        example: 1
-        type: integer
+        example: mniihfqcoynlazghdtqtq
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
       title: vmqeopfuudtdsufvyvddq
-      description: 'Dolores dolorum amet iste laborum eius est dolor.'
-      status: pending
-      due_date: '2025-04-13T09:33:34'
-      priority: 1
+      amount: 1
+      category: mniihfqcoynlazghdtqtq
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/expenses/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the expense.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -276,32 +347,21 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: 'api/v1/tasks/{id}'
+    uri: api/users
     metadata:
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Display the specified resource.'
+      title: ''
       description: ''
       authenticated: false
       custom: []
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      id:
-        name: id
-        description: 'The ID of the task.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      id: 1
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -325,96 +385,73 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - PUT
-      - PATCH
-    uri: 'api/v1/tasks/{id}'
+      - POST
+    uri: api/users
     metadata:
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update the specified resource in storage.'
+      title: ''
       description: ''
       authenticated: false
       custom: []
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      id:
-        name: id
-        description: 'The ID of the task.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      id: 1
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      title:
-        name: title
-        description: 'Must not be greater than 255 characters.'
+      name:
+        name: name
+        description: ''
         required: true
-        example: vmqeopfuudtdsufvyvddq
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      description:
-        name: description
-        description: ''
-        required: false
-        example: 'Dolores dolorum amet iste laborum eius est dolor.'
+      email:
+        name: email
+        description: 'Must be a valid email address.'
+        required: true
+        example: carolyne.luettgen@example.org
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         custom: []
-      status:
-        name: status
+      password:
+        name: password
         description: ''
         required: true
-        example: completed
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      role:
+        name: role
+        description: ''
+        required: true
+        example: Admin
         type: string
         enumValues:
-          - pending
-          - in_progress
-          - completed
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      due_date:
-        name: due_date
-        description: 'Must be a valid date.'
-        required: false
-        example: '2025-04-13T09:33:34'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      priority:
-        name: priority
-        description: 'Must be at least 1. Must not be greater than 5.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
+          - Admin
+          - Manager
+          - Employee
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      title: vmqeopfuudtdsufvyvddq
-      description: 'Dolores dolorum amet iste laborum eius est dolor.'
-      status: completed
-      due_date: '2025-04-13T09:33:34'
-      priority: 1
+      name: consequatur
+      email: carolyne.luettgen@example.org
+      password: consequatur
+      role: Admin
     fileParameters: []
     responses: []
     responseFields: []
@@ -425,14 +462,14 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - DELETE
-    uri: 'api/v1/tasks/{id}'
+      - PUT
+    uri: 'api/users/{id}'
     metadata:
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Remove the specified resource from storage.'
+      title: ''
       description: ''
       authenticated: false
       custom: []
@@ -442,20 +479,34 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the task.'
+        description: 'The ID of the user.'
         required: true
-        example: 1
-        type: integer
+        example: consequatur
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      id: 1
+      id: consequatur
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      role:
+        name: role
+        description: ''
+        required: true
+        example: Admin
+        type: string
+        enumValues:
+          - Admin
+          - Manager
+          - Employee
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      role: Admin
     fileParameters: []
     responses: []
     responseFields: []
