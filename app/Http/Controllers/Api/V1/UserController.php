@@ -57,10 +57,8 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $uuid)
+    public function show(User $user)
     {
-        $user = User::where('uuid', $uuid)->firstOrFail();
-
         return $this->successResponse(
             message: 'User retrieved successfully',
             data: new UserResource($user->load('company'))
@@ -70,9 +68,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, string $uuid)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $request->userToBeUpdated->update([
+        $user->update([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'role' => $request->validated('role'),

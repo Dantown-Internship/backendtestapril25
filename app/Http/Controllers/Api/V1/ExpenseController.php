@@ -9,6 +9,7 @@ use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -61,17 +62,15 @@ class ExpenseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, string $uuid)
+    public function show(Request $request, Expense $expense)
     {
-        $role = $request->user()->role;
-        $query = Expense::where('uuid', $uuid);
-        $query = match ($role) {
-            Role::Employee => $query->where('user_id', $request->user()->id),
-            Role::Manager => $query->with('user'),
-            Role::Admin => $query->with('user'),
+        match ($request->user()->role) {
+            Role::Employee => throw_if(
+                $expense->user_id !== $request->user()->id, 
+                new ModelNotFoundException(Expense::class)),
+            Role::Admin, Role::Manager => $expense->load('user'),
         };
-        $expense = $query->firstOrFail();
-
+        
         return $this->successResponse(
             message: 'Expense retrieved successfully.',
             data: new ExpenseResource($expense)
@@ -81,9 +80,8 @@ class ExpenseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateExpenseRequest $request, string $uuid)
+    public function update(UpdateExpenseRequest $request, Expense $expense)
     {
-        $expense = $request->expense;
         $expense->update([
             'title' => $request->validated('title'),
             'amount' => $request->validated('amount'),

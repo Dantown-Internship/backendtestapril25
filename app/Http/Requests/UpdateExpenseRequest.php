@@ -10,8 +10,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateExpenseRequest extends FormRequest
 {
-    public Expense $expense;
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -20,10 +18,6 @@ class UpdateExpenseRequest extends FormRequest
         return in_array($this->user()->role, [Role::Admin, Role::Manager]);
     }
 
-    protected function prepareForValidation(): void
-    {
-        $this->expense = Expense::where('uuid', $this->route('uuid'))->firstOrFail();
-    }
 
     /**
      * Get the validation rules that apply to the request.
