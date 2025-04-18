@@ -1,0 +1,194 @@
+Expense Management API Documentation
+Project Overview
+The Expense Management API is a multi-tenant, SaaS-based application built with Laravel 11, using Laravel Sanctum for token-based authentication, Role-Based Access Control (RBAC) for authorization, and tenant isolation to ensure data separation between companies. The API manages users, expenses, and audit logs, supporting CRUD operations for Admins, Managers, and Employees. Key features include:
+
+Authentication: Sanctum tokens for secure access.
+RBAC: Admins manage users and delete expenses; Managers update expenses; Employees view expenses.
+Multi-Tenancy: Users are restricted to their company’s data via a tenant middleware.
+Audit Logging: Tracks user actions (e.g., deletions) in the audit_logs table.
+Self-Deletion Prevention: Admins cannot delete their own accounts.
+
+The API is designed for scalability, with JSON responses, soft deletes, and comprehensive logging for debugging.
+API Endpoints
+All endpoints are prefixed with http://localhost:8000/api/ and require the following headers unless specified:
+
+Content-Type: application/json
+Accept: application/json
+
+Authentication Endpoints
+POST /login
+
+Description: Authenticates a user and returns a Sanctum token.
+Headers:
+None (no Authorization required).
+
+
+Body Parameters:
+email (string, required): User’s email.
+password (string, required): User’s password.
+
+
+Example Request:{
+    "email": "admin@corp.com",
+    "password": "password"
+}
+
+POST /register
+
+Description: Creates a new user (Admin-only).
+Headers:
+Authorization: Bearer <admin-token> (required).
+
+
+Body Parameters:
+name (string, required): User’s name.
+email (string, required): Unique email.
+password (string, required): Minimum 8 characters.
+company_id (integer, required): Existing company ID.
+role (string, required): Admin, Manager, or Employee.
+
+
+Example Request:{
+    "name": "Test User",
+    "email": "test@corp.com",
+    "password": "password",
+    "company_id": 1,
+    "role": "Employee"
+}
+
+
+User Endpoints
+All user endpoints require:
+
+Authorization: Bearer <admin-token>
+Middleware: auth:sanctum, tenant, role:Admin
+
+GET /users
+
+Description: Retrieves all users in the authenticated user’s company.
+Parameters: None.
+Example Request: GET http://localhost:8000/api/users
+
+GET /users/{id}
+
+Description: Retrieves a specific user by ID.
+URL Parameters:
+id (integer, required): User ID.
+
+
+POST /users
+
+Description: Creates a new user (same as /register but within authenticated group).
+Body Parameters: Same as /register.
+
+PUT /users/{id}
+
+Description: Updates a user’s details.
+URL Parameters:
+id (integer, required): User ID.
+
+
+Body Parameters (all optional):
+name (string): User’s name.
+email (string): Unique email.
+password (string): Minimum 8 characters.
+company_id (integer): Existing company ID.
+role (string): Admin, Manager, or Employee.
+
+
+Example Request:{
+    "name": "Updated User",
+    "email": "updated@corp.com",
+    "role": "Manager"
+}
+
+
+DELETE /users/{id}
+
+Description: Deletes a user (soft delete), with self-deletion prevention.
+URL Parameters:
+id (integer, required): User ID.
+
+
+Expense Endpoints
+GET /expenses
+
+Description: Retrieves all expenses for the authenticated user’s company.
+Headers:
+Authorization: Bearer <token> (any role).
+Parameters: None.
+
+POST /expenses
+Description: Creates a new expense.
+Headers:
+Authorization: Bearer <token> (any role)
+Example Request:{
+    "title": "Travel",
+    "amount": 500.00,
+    "category": "Travel"
+}
+
+URL Parameters:
+id (integer, required): Expense ID.
+
+
+Body Parameters (optional):
+title (string): Expense title.
+amount (numeric): Expense amount.
+category (string): Expense category.
+
+
+Example Request:{
+    "title": "Updated Travel",
+    "amount": 600.00
+}
+
+
+
+DELETE /expenses/{id}
+No Parameters needed
+
+PUT /expenses/{id}
+{
+    "title": "Fan",
+    "amount": 70
+}
+
+
+PLEASE CHECK THE DATABASE SEEDER TO VIEW THE 2 COMPANIES PROFILE AND CREDENTIALS THANKS
+
+
+LOGOUT endpoint
+http://localhost:8000/api/logout
+
+Challenges and Solutions
+1. Middleware Registration Errors
+
+Challenge: Early tests failed with Target class [role] and Target class [tenant] errors, indicating unregistered middleware.
+Solution: Registered the role and tenant middleware in app/Http/Kernel.php, ensuring proper middleware group assignment. Cleared caches with php artisan config:clear and php artisan route:clear.
+
+2. HTML Responses Instead of JSON
+
+Challenge: Postman tests returned HTML error pages (e.g., 403 Forbidden) instead of JSON, complicating debugging (April 16, 2025).
+Solution: Added a ForceJsonResponse middleware to ensure all responses were JSON. Configured Postman with Accept: application/json headers. Updated exception handling in app/Exceptions/Handler.php to return JSON errors.
+
+3. Tenant Authorization Failure
+
+Challenge: The tenant middleware logged target_user_company: null for user endpoints (e.g., http://localhost:8000/api/users/1), causing 403 errors (April 17, 2025).
+Solution: Updated EnsureTenantAccess middleware to fetch the target user’s company_id using User::find($request->route('id')) for api/users/* routes. Added logging to debug auth_user_company and target_user_company. Reseeded the database to ensure valid company_id values.
+
+4. Audit Log Schema Mismatch
+
+Challenge: The DELETE /api/users/{id} endpoint failed with SQLSTATE[HY000]: General error: 1364 Field 'changes' doesn't have a default value because the audit_logs table’s changes column was non-nullable and omitted (April 17, 2025).
+Solution: Updated UserController::destroy to include changes as a JSON-encoded array of user attributes. Added missing model_type, model_id, and performed_at columns to the audit_logs schema via a new migration. Updated the AuditLog model’s $fillable property to include all fields.
+
+5. Self-Deletion Prevention
+
+Challenge: Admins could delete their own accounts, which was undesirable for system integrity.
+Solution: Added a check in UserController::destroy to compare $authUser->id with $user->id, returning a 403 error if they matched, ensuring Admins cannot delete themselves.
+
+6. Postman Testing Issues
+
+Challenge: Initial Postman tests were inconsistent due to incorrect headers and token management (April 15, 2025).
+Solution: Provided detailed Postman instructions, including setting Authorization: Bearer <token>, Content-Type: application/json, and Accept: application/json. Guided token retrieval via POST /api/login and verified token storage in personal_access_tokens.
+
