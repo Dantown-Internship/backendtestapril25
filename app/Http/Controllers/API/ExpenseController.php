@@ -83,12 +83,24 @@ class ExpenseController extends Controller
                 'company_id' => $user->company_id,
             ]);
 
+            // Create audit log
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $user->company_id,
+                'action' => 'create',
+                'changes' => json_encode([
+                    'expense_id' => $expense->id,
+                    'old' => null,
+                    'new' => $expense->toArray(),
+                ]),
+            ]);
+
             // Clear list caches with a pattern
             $this->clearExpenseListCache($user);
 
             return response()->json([
                 'message' => 'Expense created successfully',
-                'expense' => new ExpenseResource($expense->load('user')),
+                'data' => new ExpenseResource($expense->load('user')),
             ], 201);
         });
     }
@@ -119,7 +131,7 @@ class ExpenseController extends Controller
             }
 
             return response()->json([
-                'expense' => new ExpenseResource($expense)
+                'data' => new ExpenseResource($expense)
             ]);
         });
     }
@@ -137,12 +149,6 @@ class ExpenseController extends Controller
 
         if (!$expense) {
             return response()->json(['message' => 'Expense not found'], 404);
-        }
-
-        // Check if user is authorized to update the expense
-        // Employees can only update their own expenses, managers and admins can update any
-        if ($user->isEmployee() && $expense->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized to update this expense'], 403);
         }
 
         $request->validate([
@@ -182,7 +188,7 @@ class ExpenseController extends Controller
 
             return response()->json([
                 'message' => 'Expense updated successfully',
-                'expense' => new ExpenseResource($expense->load('user')),
+                'data' => new ExpenseResource($expense->load('user')),
             ]);
         });
     }
@@ -200,12 +206,6 @@ class ExpenseController extends Controller
 
         if (!$expense) {
             return response()->json(['message' => 'Expense not found'], 404);
-        }
-
-        // Check if user is authorized to delete the expense
-        // Employees can only delete their own expenses, managers and admins can delete any
-        if ($user->isEmployee() && $expense->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized to delete this expense'], 403);
         }
 
         // Use a transaction to ensure both expense and audit log are handled correctly
