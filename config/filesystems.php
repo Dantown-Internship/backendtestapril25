@@ -37,7 +37,16 @@ return [
             'throw' => false,
             'report' => false,
         ],
-
+     
+        'tmp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/tmp'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+        
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -75,6 +84,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('tmp') => storage_path('app/tmp'),
     ],
 
 ];

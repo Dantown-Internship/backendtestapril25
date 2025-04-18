@@ -85,4 +85,10 @@ class User extends Authenticatable
             ->where('id', '<>', $this->id)
             ->get();
     }
+
+    public function scopeWhereAdmin($query)
+    {
+        return $query->where('role', self::ROLE_ADMIN);
+    }
+
 }
