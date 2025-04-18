@@ -251,7 +251,7 @@ Admin users have access to the audit logs and can filter logs based on the **act
 
 ### **Indexing for Performance**
 
-Since the application is multi-tenant, indexing was carefully implemented to optimize query performance. Composite indexes have been added to frequently filtered columns, ensuring efficient retrieval of data.  
+Since the application is multi-tenant, indexing was carefully implemented to optimize query performance. Composite indexes have been added to frequently filtered columns, ensuring efficient retrieval of data. There was no additional need to create an index on the `company_id` column as MYSQL automatically adds an index on foreign keys.  
 Specifically, the following composite indexes were added:
 
 -   `company_id` + `uuid` (for fast access to data by company and UUID)
