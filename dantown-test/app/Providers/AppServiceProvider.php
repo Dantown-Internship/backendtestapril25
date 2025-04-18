@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Services\CompanyService;
 use App\Services\UserService;
 use App\Services\ExpenseService;
+use App\Jobs\SendExpenseReport;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+         $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->job(new SendExpenseReport)->weekly();
+        });
     }
 }

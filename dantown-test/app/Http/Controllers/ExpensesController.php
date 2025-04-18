@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\ExpenseService;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 
@@ -36,7 +35,7 @@ class ExpensesController extends Controller
     /**
      * Store a newly created expense in storage.
      */
-    public function store(StoreExpenseRequest $request)
+    public function store(Request $request)
     {
         $authUser = Auth::user()->load('company');
         $expenseRequest = $request->validate([
@@ -45,7 +44,7 @@ class ExpensesController extends Controller
             'amount' => 'required|numeric|min:1.00',
         ]);
        
-        $expense = $this->expenseService->createExpense($authUser, $expenseRequest);
+        $expense = $this->expenseService->createExpenses($authUser, $expenseRequest);
         
         return response()->json($expense, 200);
         
@@ -57,10 +56,7 @@ class ExpensesController extends Controller
         $authUser = Auth::user()->load('company');
 
         $expense = $this->expenseService->getExpenseById($authUser, $id);
-        if ($expense->company_id !== Auth::user()->company_id) {
-            return response()->json(['success'=>false, 'message' => 'Forbidden', 'data'=> []], 403);
-        }
-       return response()->json($expense, 200);
+        return response()->json($expense, 200);
     }
 
     /**
@@ -68,11 +64,10 @@ class ExpensesController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $expense); // Use the ExpensePolicy
+        $authUser = Auth::user()->load('company');
 
-        $expense->delete();
-
-        return response()->json(['message' => 'Expense deleted successfully']);
+        $expense = $this->expenseService->deleteExpense($authUser, $id);
+        return response()->json($expense, 200);
     }
 
 

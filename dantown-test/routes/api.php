@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 // Auth routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware(['checkRole:Admin,Manager'])->group(function () {
+    Route::middleware(['checkRole:Admin'])->group(function () {
         Route::post('/register-user', [AuthController::class, 'registerUser']);
     });
     Route::middleware(['checkRole:SuperAdmin'])->group(function () {
@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['checkRole:Admin,Manager,Employee'])->group(function () {
         Route::get('/expenses', [ExpensesController::class, 'index']);
+        Route::get('/expenses/{id}', [ExpensesController::class, 'show']);
         Route::post('/expenses', [ExpensesController::class, 'store']);
     });
 
@@ -57,8 +58,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // User routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'deleteUser'])->middleware(['auth:sanctum', 'checkRole:Admin']);
+    Route::middleware(['checkRole:Admin'])->group(function () {
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/{id}', [UserController::class, 'viewUser']);
+        Route::put('/users/{id}', [UserController::class, 'updateUser']);
+        Route::delete('/users/{id}', [UserController::class, 'deleteUser']);
+    });
+
+    Route::put('/users/{id}', [UserController::class, 'updateUserPassword']);
+    
 });

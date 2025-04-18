@@ -55,12 +55,6 @@ class CompanyController extends Controller
         return response()->json($responseData, $responseData['success'] ? 200:400);
     }
 
-    /**
-     * Remove the specified company.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
     public function deleteCompany(int $id): JsonResponse
     {
         $responseData = $this->companyService->deleteCompany($id);
