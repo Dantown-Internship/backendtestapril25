@@ -84,16 +84,15 @@ This is a multi-tenant expense management API built with Laravel. The API allows
 POST /api/login
 POST /api/logout
 POST /api/register
+GET /api/user
 ```
 
 ### Companies
 
 ```
-GET /api/companies
-GET /api/companies/{id}
-POST /api/companies
-PUT /api/companies/{id}
-DELETE /api/companies/{id}
+GET /api/company
+PUT /api/company
+GET /api/company/statistics
 ```
 
 ### Users
@@ -114,14 +113,28 @@ GET /api/expenses/{id}
 POST /api/expenses
 PUT /api/expenses/{id}
 DELETE /api/expenses/{id}
+GET /api/expenses/{id}/audit-logs
 ```
 
-### Audit Logs
+## Postman Collection
 
-```
-GET /api/audit-logs
-GET /api/audit-logs/{id}
-```
+A Postman collection is included in the repository for easy API testing and exploration. The collection includes all endpoints with request examples and documentation.
+
+### How to use the Postman Collection:
+
+1. Download and install [Postman](https://www.postman.com/downloads/)
+2. Import the collection file `ExpenseManagementAPI.postman_collection.json` into Postman:
+   - Open Postman
+   - Click on "Import" button
+   - Select the collection file from the project directory
+   - Click "Import"
+
+3. Set up environment variables:
+   - Create a new environment in Postman
+   - Add the variable `base_url` with the value of your API server (e.g., `http://localhost:8000`)
+   - After logging in with the Login request, copy the token from the response and set it as the `token` variable
+
+4. You can now explore all API endpoints with proper authentication.
 
 ## Background Jobs
 
