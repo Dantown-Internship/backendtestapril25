@@ -1,0 +1,20 @@
+    // public function register(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string',
+    //         'email' => 'required|email|unique:users',
+    //         'password' => 'required|string|min:8',
+    //         'company_id' => 'required|exists:companies,id',
+    //         'role' => 'required|in:Admin,Manager,Employee',
+    //     ]);
+
+    //     $user = User::create([
+    //         'name' => $validated['name'],
+    //         'email' => $validated['email'],
+    //         'password' => Hash::make($validated['password']),
+    //         'company_id' => $validated['company_id'],
+    //         'role' => $validated['role'],
+    //     ]);
+
+    //     return response()->json(['user' => $user, 'token' => $user->createToken('api')->plainTextToken]);
+    // }
