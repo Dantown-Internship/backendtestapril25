@@ -42,7 +42,10 @@ class ExpenseController extends Controller
 
             // Handle search term
             if ($request->has('search')) {
-                $query->where('title', 'like', '%' . $request->search . '%');
+                $query->where(function ($q) use ($request) {
+                    $q->where('title', 'like', '%' . $request->search . '%')
+                      ->orWhere('category', 'like', '%' . $request->search . '%');
+                });
             }
 
             // Handle sorting

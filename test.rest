@@ -112,7 +112,7 @@ Accept: {{contentType}}
 // ==================== Expense Tests ====================
 
 ### Get all expenses
-GET {{baseUrl}}/expenses?page=1&limit=6
+GET {{baseUrl}}/expenses?search=Training&page=1&limit=2
 Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 
