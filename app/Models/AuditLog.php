@@ -9,6 +9,17 @@ class AuditLog extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'changes' => 'array',
+    ];
+
+    protected $fillable = [
+        'company_id',
+        'user_id',
+        'action',
+        'changes',
+    ];
+
     public static function logAudit(string $action, array $oldData = [], $newData = null)
     {
         $user = auth()->user();

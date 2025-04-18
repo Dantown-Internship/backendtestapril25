@@ -27,22 +27,15 @@ class WeeklyExpenseReport extends Mailable
     /**
      * Get the message envelope.
      */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Weekly Expense Report',
-        );
+        return $this->view('emails.expense-report')
+            ->with([
+                'admin' => $this->admin,
+                'expenses' => $this->expenses
+            ]);
     }
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            markdown: 'emails.expense-report',
-        );
-    }
 
     /**
      * Get the attachments for the message.

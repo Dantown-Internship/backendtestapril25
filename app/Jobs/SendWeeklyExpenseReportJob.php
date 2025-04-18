@@ -34,7 +34,7 @@ class SendWeeklyExpenseReportJob implements ShouldQueue
             $expenses = Expense::where('company_id', $admin->company_id)
             ->whereDate('created_at', '>=', now()->subWeek()->startOfWeek())
             ->whereDate('created_at', '<=', now()->subWeek()->endOfWeek())
-            ->with('user')
+            ->with('users')
             ->get();
 
             if ($expenses->isNotEmpty()) {

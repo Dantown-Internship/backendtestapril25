@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\utility\Util;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UserAccountRequest extends FormRequest
+class AddUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +23,16 @@ class UserAccountRequest extends FormRequest
      */
     public function rules(): array
     {
-
+        $user = Util::Auth();
         return [
-            'name' => 'required|string|min:3|max:255',
-            'company_name' => 'required|string|min:3|max:255|unique:companies,company_name',
-            'company_email' => 'required|max:255|unique:companies,company_email',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|min:6',
-        ];
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required','email',
+                Rule::unique('users')->where(function ($query) use ($user) {
+                    return $query->where('company_id', $user->company_id);
+                }),
+            ],
+             'password' => 'required|min:6',
+         ];
     }
 }

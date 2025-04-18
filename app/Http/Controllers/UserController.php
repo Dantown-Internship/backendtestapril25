@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserAccountRequest;
+use App\Http\Requests\AddUserRequest;
 use App\Models\User;
 use App\utility\Util;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function registerUser(UserAccountRequest $request){
+    public function addUser(AddUserRequest $request){
         try {
             $user = Util::Auth();
             //Admin Create A New Company User
@@ -36,12 +36,27 @@ class UserController extends Controller
         }
     }
 
-    public function updateUser(Request $request, $user){
+    public function audith(){
         try {
             
-            $this->authorize('update', $user);
+            $user = Util::Auth();
+            //Admin get list of  all Company Users
+            $audith = User::getAudithLog($user);
+            
+            return response()->json(['sucess' => true, 'message' => 'Fetch Logs List Successfully', 'audith' => $audith]);
+
+        } catch (\Throwable $th) {
+            return response()->json(['sucess' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function update(Request $request, $user){
+        try {
+            
+            
             //Admin Update Company Users Role
             $updateDetails = User::find($user);
+            $this->authorize('update', $updateDetails);
             $updateDetails->role = $request->role ?? $updateDetails->role;
             $updateDetails->update();
             

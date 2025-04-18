@@ -22,8 +22,8 @@ class AuthController extends Controller
         try {
         //Register company Account
         $company = new Company();
-        $company->name = $request->name;
-        $company->email = $request->email;
+        $company->company_name = $request->company_name;
+        $company->company_email = $request->company_email;
         $company->save();
 
         //create Admin User
@@ -44,7 +44,7 @@ class AuthController extends Controller
         $tokenResult->accessToken->expires_at = $expiration;
         $tokenResult->accessToken->save();
 
-            return response()->json(['sucess'=> true, 'message' => 'Account Pending Approval', 'user'=> $user, 'token' => $token,], 201);
+            return response()->json(['sucess'=> true, 'message' => 'Company Account Created', 'company'=> $company,'user'=> $user, 'token' => $token,], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['sucess' => false, 'message' => $th->getMessage()]);

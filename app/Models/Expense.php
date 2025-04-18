@@ -30,11 +30,9 @@ class Expense extends Model
         $expense->title= $params['title'];
         $expense->category = $params['category'];
         $expense->amount = $params['amount'];
-        $expense->user_id = $params['user_id'];
+        $expense->user_id = $userId;
         $expense->company_id = $companyId;
         $expense->save();
-
-        self::logAudit('created', [], $expense);
         return $expense;
     }
 }

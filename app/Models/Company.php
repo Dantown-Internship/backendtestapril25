@@ -10,8 +10,8 @@ class Company extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'email',
+        'company_name',
+        'company_email',
     ];
 
     public function users(){

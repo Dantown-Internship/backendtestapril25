@@ -39,7 +39,11 @@ class User extends Authenticatable
 
 
     public static function getUserList($user){
-        return User::where('company_id', $user->company_id)->where('role', User::$Admin)->get();
+        return User::where('company_id', $user->company_id)->where('id', '!=', $user->id)->get();
+    }
+
+    public static function getAudithLog($user){
+        return AuditLog::where('company_id', $user->company_id)->get();
     }
 
 
@@ -48,7 +52,6 @@ class User extends Authenticatable
         $addUser = new User();
         $addUser->name= $params['name'];
         $addUser->email = $params['email'];
-        $addUser->phone = $params['phone'];
         $addUser->password  = Hash::make($params['password']);
         $addUser->role = $params['role'];
         $addUser->company_id = $companyId;

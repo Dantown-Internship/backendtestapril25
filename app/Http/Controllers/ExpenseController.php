@@ -18,11 +18,11 @@ class ExpenseController extends Controller
 
         $cacheKey = "expenses_{$user->company_id}_page_" . $request->get('page', 1) . '_search_' . $request->get('search');
         $expenses = Cache::remember($cacheKey, 60, function () use ($user, $request) {
-            $query = Expense::with('user')->where('company_id', $user->company_id);
+            $query = Expense::with('users')->where('company_id', $user->company_id);
             if ($search = $request->query('search')) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%search%")
-                        ->orWhere('category', 'like', "%search%");
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%");
                 });
             }
             return $query->paginate(10);
@@ -59,7 +59,7 @@ class ExpenseController extends Controller
             $expense->amount = $request->amount ?? $expense->amount;
             $expense->update();
 
-            Expense::logAudit('updated', $oldData, $expense);
+            AuditLog::logAudit('updated', $oldData, $expense);
 
             // clear first pegination
             Cache::forget("expenses_{$expense->company_id}_page_1_search_");
@@ -78,7 +78,7 @@ class ExpenseController extends Controller
             $expense->delete();
             // clear first pegination
             Cache::forget("expenses_{$expense->company_id}_page_1_search_");
-            Expense::logAudit('deleted', $oldData);
+            AuditLog::logAudit('deleted', $oldData);
   
             return response()->json(['success' => true, 'message' => 'Expense Deleted Successfully']);
         } catch (\Throwable $th) {
