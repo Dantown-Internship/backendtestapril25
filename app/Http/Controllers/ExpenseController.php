@@ -39,7 +39,7 @@ class ExpenseController extends Controller
 
         $expense = $expenseService->createExpense($user, $data);
 
-        return successJsonResponse('Expense added successfully.', ['expense' => $expense]);
+        return successJsonResponse('Expense added successfully.', ['expense' => $expense], 201);
     }
 
     public function update(UpdateExpenseRequest $request, Expense $expense, ExpenseService $expenseService)

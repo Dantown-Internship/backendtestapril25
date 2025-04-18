@@ -38,7 +38,7 @@ class UserController extends Controller
         $admin = $request->user();
         $user = $userService->createUser($admin, $data);
 
-        return successJsonResponse('User created successfully.', ['user' => $user]);
+        return successJsonResponse('User created successfully.', ['user' => $user], 201);
     }
 
     public function updateRole(UpdateUserRoleRequest $request, User $user, UserService $userService)
