@@ -42,7 +42,7 @@ class WeeklyExpenseReportNotification extends Notification implements ShouldQueu
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Weekly Expense Report')
+            ->subject("{$this->companyName}'s Weekly Expense Report")
             ->markdown('emails.weekly-report', [
                 'user' => $notifiable,
                 'companyName' => $this->companyName,
