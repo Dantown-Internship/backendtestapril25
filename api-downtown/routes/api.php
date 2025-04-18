@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 | role-based restrictions (Admin, Manager, Employee).
 |
 */
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum', 'token')->group(function () {
     Route::post('/save/expenses', [ExpensesController::class, 'saveExpenses']);
     Route::get('/expenses', [ExpensesController::class, 'listExpenses']);
     Route::put('/expenses/{id}', [ExpensesController::class, 'updateExpenses'])->middleware('role:Admin,Manager');
@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
 | Routes for managing users, restricted to Admins only.
 |
 */
-Route::middleware(['role:Admin', 'auth:sanctum'])->group(function () {
+Route::middleware(['role:Admin', 'auth:sanctum', 'token'])->group(function () {
     Route::get('/list/users', [UserController::class, 'listUsers']);
     Route::post('/users', [UserController::class, 'storeUsersData']);
     Route::put('/user/{id}', [UserController::class, 'updateRole']);

@@ -164,15 +164,6 @@ public function refreshToken(Request $request)
     /**
      * Log out a user.
      */
-    // public function logout(Request $request)
-    // {
-    //     try {
-    //         $request->user()->currentAccessToken()->delete();
-    //         return $this->successResponse('Logged out successfully');
-    //     } catch (\Exception $e) {
-    //         return $this->errorResponse('Failed to log out. Please try again.', 500);
-    //     }
-    // }
 
     public function logout(Request $request)
     {
