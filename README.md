@@ -55,6 +55,7 @@ Clone the repository to your local machine:
 ```bash
 git clone https://github.com/FavourOladeji/backendtestapril25.git
 cd backendtestapril25
+git checkout favour-oladeji
 ```
 
 ### 2. Install Dependencies
