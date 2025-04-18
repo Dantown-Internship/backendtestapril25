@@ -19,9 +19,7 @@ class EnsureUserBelongsToCompany
         $user = $request->user();
 
         if (!$user || !$user->company_id) {
-            return response()->json([
-                'message' => 'User does not belong to any company'
-            ], 403);
+            return response()->unauthorized('User does not belong to any company');
         }
 
         return $next($request);
