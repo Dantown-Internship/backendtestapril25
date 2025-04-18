@@ -33,7 +33,7 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
     public function handle(): void
     {
         $admins = cache()->remember(
-            CacheKey::companyAdmins($this->company->id),
+            CacheKey::companyAdmins($this->company->uuid),
             now()->addDays(30),
             function () {
                 return $this->company->users()
@@ -47,8 +47,7 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
         $expenseQuery = $this->company->expenses()
             ->where('created_at', '>=', $startDate);
 
-        $totalExpense = $expenseQuery
-            ->sum('amount');
+        $totalExpense = $expenseQuery->sum('amount');
 
         $topSpenders = $expenseQuery
             ->select('user_id', DB::raw('SUM(amount) as total'))
@@ -78,7 +77,8 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
                 return [
                     $category->label() => $expense['total'] ?? 0,
                 ];
-            })->sortDesc();
+            })
+            ->sortDesc();
 
         Notification::send($admins, new WeeklyExpenseReportNotification(
             totalExpense: $totalExpense,

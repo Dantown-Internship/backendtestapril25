@@ -9,12 +9,10 @@ use App\Http\Requests\RegistrationRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RegistrationController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(RegistrationRequest $request)
     {
         try {
@@ -32,7 +30,9 @@ class RegistrationController extends Controller
 
                 return $user;
             });
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
+            Log::error("Registration failed: " . $e->getMessage());
+
             return $this->errorResponse(message: 'Registration failed', statusCode: 500);
         }
 

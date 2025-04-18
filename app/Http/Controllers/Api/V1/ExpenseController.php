@@ -14,9 +14,6 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(ListExpensesRequest $request)
     {
         $perPage = $request->validated('per_page', 10);
@@ -59,9 +56,6 @@ class ExpenseController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, Expense $expense)
     {
         $this->authorize('view', $expense);
@@ -75,9 +69,6 @@ class ExpenseController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateExpenseRequest $request, Expense $expense)
     {
         $expense->update([
@@ -92,9 +83,6 @@ class ExpenseController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, Expense $expense)
     {
         $this->authorize('delete', $expense);

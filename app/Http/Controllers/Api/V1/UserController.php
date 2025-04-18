@@ -14,9 +14,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(ListUsersRequest $request)
     {
         $perPage = $request->validated('per_page', 10) ?? 10;
@@ -35,9 +32,6 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreUserRequest $request)
     {
         $role = Role::from($request->validated('role'));
@@ -60,9 +54,6 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
         return $this->successResponse(
@@ -71,9 +62,6 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateUserRequest $request, User $user)
     {
         $role = Role::from($request->validated('role'));

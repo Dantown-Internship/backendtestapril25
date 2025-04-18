@@ -4,8 +4,8 @@ namespace App\Helpers;
 
 class CacheKey
 {
-    public static function companyAdmins($companyId): string
+    public static function companyAdmins($companyUuid): string
     {
-        return "company_admins_{$companyId}";
+        return "company_admins_{$companyUuid}";
     }
 }
