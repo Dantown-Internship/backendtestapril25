@@ -83,18 +83,6 @@ class ExpenseController extends Controller
                 'company_id' => $user->company_id,
             ]);
 
-            // Create audit log
-            AuditLog::create([
-                'user_id' => $user->id,
-                'company_id' => $user->company_id,
-                'action' => 'create',
-                'changes' => json_encode([
-                    'expense_id' => $expense->id,
-                    'old' => null,
-                    'new' => $expense->toArray(),
-                ]),
-            ]);
-
             // Clear list caches with a pattern
             $this->clearExpenseListCache($user);
 
