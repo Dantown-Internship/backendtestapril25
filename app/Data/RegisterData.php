@@ -28,9 +28,5 @@ class RegisterData extends Data
 
         #[Required]
         public string $password,
-
-        #[Required]
-        #[Exists('companies', 'id')]
-        public int $company_id,
     ) {}
 }

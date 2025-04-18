@@ -13,16 +13,17 @@ class RegisterAction
     public function execute(RegisterData $registerData)
     {
         return DB::transaction(function () use ($registerData) {
-            Company::create([
+            $company = Company::create([
                 'name' => $registerData->company_name,
                 'email' => $registerData->company_email,
             ]);
 
-            User::create([
+            return User::create([
                 'name' => $registerData->name,
                 'email' => $registerData->email,
                 'password' => bcrypt($registerData->password),
-                'company_id' => $registerData->company_id,
+                'company_id' => $company->id,
+                'role' => RoleEnum::ADMIN->value,
             ])->assignRole(RoleEnum::ADMIN->value);
         });
     }

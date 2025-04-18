@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Data;
@@ -12,6 +13,7 @@ class LoginData extends Data
     public function __construct(
         public string $email,
         public string $password,
+        public ?User $user = null,
     ) {}
 
     public static function rules(): array
@@ -27,24 +29,28 @@ class LoginData extends Data
         return true;
     }
 
-    public static function withValidator($validator): void
+    /**
+     * @throws ValidationException
+     */
+    public static function fromRequest(Request $request): self
     {
-        $validator->after(function ($validator) {
-            $data = $validator->getData();
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
-            if (!auth()->attempt($data)) {
-                $validator->errors()->add('email', 'Invalid email or password');
-            }
+        $user = User::where('email', $data['email'])->first();
 
-            $user = User::where('email', $data['email'])->first();
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
 
-            if (!$user || !Hash::check($data['password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'email' => ['The provided credentials are incorrect.'],
-                ]);
-            }
-
-            $data['user'] = $user;
-        });
+        return new self(
+            email: $data['email'],
+            password: $data['password'],
+            user: $user
+        );
     }
 }

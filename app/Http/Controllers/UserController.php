@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $user = auth()->user();
 

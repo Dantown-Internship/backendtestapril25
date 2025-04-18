@@ -27,9 +27,14 @@ class AuthController extends Controller
         );
     }
 
-    public function login(LoginData $data): JsonResponse
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function login(Request $request): JsonResponse
     {
-        $tokenPayload = (new GenerateTokenAction())->execute($data->user);
+        $loginData = LoginData::fromRequest($request);
+
+        $tokenPayload = (new GenerateTokenAction())->execute($loginData->user);
 
         return new JsonResponse(
             [
