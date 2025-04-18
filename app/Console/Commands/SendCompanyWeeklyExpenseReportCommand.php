@@ -14,14 +14,14 @@ class SendCompanyWeeklyExpenseReportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:report';
+    protected $signature = 'expense:report';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Send Weekly Company Expense Report';
 
     /**
      * Execute the console command.
