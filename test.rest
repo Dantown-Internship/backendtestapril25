@@ -2,7 +2,7 @@
 @contentType = application/json
 
 // Store tokens and variables for use in multiple requests
-@authToken = 4|nqJ4n1Rooz9OPiNsq64Cvvgv9fWihl26Iw7OFIchcae45924
+@authToken = 6|mmPVvrb14XQsIXwsVP4aAwmO8Bir1HCzUWk9w6TV8cdaeaa4
 @userId = 1
 @expenseId =
 
@@ -23,29 +23,13 @@ Authorization: Bearer {{authToken}}
   "company_email": "testcompany@company.com"
 }
 
-### Register a user with Manager role
-POST {{baseUrl}}/register
-Content-Type: {{contentType}}
-Accept: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-{
-  "name": "Manager User",
-  "email": "manager@example.com",
-  "password": "password123",
-  "password_confirmation": "password123",
-  "company_name": "Manager Company",
-  "company_email": "managercompany@company.com",
-  "role": "Manager"
-}
-
 ### Login
 POST {{baseUrl}}/login
 Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "email": "admin_1@example.com",
+  "email": "testuser@example.com",
   "password": "password123"
 }
 

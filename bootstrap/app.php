@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\{AdminMiddleware, AdminOrManagerMiddleware, EnsureUserBelongsToCompany};
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\EnsureUserBelongsToCompany;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'company.user' => EnsureUserBelongsToCompany::class,
             'admin' => AdminMiddleware::class,
+            'adminOrmanager' => AdminOrManagerMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
