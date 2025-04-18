@@ -28,7 +28,7 @@ class CreateUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users')],
             'password' => 'required|string|min:8|confirmed',
-            'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])],
+            'role' => ['required', Rule::in(['Manager', 'Employee'])],
         ];
     }
 
