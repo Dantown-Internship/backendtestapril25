@@ -31,8 +31,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        'id',
         'password',
         'remember_token',
+        'company_id',
+        'updated_at'
     ];
 
     /**
