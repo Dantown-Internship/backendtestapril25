@@ -64,12 +64,10 @@ class ExpenseController extends Controller
      */
     public function show(Request $request, Expense $expense)
     {
-        match ($request->user()->role) {
-            Role::Employee => throw_if(
-                $expense->user_id !== $request->user()->id,
-                new ModelNotFoundException(Expense::class)),
-            Role::Admin, Role::Manager => $expense->load('user'),
-        };
+        $this->authorize('view', $expense);
+        if(in_array($request->user()->role, [Role::Manager, Role::Admin])) {
+            $expense->load('user');
+        }
 
         return $this->successResponse(
             message: 'Expense retrieved successfully.',
@@ -97,14 +95,9 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, string $uuid)
+    public function destroy(Request $request, Expense $expense)
     {
-        abort_if(
-            $request->user()->role !== Role::Admin,
-            403,
-            'You are not authorized to delete this expense.'
-        );
-        $expense = Expense::where('uuid', $uuid)->firstOrFail();
+        $this->authorize('delete', $expense);
         $expense->delete();
 
         return $this->successResponse(
