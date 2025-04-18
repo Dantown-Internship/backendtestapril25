@@ -60,6 +60,21 @@ The application includes a scheduled task that sends weekly expense reports to c
 php artisan schedule:run
 ```
 
+## Testing
+
+The application comes with comprehensive test coverage using Pest PHP:
+
+- **Authentication Tests**: Tests for registration, login, and logout functionality
+- **Expense Management Tests**: Full CRUD testing for expenses with proper authorization
+- **User Management Tests**: Tests for user listing, creation, and updates with role-based permissions
+- **Company Isolation Tests**: Ensures data isolation between different companies
+
+Run tests with:
+
+```bash
+php artisan test
+```
+
 ## Documentation
 The postman documentation for the endpoints can be found here -
 
