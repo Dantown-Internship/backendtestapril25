@@ -51,4 +51,17 @@ class AuthService implements AuthServiceInterface
         $token = $user->currentAccessToken();
         $token->delete();
     }
+
+    public function createUser(User $creator, array $data): User
+    {
+        $companyId = $creator->company_id;
+        $password = fake()->password(8, 15);
+        return User::create([
+            'name'       => $data['name'],
+            'email'      => $data['email'],
+            'password'   => Hash::make($password),
+            'company_id' => $companyId,
+            'role'       => $data['role'] ?? RoleEnum::EMPLOYEE(),
+        ]);
+    }
 }

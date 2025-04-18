@@ -13,6 +13,7 @@ class UserPolicy
      */
     public function before(User $user, string $ability, ?User $model): bool|null
     {
+
         if ($user->company_id != $model->company_id) {
             return false;
         }
@@ -25,7 +26,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->role == RoleEnum::ADMIN();
     }
 
     /**

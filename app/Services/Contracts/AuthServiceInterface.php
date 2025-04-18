@@ -18,4 +18,7 @@ interface AuthServiceInterface
 
     /** Revoke the user’s current token. */
     public function logout(User $user): void;
+
+    /** Create a new user for the admin's company */
+    public function createUser(User $creator, array $data): User;
 }

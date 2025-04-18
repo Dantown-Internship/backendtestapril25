@@ -2,16 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RoleEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
-class StoreCompanyRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,11 @@ class StoreCompanyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        return
+            [
+                'name' => ['required', 'max:255', 'string'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                "role" => ["sometimes", new EnumRule(RoleEnum::class)],
+            ];
     }
 }
