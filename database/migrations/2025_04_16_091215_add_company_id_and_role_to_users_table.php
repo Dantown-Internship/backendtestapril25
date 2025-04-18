@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->uuid()->after('id')->unique();
             $table->foreignId('company_id')
+                ->after('uuid')
                 ->constrained('companies')
-                ->onDelete('cascade')
-                ->after('uuid');
+                ->onDelete('cascade');
             $table->string('role')->after('company_id')->index();
 
             // Since I'm using mysql, I dont need to add the index manually as the
