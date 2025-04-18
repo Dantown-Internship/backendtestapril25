@@ -136,6 +136,15 @@ A Postman collection is included in the repository for easy API testing and expl
 
 4. You can now explore all API endpoints with proper authentication.
 
+### What's included in the Postman collection:
+
+- Pre-configured requests for all API endpoints
+- Authentication flow with token management
+- Examples of request bodies for POST and PUT operations
+- Environment variables for easy configuration
+- Tests to validate responses
+- Documentation for each request with expected responses
+
 ## Background Jobs
 
 The application includes scheduled tasks for:
