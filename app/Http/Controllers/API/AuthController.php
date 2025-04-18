@@ -89,8 +89,14 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->unauthorized('User not authenticated');
+        }
+
         // In testing, the token might be null or a transient token
-        $token = $request->user()->currentAccessToken();
+        $token = $user->currentAccessToken();
         if ($token && !($token instanceof TransientToken)) {
             $token->delete();
         }
@@ -103,8 +109,14 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->unauthorized('User not authenticated');
+        }
+
         return response()->success('User details retrieved successfully', [
-            'user' => $request->user()->load('company'),
+            'user' => $user->load('company'),
         ]);
     }
 }
