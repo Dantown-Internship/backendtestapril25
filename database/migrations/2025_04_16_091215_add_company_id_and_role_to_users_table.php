@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')
                 ->constrained('companies')
                 ->onDelete('cascade')
-                ->after('id');
+                ->after('uuid');
             $table->string('role')->after('company_id')->index();
 
             // Since I'm using mysql, I dont need to add the index manually as the
