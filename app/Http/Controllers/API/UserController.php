@@ -24,7 +24,7 @@ class UserController extends Controller
             ->paginate($limit, ['*'], 'page', $request->query('page'))
             ->toResourceCollection();
 
-        return response()->json($users);
+        return response()->success('Users retrieved successfully', $users);
     }
 
     /**
@@ -49,10 +49,7 @@ class UserController extends Controller
             'company_id' => $currentUser->company_id,
         ]);
 
-        return response()->json([
-            'message' => 'User added successfully',
-            'user' => $user
-        ], 201);
+        return response()->success('User added successfully', $user, 201);
     }
 
     /**
@@ -68,14 +65,14 @@ class UserController extends Controller
             ->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->notFound('User not found');
         }
 
         if ($user->id !== $currentUser->id && !$currentUser->isAdmin() && !$currentUser->isManager()) {
-            return response()->json(['message' => 'Unauthorized to view this user'], 403);
+            return response()->unauthorized('Unauthorized to view this user');
         }
 
-        return response()->json(['message' => 'User retrieved successfully!', 'data' => $user]);
+        return response()->success('User retrieved successfully', $user);
     }
 
     /**
@@ -91,7 +88,7 @@ class UserController extends Controller
             ->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->notFound('User not found');
         }
 
         // Validate the role
@@ -103,10 +100,7 @@ class UserController extends Controller
         $user->role = $request->role;
         $user->save();
 
-        return response()->json([
-            'message' => 'User role updated successfully',
-            'data' => $user
-        ]);
+        return response()->success('User role updated successfully', $user);
     }
 
     /**
@@ -118,7 +112,7 @@ class UserController extends Controller
 
         // Admin cannot delete themselves
         if ($currentUser->id == $id) {
-            return response()->json(['message' => 'Cannot delete your own account'], 400);
+            return response()->error('Cannot delete your own account', null, 400);
         }
 
         $user = User::where('id', $id)
@@ -126,11 +120,11 @@ class UserController extends Controller
             ->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->notFound('User not found');
         }
 
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->success('User deleted successfully');
     }
 }

@@ -14,12 +14,11 @@ class CompanyController extends Controller
     {
         $company = $request->user()->company;
 
-
         if (!$company) {
-            return response()->json(['message' => 'Company not found'], 404);
+            return response()->notFound('Company not found');
         }
 
-        return response()->json(['company' => $company]);
+        return response()->success('Company details retrieved successfully', ['company' => $company]);
     }
 
     /**
@@ -31,12 +30,12 @@ class CompanyController extends Controller
         $company = $user->company;
 
         if (!$company) {
-            return response()->json(['message' => 'Company not found'], 404);
+            return response()->notFound('Company not found');
         }
 
         // Only admin can update company details
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized. Only admin can update company details.'], 403);
+            return response()->unauthorized('Unauthorized. Only admin can update company details.');
         }
 
         $request->validate([
@@ -46,10 +45,7 @@ class CompanyController extends Controller
 
         $company->update($request->only('name', 'email'));
 
-        return response()->json([
-            'message' => 'Company updated successfully',
-            'company' => $company
-        ]);
+        return response()->success('Company updated successfully', ['company' => $company]);
     }
 
     /**
@@ -60,7 +56,7 @@ class CompanyController extends Controller
         $company = $request->user()->company;
 
         if (!$company) {
-            return response()->json(['message' => 'Company not found'], 404);
+            return response()->notFound('Company not found');
         }
 
         // Get total expenses, user count, and other relevant metrics
@@ -75,7 +71,7 @@ class CompanyController extends Controller
             ->groupBy('category')
             ->get();
 
-        return response()->json([
+        return response()->success('Company statistics retrieved successfully', [
             'total_expenses' => $totalExpenses,
             'user_count' => $userCount,
             'expense_count' => $expenseCount,

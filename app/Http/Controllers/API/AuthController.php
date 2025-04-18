@@ -16,7 +16,7 @@ use Laravel\Sanctum\TransientToken;
 
 class AuthController extends Controller
 {
-     /**
+    /**
      * Register a new company and admin user
      */
     public function register(Request $request)
@@ -49,8 +49,7 @@ class AuthController extends Controller
             // Generate token for the user
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'Company and admin user registered successfully',
+            return response()->success('Company and admin user registered successfully', [
                 'user' => $user,
                 'company' => $company,
                 'token' => $token,
@@ -78,14 +77,12 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
+        return response()->success('Login successful', [
             'user' => $user,
             'company' => $user->company,
             'token' => $token,
         ]);
     }
-
 
     /**
      * Logout user (revoke token)
@@ -98,9 +95,7 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        return response()->json([
-            'message' => 'Logged out successfully',
-        ]);
+        return response()->success('Logged out successfully');
     }
 
     /**
@@ -108,7 +103,7 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        return response()->json([
+        return response()->success('User details retrieved successfully', [
             'user' => $request->user()->load('company'),
         ]);
     }

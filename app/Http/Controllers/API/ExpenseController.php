@@ -26,7 +26,7 @@ class ExpenseController extends Controller
         $cacheKey = 'expenses_' . $user->id . '_' . $user->company_id . '_' . md5(json_encode($request->all()));
 
         // Get data from cache or run the query
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request, $user, $limit) {
+        $expenseCollection = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request, $user, $limit) {
             $query = Expense::with('user')
                 ->where('company_id', $user->company_id);
 
@@ -44,7 +44,7 @@ class ExpenseController extends Controller
             if ($request->has('search')) {
                 $query->where(function ($q) use ($request) {
                     $q->where('title', 'like', '%' . $request->search . '%')
-                      ->orWhere('category', 'like', '%' . $request->search . '%');
+                        ->orWhere('category', 'like', '%' . $request->search . '%');
                 });
             }
 
@@ -53,10 +53,12 @@ class ExpenseController extends Controller
             $sortDirection = $request->sort_direction ?? 'desc';
             $query->orderBy($sortField, $sortDirection);
 
-            $expenses = $query->paginate($limit, ['*'], 'page', $request->query('page'))->toResourceCollection();
-
-            return ExpenseResource::collection($expenses);
+            return $query->paginate($limit, ['*'], 'page', $request->query('page'));
         });
+
+        $resources = ExpenseResource::collection($expenseCollection);
+
+        return response()->success('Expenses retrieved successfully', $resources);
     }
 
     /**
@@ -98,10 +100,7 @@ class ExpenseController extends Controller
             // Clear list caches with a pattern
             $this->clearExpenseListCache($user);
 
-            return response()->json([
-                'message' => 'Expense created successfully',
-                'data' => new ExpenseResource($expense->load('user')),
-            ], 201);
+            return response()->success('Expense created successfully', new ExpenseResource($expense->load('user')), 201);
         });
     }
 
@@ -122,17 +121,15 @@ class ExpenseController extends Controller
                 ->first();
 
             if (!$expense) {
-                return response()->json(['message' => 'Expense not found'], 404);
+                return response()->notFound('Expense not found');
             }
 
             // Check if user is authorized to view the expense
             if ($user->isEmployee() && $expense->user_id !== $user->id) {
-                return response()->json(['message' => 'Unauthorized to view this expense'], 403);
+                return response()->unauthorized('Unauthorized to view this expense');
             }
 
-            return response()->json([
-                'data' => new ExpenseResource($expense)
-            ]);
+            return response()->success('Expense retrieved successfully', new ExpenseResource($expense));
         });
     }
 
@@ -148,7 +145,7 @@ class ExpenseController extends Controller
             ->first();
 
         if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
+            return response()->notFound('Expense not found');
         }
 
         $request->validate([
@@ -186,10 +183,7 @@ class ExpenseController extends Controller
             // Clear list caches with a pattern
             $this->clearExpenseListCache($user);
 
-            return response()->json([
-                'message' => 'Expense updated successfully',
-                'data' => new ExpenseResource($expense->load('user')),
-            ]);
+            return response()->success('Expense updated successfully', new ExpenseResource($expense->load('user')));
         });
     }
 
@@ -205,7 +199,7 @@ class ExpenseController extends Controller
             ->first();
 
         if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
+            return response()->notFound('Expense not found');
         }
 
         // Use a transaction to ensure both expense and audit log are handled correctly
@@ -234,10 +228,7 @@ class ExpenseController extends Controller
             // Clear list caches with a pattern
             $this->clearExpenseListCache($user);
 
-            return response()->json([
-                'message' => 'Expense deleted successfully',
-                'status' => 'success'
-            ]);
+            return response()->success('Expense deleted successfully');
         });
     }
 
@@ -250,7 +241,7 @@ class ExpenseController extends Controller
 
         // Only managers and admins can view audit logs
         if ($user->isEmployee()) {
-            return response()->json(['message' => 'Unauthorized to view audit logs'], 403);
+            return response()->unauthorized('Unauthorized to view audit logs');
         }
 
         $expense = Expense::where('id', $id)
@@ -258,7 +249,7 @@ class ExpenseController extends Controller
             ->first();
 
         if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
+            return response()->notFound('Expense not found');
         }
 
         $auditLogs = AuditLog::with('user')
@@ -267,7 +258,9 @@ class ExpenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return AuditLogResource::collection($auditLogs);
+        $resources = AuditLogResource::collection($auditLogs);
+
+        return response()->success('Audit logs retrieved successfully', $resources);
     }
 
     /**
