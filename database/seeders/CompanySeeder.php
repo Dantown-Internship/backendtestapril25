@@ -1,4 +1,5 @@
 <?php
+// database/seeders/CompanySeeder.php
 
 namespace Database\Seeders;
 
@@ -13,6 +14,15 @@ class CompanySeeder extends Seeder
             'name' => 'Test Company',
             'email' => 'testcompany@example.com', // ✅ required column
             // Add other required fields if your schema has more
+        ]);
+        
+        // Create a user tied to that company
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+            'company_id' => $company->id, // ✅ fix
+            'role' => 'Admin', // if role is required
         ]);
     }
 }
