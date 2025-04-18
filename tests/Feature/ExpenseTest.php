@@ -43,8 +43,11 @@ class ExpenseTest extends TestCase
             ->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/expenses');
 
-        $response->assertStatus(200);
-        // Skip the count assertion until we understand the exact structure
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'message',
+                'data'
+            ]);
     }
 
     public function test_user_can_create_expense()
@@ -60,9 +63,9 @@ class ExpenseTest extends TestCase
             ->postJson('/api/expenses', $expenseData);
 
         $response->assertStatus(201)
-            ->assertJsonPath('expense.title', 'Business lunch')
-            ->assertJsonPath('expense.amount', '45.75')
-            ->assertJsonPath('expense.category', 'Meals');
+            ->assertJsonPath('data.title', 'Business lunch')
+            ->assertJsonPath('data.amount', '45.75')
+            ->assertJsonPath('data.category', 'Meals');
 
         $this->assertDatabaseHas('expenses', [
             'title' => 'Business lunch',
@@ -90,9 +93,9 @@ class ExpenseTest extends TestCase
             ->getJson('/api/expenses/' . $expense->id);
 
         $response->assertStatus(200)
-            ->assertJsonPath('expense.id', $expense->id)
-            ->assertJsonPath('expense.title', $expense->title)
-            ->assertJsonPath('expense.amount', (string) $expense->amount);
+            ->assertJsonPath('data.id', $expense->id)
+            ->assertJsonPath('data.title', $expense->title)
+            ->assertJsonPath('data.amount', (string) $expense->amount);
     }
 
     public function test_user_can_update_expense()
@@ -113,9 +116,9 @@ class ExpenseTest extends TestCase
             ->putJson('/api/expenses/' . $expense->id, $updatedData);
 
         $response->assertStatus(200)
-            ->assertJsonPath('expense.id', $expense->id)
-            ->assertJsonPath('expense.title', 'Updated business lunch')
-            ->assertJsonPath('expense.amount', '52.50');
+            ->assertJsonPath('data.id', $expense->id)
+            ->assertJsonPath('data.title', 'Updated business lunch')
+            ->assertJsonPath('data.amount', '52.50');
 
         $this->assertDatabaseHas('expenses', [
             'id' => $expense->id,
@@ -167,19 +170,27 @@ class ExpenseTest extends TestCase
             \App\Models\AuditLog::create([
                 'user_id' => $this->user->id,
                 'company_id' => $this->company->id,
-                'auditable_id' => $expense->id,
-                'auditable_type' => 'App\Models\Expense',
-                'action' => ['created', 'updated', 'viewed'][$i],
-                'changes' => json_encode(['field' => 'value']),
+                'action' => ['create', 'update', 'view'][$i],
+                'changes' => json_encode([
+                    'expense_id' => $expense->id,
+                    'field' => 'value'
+                ]),
             ]);
         }
+
+        // Set up user as admin to access audit logs
+        $this->user->role = \App\Enums\UserRole::ADMIN;
+        $this->user->save();
 
         $response = $this->actingAs($this->user)
             ->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/expenses/' . $expense->id . '/audit-logs');
 
-        $response->assertStatus(200);
-        // Skip the count assertion until we understand the exact structure
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'message',
+                'data'
+            ]);
     }
 
     public function test_cannot_access_expenses_from_different_company()

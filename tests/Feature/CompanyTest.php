@@ -40,9 +40,12 @@ class CompanyTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'company' => [
-                    'id' => $this->company->id,
-                    'name' => $this->company->name
+                'message' => 'Company details retrieved successfully',
+                'data' => [
+                    'company' => [
+                        'id' => $this->company->id,
+                        'name' => $this->company->name
+                    ]
                 ]
             ]);
     }
@@ -51,9 +54,6 @@ class CompanyTest extends TestCase
     {
         $updatedData = [
             'name' => 'Updated Company Name',
-            'address' => '123 New Address',
-            'phone' => '555-9876',
-            'website' => 'https://updatedwebsite.com',
             'email' => 'updated@example.com'  // Adding the required email field
         ];
 
@@ -62,7 +62,7 @@ class CompanyTest extends TestCase
             ->putJson('/api/company', $updatedData);
 
         $response->assertStatus(200)
-            ->assertJsonPath('company.name', 'Updated Company Name');
+            ->assertJsonPath('data.company.name', 'Updated Company Name');
 
         $this->assertDatabaseHas('companies', [
             'id' => $this->company->id,
@@ -72,14 +72,38 @@ class CompanyTest extends TestCase
 
     public function test_can_get_company_statistics()
     {
-        // Skip this test for now until we understand the statistics structure
-        $this->markTestSkipped('Statistics structure needs to be determined');
+        // Create some expenses for the company to generate statistics
+        \App\Models\Expense::factory()->count(5)->create([
+            'user_id' => $this->user->id,
+            'company_id' => $this->company->id,
+            'category' => 'Food'
+        ]);
+
+        \App\Models\Expense::factory()->count(3)->create([
+            'user_id' => $this->user->id,
+            'company_id' => $this->company->id,
+            'category' => 'Travel'
+        ]);
 
         $response = $this->actingAs($this->user)
             ->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/company/statistics');
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'total_expenses',
+                    'user_count',
+                    'expense_count',
+                    'recent_expenses',
+                    'expenses_by_category'
+                ]
+            ]);
+
+        // Verify counts match what we created
+        $response->assertJsonPath('data.expense_count', 8);
+        $response->assertJsonPath('data.user_count', 1);
     }
 
     public function test_unauthorized_user_cannot_access_company_details()
@@ -100,9 +124,12 @@ class CompanyTest extends TestCase
         // Should return company of the authenticated user, not the original company
         $response->assertStatus(200)
             ->assertJson([
-                'company' => [
-                    'id' => $otherCompany->id,
-                    'name' => $otherCompany->name
+                'message' => 'Company details retrieved successfully',
+                'data' => [
+                    'company' => [
+                        'id' => $otherCompany->id,
+                        'name' => $otherCompany->name
+                    ]
                 ]
             ]);
     }
