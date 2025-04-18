@@ -2,7 +2,7 @@
 @contentType = application/json
 
 // Store tokens and variables for use in multiple requests
-@authToken = 6|mmPVvrb14XQsIXwsVP4aAwmO8Bir1HCzUWk9w6TV8cdaeaa4
+@authToken = 7|jJbmNSui7JQdZXU1zwqRynefXNyVTtPQwCq4TlA248813df8
 @userId = 1
 @expenseId =
 
@@ -29,7 +29,7 @@ Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "email": "testuser@example.com",
+  "email": "admin_1@example.com",
   "password": "password123"
 }
 
@@ -71,7 +71,7 @@ Accept: {{contentType}}
 // ==================== User Management Tests ====================
 
 ### Get all users
-GET {{baseUrl}}/users
+GET {{baseUrl}}/users?page=1&limit=5
 Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 

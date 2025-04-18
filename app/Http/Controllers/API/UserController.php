@@ -17,14 +17,12 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-
-        // Only admin and managers can view all users
-        if (!$user->isAdmin() && !$user->isManager()) {
-            return response()->json(['message' => 'Unauthorized to view user list'], 403);
-        }
+        $limit = $request->query('limit', 10); // Default to 10 items per page
+        $limit = min(max((int)$limit, 1), 100); // Ensure limit is between 1 and 100
 
         $users = User::where('company_id', $user->company_id)
-            ->paginate(10);
+            ->paginate($limit, ['*'], 'page', $request->query('page'))
+            ->toResourceCollection();
 
         return response()->json($users);
     }
