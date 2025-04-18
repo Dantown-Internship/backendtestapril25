@@ -26,17 +26,14 @@ Route::post('/login', [AuthController::class, 'login']);
 // Authenticated routes (Sanctum protected)
 Route::middleware('auth:sanctum')->group(function () {
     // User routes
-    Route::post('/register', [AuthController::class, 'register'])
-        ->middleware('role:Admin');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('role:Admin');
 
     // Expense routes
     Route::prefix('expenses')->group(function () {
         Route::get('/', [ExpenseController::class, 'index']);
         Route::post('/', [ExpenseController::class, 'store']);
-        Route::put('/{expense}', [ExpenseController::class, 'update'])
-            ->middleware('role:Admin,Manager');
-        Route::delete('/{expense}', [ExpenseController::class, 'destroy'])
-            ->middleware('role:Admin');
+        Route::put('/{expense}', [ExpenseController::class, 'update'])->middleware('role:Admin,Manager');
+        Route::delete('/{expense}', [ExpenseController::class, 'destroy'])->middleware('role:Admin');
     });
 
     // User management routes (Admin only)
