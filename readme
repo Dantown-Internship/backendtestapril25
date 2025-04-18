@@ -10,12 +10,12 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 
 ### ✅ Key Features to Implement
 
-- **Multi-Tenant Support** – Companies should have isolated data.
-- **Secure API Authentication** – Use Laravel Sanctum.
-- **Role-Based Access Control (RBAC)** – Admins, Managers, Employees.
-- **Advanced Query Optimization** – Indexing, Eager Loading.
+- **Multi-Tenant Support** – Companies should have isolated data. done
+- **Secure API Authentication** – Use Laravel Sanctum.  done
+- **Role-Based Access Control (RBAC)** – Admins, Managers, Employees.  done
+- **Advanced Query Optimization** – Indexing, Eager Loading. 
 - **Background Job Processing** – Laravel Queues.
-- **Audit Logging** – Track changes to expenses.
+- **Audit Logging** – Track changes to expenses.  done
 
 ---
 
