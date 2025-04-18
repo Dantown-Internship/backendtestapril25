@@ -16,7 +16,10 @@ class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Expense::with('user.company');
+        $user = Auth::user();
+
+        $query = Expense::where('company_id', $user->company_id)
+        ->with('user');
 
         if ($search = $request->input('search')) {
             $query->where(function($q) use ($search) {
@@ -35,7 +38,7 @@ class ExpenseController extends Controller
         */
 
         return Cache::remember("expenses_{$request->user()->company_id}", 60, fn () => $query->paginate(10));
-    
+
     }
 
     public function store(StoreExpenseRequest $request)
@@ -72,7 +75,7 @@ class ExpenseController extends Controller
 
         // Old value before update
         $oldValues = $expense->toArray();
-        
+
         // Update the expense
         $expense->update($request->validated());
 
