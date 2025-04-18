@@ -10,6 +10,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Scheduled task to send weekly expense reports
-Schedule::job(new WeeklyExpenseReport())->weekly()->thursdays()->at('14:35'); // Run every Monday at 8:00 AM
-// Schedule::job(new WeeklyExpenseReport())->weekly()->mondays()->at('08:00'); // Run every Monday at 8:00 AM
+Schedule::job(new WeeklyExpenseReport())->weekly()->mondays()->at('08:00'); // Run every Monday at 8:00 AM
+// Schedule::job(new WeeklyExpenseReport())->weekly()->thursdays()->at('14:35'); // Test
         // You can adjust the frequency and time as needed
