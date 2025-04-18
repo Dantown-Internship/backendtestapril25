@@ -28,8 +28,10 @@ class CheckRole
             return $next($request);
         }
         
+        $userRole = strtolower($user->role);
+        
         foreach ($roles as $role) {
-            if ($user->role === $role) {
+            if ($userRole === strtolower($role)) {
                 return $next($request);
             }
         }

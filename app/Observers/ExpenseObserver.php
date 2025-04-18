@@ -31,7 +31,7 @@ class ExpenseObserver
             }
             
             AuditLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => Auth::id() ?? $expense->user_id,
                 'company_id' => $expense->company_id,
                 'action' => 'updated',
                 'changes' => [
@@ -48,7 +48,7 @@ class ExpenseObserver
     public function deleted(Expense $expense): void
     {
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? $expense->user_id,
             'company_id' => $expense->company_id,
             'action' => 'deleted',
             'changes' => $expense->getAttributes(),

@@ -10,27 +10,19 @@ class Company extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    
     protected $fillable = [
         'name',
         'email',
     ];
 
-    /**
-     * Get the users for the company.
-     */
+    
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    /**
-     * Get the expenses for the company.
-     */
+    
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);

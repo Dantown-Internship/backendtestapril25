@@ -11,14 +11,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    
     protected $fillable = [
         'name',
         'email',
@@ -27,21 +22,13 @@ class User extends Authenticatable
         'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    
     protected function casts(): array
     {
         return [
@@ -50,43 +37,33 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the company that the user belongs to.
-     */
+    
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    /**
-     * Get the expenses for the user.
-     */
+    
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
 
-    /**
-     * Check if the user is an admin.
-     */
+    
     public function isAdmin(): bool
     {
-        return $this->role === 'Admin';
+        return strtolower($this->role) === 'admin';
     }
 
-    /**
-     * Check if the user is a manager.
-     */
+    
     public function isManager(): bool
     {
-        return $this->role === 'Manager';
+        return strtolower($this->role) === 'manager';
     }
 
-    /**
-     * Check if the user is an employee.
-     */
+    
     public function isEmployee(): bool
     {
-        return $this->role === 'Employee';
+        return strtolower($this->role) === 'employee';
     }
 }

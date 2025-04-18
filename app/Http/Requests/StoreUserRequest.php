@@ -6,20 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         // Only admins can create users
         return $this->user() && $this->user()->isAdmin();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
+    
     public function rules(): array
     {
         return [
@@ -27,16 +21,18 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:Admin,Manager,Employee',
+            'company_id' => 'sometimes|exists:companies,id',
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     */
+    
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'company_id' => $this->user()->company_id,
-        ]);
+        // Always use the authenticated user's company_id
+        if ($this->user()) {
+            $this->merge([
+                'company_id' => $this->user()->company_id,
+            ]);
+        }
     }
 }
