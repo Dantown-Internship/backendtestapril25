@@ -23,8 +23,8 @@ class AuthControllerTest extends TestCase
         $this->validPassword = $this->faker->password(10);
         $this->invalidPassword = $this->faker->password(3, 6);
     }
-    /** @test */
-    public function it_can_register_new_user(): void
+
+    public function test_it_can_register_new_user(): void
     {
         $payload = [
             "name" => $this->faker()->name(),
@@ -52,8 +52,8 @@ class AuthControllerTest extends TestCase
         $this->assertDatabaseHas(app(User::class)->getTable(), $payload);
     }
 
-    /** @test */
-    public function it_throws_validation_error_when_user_passwords_do_not_match(): void
+
+    public function test_it_throws_validation_error_when_user_passwords_do_not_match(): void
     {
         $payload = [
             "name" => $this->faker()->name(),
@@ -81,8 +81,8 @@ class AuthControllerTest extends TestCase
         $this->assertDatabaseMissing(app(User::class)->getTable(), $payload);
     }
 
-    /** @test */
-    public function it_allows_user_with_valid_password_login(): void
+
+    public function test_it_allows_user_with_valid_password_login(): void
     {
         $user = User::factory()->create();
 
@@ -102,8 +102,8 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_does_not_allow_user_with_invalid_password_to_login(): void
+
+    public function test_it_does_not_allow_user_with_invalid_password_to_login(): void
     {
         $user = User::factory()->create();
 
@@ -121,8 +121,8 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_deletes_user_token_upon_logout(): void
+
+    public function test_it_deletes_user_token_upon_logout(): void
     {
         $user = User::factory()->create();
         $payload = [

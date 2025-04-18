@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,7 @@ class Expense extends Model
 {
     /** @use HasFactory<\Database\Factories\ExpenseFactory> */
     use HasFactory;
+    use BelongsToCompany;
 
     protected $fillable = [
         'company_id',
@@ -53,5 +55,17 @@ class Expense extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if (! $term) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'LIKE', "%{$term}%")
+                ->orWhere('category', 'LIKE', "%{$term}%");
+        });
     }
 }
