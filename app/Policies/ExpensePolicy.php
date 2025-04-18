@@ -20,12 +20,12 @@ class ExpensePolicy
 
     public function update(User $user, Expense $expense): bool
     {
-        return $user->isAdmin() || $user->isManager();
+        return ($user->isAdmin() || $user->isManager() || $user->id === $expense->user_id) && $user->company_id === $expense->company_id;
     }
 
     public function destroy(User $user, Expense $expense): bool
     {
-        return $user->isAdmin();
+        return ($user->isAdmin() || $user->id === $expense->user_id) && $user->company_id === $expense->company_id;
     }
 
 }

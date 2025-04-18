@@ -20,6 +20,6 @@ class UserPolicy
 
     public function update(User $user, Model $model): bool
     {
-        return $user->isAdmin() || $user->id === $model->id;
+        return ($user->isAdmin() || $user->id === $model->id) && $user->company_id === $model->company_id;
     }
 }
