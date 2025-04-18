@@ -86,30 +86,26 @@ Accept: {{contentType}}
   "email": "employee@example.com",
   "password": "password123",
   "password_confirmation": "password123",
-  "role": "user"
+  "role": "Employee"
 }
 
-// After creating a user, copy the user ID from the response and set it as @userId
-
 ### Get specific user
-GET {{baseUrl}}/users/{{userId}}
+GET {{baseUrl}}/users/5
 Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 
-### Update user
-PUT {{baseUrl}}/users/{{userId}}
+### Update user Role
+PUT {{baseUrl}}/users/5
 Authorization: Bearer {{authToken}}
 Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "name": "Updated Employee Name",
-  "email": "updated_employee@example.com",
-  "role": "admin"
+  "role": "Manager"
 }
 
 ### Delete user
-DELETE {{baseUrl}}/users/17
+DELETE {{baseUrl}}/users/3
 Authorization: Bearer {{authToken}}
 Accept: {{contentType}}
 

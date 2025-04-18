@@ -34,11 +34,6 @@ class UserController extends Controller
     {
         $currentUser = $request->user();
 
-        // Only admin can create new users
-        if (!$currentUser->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized to create users'], 403);
-        }
-
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -55,7 +50,7 @@ class UserController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'User created successfully',
+            'message' => 'User added successfully',
             'user' => $user
         ], 201);
     }
@@ -80,11 +75,11 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized to view this user'], 403);
         }
 
-        return response()->json(['user' => $user]);
+        return response()->json(['message' => 'User retrieved successfully!', 'data' => $user]);
     }
 
     /**
-     * Update the specified user.
+     * Update the specified user's role.
      */
     public function update(Request $request, $id)
     {
@@ -99,47 +94,18 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        // Users can update their own profile (except role), admins can update any user
-        if ($user->id !== $currentUser->id && !$currentUser->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized to update this user'], 403);
-        }
+        // Validate the role
+        $request->validate([
+            'role' => ['required', Rule::in(UserRole::toArray())],
+        ]);
 
-        $rules = [
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-        ];
-
-        // Only admin can update roles
-        if ($currentUser->isAdmin()) {
-            $rules['role'] = ['sometimes', 'required', Rule::in(UserRole::toArray())];
-        }
-
-        // Add password validation if it's being updated
-        if ($request->has('password')) {
-            $rules['password'] = 'required|string|min:8';
-        }
-
-        $request->validate($rules);
-
-        // Update basic info
-        $user->name = $request->name ?? $user->name;
-        $user->email = $request->email ?? $user->email;
-
-        // Update password if provided
-        if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        // Update role if admin and role provided
-        if ($currentUser->isAdmin() && $request->has('role')) {
-            $user->role = $request->role;
-        }
-
+        // Update the role
+        $user->role = $request->role;
         $user->save();
 
         return response()->json([
-            'message' => 'User updated successfully',
-            'user' => $user
+            'message' => 'User role updated successfully',
+            'data' => $user
         ]);
     }
 
@@ -149,11 +115,6 @@ class UserController extends Controller
     public function destroy(Request $request, $id)
     {
         $currentUser = $request->user();
-
-        // Only admin can delete users
-        if (!$currentUser->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized to delete users'], 403);
-        }
 
         // Admin cannot delete themselves
         if ($currentUser->id == $id) {
