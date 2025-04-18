@@ -2,8 +2,8 @@
 
 use App\Models\Expense;
 use App\Models\User;
-
 use Illuminate\Support\Str;
+
 use function Pest\Laravel\actingAs;
 
 test('employees can only view their expenses', function () {
@@ -26,9 +26,9 @@ test('employees can only view their expenses', function () {
         ->assertJson([
             'meta' => [
                 'pagination' => [
-                    'total' => $expenses->count()
-                ]
-            ]
+                    'total' => $expenses->count(),
+                ],
+            ],
         ])
         ->assertJsonStructure([
             'status',
@@ -58,7 +58,7 @@ test('managers and admins can view all the expenses in the company', function ()
         ->assertJson([
             'meta' => [
                 'pagination' => [
-                    'total' => $expenses->count()
+                    'total' => $expenses->count(),
                 ],
             ],
         ])
@@ -74,10 +74,10 @@ test('managers and admins can view all the expenses in the company', function ()
                     'created_at',
                     'updated_at',
                     'user',
-                ]
+                ],
             ],
             'meta' => [
-                'pagination'
+                'pagination',
             ],
         ]);
 
@@ -105,7 +105,7 @@ test('list of expenses can be filtered', function () {
     ]);
     $filterPayload = [
         'per_page' => 15,
-        'search' => $randomString
+        'search' => $randomString,
     ];
 
     $response = actingAs($admin)

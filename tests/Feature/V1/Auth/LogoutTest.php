@@ -2,14 +2,13 @@
 
 use App\Models\User;
 
-
 test("user's token gets deleted on logout", function () {
     $user = User::factory()->create();
 
     $token = $user->createToken('test-token')->plainTextToken;
     // Make the request with the token
     $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $token,
+        'Authorization' => 'Bearer '.$token,
     ])->postJson(route('api.v1.logout'));
 
     // Assert the response

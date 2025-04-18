@@ -1,4 +1,5 @@
 <?php
+
 use App\Enums\Role;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;

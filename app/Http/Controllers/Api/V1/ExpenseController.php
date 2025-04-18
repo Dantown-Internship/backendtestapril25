@@ -66,11 +66,11 @@ class ExpenseController extends Controller
     {
         match ($request->user()->role) {
             Role::Employee => throw_if(
-                $expense->user_id !== $request->user()->id, 
+                $expense->user_id !== $request->user()->id,
                 new ModelNotFoundException(Expense::class)),
             Role::Admin, Role::Manager => $expense->load('user'),
         };
-        
+
         return $this->successResponse(
             message: 'Expense retrieved successfully.',
             data: new ExpenseResource($expense)

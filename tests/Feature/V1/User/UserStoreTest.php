@@ -5,24 +5,24 @@ use App\Models\User;
 
 use function Pest\Laravel\actingAs;
 
-test('admin can create a new user assigned to their company', function() {
+test('admin can create a new user assigned to their company', function () {
     $admin = User::factory()->admin()->create()->fresh();
     $userData = [
         'name' => 'New User',
         'email' => 'newuser@example.com',
         'role' => Role::Employee->value,
-        'password' => "password",
-        'password_confirmation' => "password",
+        'password' => 'password',
+        'password_confirmation' => 'password',
     ];
     $response = actingAs($admin)
         ->postJson(route('api.v1.users.store'), $userData)
         ->assertStatus(201)
         ->assertJson([
             'data' => [
-                'name' => "New User",
+                'name' => 'New User',
                 'email' => 'newuser@example.com',
                 'role' => Role::Employee->value,
-            ]
+            ],
         ])
         ->assertJsonStructure([
             'status',
@@ -33,8 +33,8 @@ test('admin can create a new user assigned to their company', function() {
                 'email',
                 'role',
                 'created_at',
-                'updated_at'
-            ]
+                'updated_at',
+            ],
         ]);
 
     $userUid = $response->json('data')['id'];
@@ -48,8 +48,8 @@ test('validation error is thrown when invalid input is supplied', function () {
         'name' => '',
         'email' => 'invalid-email',
         'role' => 'invalid-role',
-        'password' => "short",
-        'password_confirmation' => "different",
+        'password' => 'short',
+        'password_confirmation' => 'different',
     ];
 
     actingAs($admin)

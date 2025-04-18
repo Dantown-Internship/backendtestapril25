@@ -4,10 +4,10 @@ use App\Models\User;
 
 use function Pest\Laravel\actingAs;
 
-test("admin can view details of users in the company", function () {
+test('admin can view details of users in the company', function () {
     $admin = User::factory()->admin()->create()->fresh();
     $user = User::factory()->create([
-        'company_id' => $admin->company_id
+        'company_id' => $admin->company_id,
     ])->fresh();
 
     actingAs($admin)
@@ -19,7 +19,7 @@ test("admin can view details of users in the company", function () {
                 'email' => $user->email,
                 'role' => $user->role->value,
                 'name' => $user->name,
-            ]
+            ],
         ]);
 });
 
@@ -30,6 +30,6 @@ test('admin cannot view detail of users that are not in their company', function
         ->getJson(route('api.v1.users.show', [$user->uuid]))
         ->assertStatus(404)
         ->assertJson([
-            'status' => false
+            'status' => false,
         ]);
 });

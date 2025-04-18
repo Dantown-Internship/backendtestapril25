@@ -6,7 +6,7 @@ class TokenDto
 {
     public function __construct(
         public string $accessToken,
-        public string $tokenType = "Bearer",
+        public string $tokenType = 'Bearer',
         public ?int $expiresIn = null,
     ) {
         $this->expiresIn = config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null;

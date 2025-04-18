@@ -9,7 +9,7 @@ test('admin can update the details of a user in their company', function () {
     $admin = User::factory()->admin()->create()->fresh();
     $user = User::factory()->create(['company_id' => $admin->company_id])->fresh();
     $updatePayload = [
-        'name' => "Updated name",
+        'name' => 'Updated name',
         'email' => 'updated@email.com',
         'role' => Role::Employee->value,
     ];
@@ -25,7 +25,7 @@ test('admin can update the details of a user in their company', function () {
                 'name' => $updatePayload['name'],
                 'email' => $updatePayload['email'],
                 'role' => $updatePayload['role'],
-            ]
+            ],
         ]);
 });
 

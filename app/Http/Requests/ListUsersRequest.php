@@ -26,7 +26,7 @@ class ListUsersRequest extends FormRequest
         return [
             'per_page' => ['nullable', 'integer'],
             'search' => ['nullable', 'string'],
-            'role' => ['nullable', Rule::enum(Role::class)]
+            'role' => ['nullable', Rule::enum(Role::class)],
         ];
     }
 }

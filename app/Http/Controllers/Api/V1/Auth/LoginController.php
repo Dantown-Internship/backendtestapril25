@@ -18,8 +18,7 @@ class LoginController extends Controller
 
         return $this->successResponse('Login successful', [
             'user' => new UserResource($user->load('company')),
-            'token' => (new TokenDto($token))->toArray()
+            'token' => (new TokenDto($token))->toArray(),
         ]);
     }
-
 }

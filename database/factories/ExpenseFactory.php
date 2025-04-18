@@ -21,6 +21,7 @@ class ExpenseFactory extends Factory
     {
         $timestamp = fake()->dateTimeBetween('-1 week', 'now');
         $company = Company::factory()->create();
+
         return [
             'company_id' => $company->id,
             'user_id' => User::factory()->create(['company_id' => $company->id])->id,

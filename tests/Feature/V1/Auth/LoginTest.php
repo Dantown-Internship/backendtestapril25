@@ -2,7 +2,6 @@
 
 use App\Models\User;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
 test('users can authenticate using the login endpoint', function () {
@@ -20,9 +19,9 @@ test('users can authenticate using the login endpoint', function () {
                 'token' => [
                     'access_token',
                     'token_type',
-                    'expires_in'
-                ]
-            ]
+                    'expires_in',
+                ],
+            ],
         ]);
     $userData = $response->json()['data']['user'];
     expect($userData['id'])->toBe($user->uuid);
@@ -37,6 +36,6 @@ test('users can not authenticate with invalid password', function () {
         'password' => 'wrong-password',
     ]);
     $response->assertJson([
-        'status' => false
+        'status' => false,
     ])->assertStatus(422);
 });

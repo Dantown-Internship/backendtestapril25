@@ -15,14 +15,14 @@ test('employees cannot update an expense', function () {
     $expense = Expense::factory()
         ->create([
             'user_id' => $employee->id,
-            'company_id' => $employee->company_id
+            'company_id' => $employee->company_id,
         ])->fresh();
 
     actingAs($employee)
         ->putJson(
             route('api.v1.expenses.update', $expense->uuid),
             [
-                'title' => "random",
+                'title' => 'random',
                 'amount' => 100,
                 'category' => ExpenseCategory::Food->value,
             ])
@@ -33,19 +33,19 @@ test('admins can update an expense', function () {
     $admin = User::factory()->admin()->create();
     $expense = Expense::factory()->create(['company_id' => $admin->company_id]);
     $updatePayload = [
-        'title' => "New title",
+        'title' => 'New title',
         'amount' => 200,
         'category' => ExpenseCategory::Food->value,
     ];
 
     actingAs($admin)
         ->putJson(
-        route('api.v1.expenses.update', $expense->uuid),
+            route('api.v1.expenses.update', $expense->uuid),
             $updatePayload
         )
         ->assertStatus(200)
         ->assertJson([
-            'data' => array_merge($updatePayload, ['id' => $expense->uuid])
+            'data' => array_merge($updatePayload, ['id' => $expense->uuid]),
         ]);
 });
 
@@ -53,19 +53,19 @@ test('managers can update an expense', function () {
     $manager = User::factory()->manager()->create();
     $expense = Expense::factory()->create(['company_id' => $manager->company_id]);
     $updatePayload = [
-        'title' => "New title",
+        'title' => 'New title',
         'amount' => 200,
         'category' => ExpenseCategory::Food->value,
     ];
 
     actingAs($manager)
         ->putJson(
-        route('api.v1.expenses.update', $expense->uuid),
+            route('api.v1.expenses.update', $expense->uuid),
             $updatePayload
         )
         ->assertStatus(200)
         ->assertJson([
-            'data' => array_merge($updatePayload, ['id' => $expense->uuid])
+            'data' => array_merge($updatePayload, ['id' => $expense->uuid]),
         ]);
 });
 
@@ -74,12 +74,12 @@ test('validation error is thrown when invalid input is passed', function () {
     $expense = Expense::factory()->create(['company_id' => $admin->company_id]);
     $updatePayload = [
         'title' => 10,
-        'amount' => "test",
-        'category' => "random category",
+        'amount' => 'test',
+        'category' => 'random category',
     ];
     actingAs($admin)
         ->putJson(
-        route('api.v1.expenses.update', $expense->uuid),
+            route('api.v1.expenses.update', $expense->uuid),
             $updatePayload
         )
         ->assertUnprocessable()
@@ -90,19 +90,19 @@ test('audit log is created when an expense is created', function () {
     $admin = User::factory()->admin()->create();
     $expense = Expense::factory()->create(['company_id' => $admin->company_id])->fresh();
     $updatePayload = [
-        'title' => "New title",
+        'title' => 'New title',
         'amount' => 200,
         'category' => ExpenseCategory::Food->value,
     ];
 
     actingAs($admin)
         ->putJson(
-        route('api.v1.expenses.update', $expense->uuid),
+            route('api.v1.expenses.update', $expense->uuid),
             $updatePayload
         )
         ->assertStatus(200)
         ->assertJson([
-            'data' => array_merge($updatePayload, ['id' => $expense->uuid])
+            'data' => array_merge($updatePayload, ['id' => $expense->uuid]),
         ]);
 
     expect(AuditLog::count())->toBe(1);
@@ -114,7 +114,6 @@ test('audit log is created when an expense is created', function () {
             old: $expense->getRawOriginal(),
             new: $expense->fresh()->getAttributes())
             )
-            ->toJson()
+                ->toJson(),
     ]);
 });
-

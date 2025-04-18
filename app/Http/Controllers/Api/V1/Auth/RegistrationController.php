@@ -27,19 +27,18 @@ class RegistrationController extends Controller
                     'name' => $request->validated('name'),
                     'email' => $request->validated('email'),
                     'password' => bcrypt($request->validated('password')),
-                    'role' => Role::Admin
+                    'role' => Role::Admin,
                 ]);
 
                 return $user;
             });
         } catch (\Throwable $th) {
-            return $this->errorResponse(message: "Registration failed", statusCode: 500);
+            return $this->errorResponse(message: 'Registration failed', statusCode: 500);
         }
 
-
         return $this->successResponse(
-            message: "Registration successful",
-            data:[
+            message: 'Registration successful',
+            data: [
                 'user' => new UserResource($user->load('company')),
                 'token' => (new TokenDto($user->createToken('auth_token')->plainTextToken))->toArray(),
             ],

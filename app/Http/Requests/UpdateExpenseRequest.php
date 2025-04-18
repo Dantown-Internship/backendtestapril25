@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\ExpenseCategory;
 use App\Enums\Role;
-use App\Models\Expense;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +16,6 @@ class UpdateExpenseRequest extends FormRequest
     {
         return in_array($this->user()->role, [Role::Admin, Role::Manager]);
     }
-
 
     /**
      * Get the validation rules that apply to the request.

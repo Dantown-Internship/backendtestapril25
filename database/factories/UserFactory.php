@@ -49,21 +49,21 @@ class UserFactory extends Factory
     public function admin()
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Role::Admin->value
+            'role' => Role::Admin->value,
         ]);
     }
 
     public function manager()
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Role::Manager->value
+            'role' => Role::Manager->value,
         ]);
     }
 
     public function employee()
     {
         return $this->state(fn (array $attributes) => [
-            'role' => Role::Employee->value
+            'role' => Role::Employee->value,
         ]);
     }
 }

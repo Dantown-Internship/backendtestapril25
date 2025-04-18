@@ -9,7 +9,7 @@ test('employee can view their own expenses', function () {
     $employee = User::factory()->employee()->create();
     $expense = Expense::factory()->create([
         'company_id' => $employee->company_id,
-        'user_id' => $employee->id
+        'user_id' => $employee->id,
     ])->fresh();
 
     actingAs($employee)
@@ -25,7 +25,7 @@ test('employee can view their own expenses', function () {
                 'category',
                 'created_at',
                 'updated_at',
-            ]
+            ],
         ])
         ->assertJson([
             'data' => [
@@ -35,14 +35,14 @@ test('employee can view their own expenses', function () {
                 'category' => $expense->category->value,
                 'created_at' => $expense->created_at->toISOString(),
                 'updated_at' => $expense->updated_at->toISOString(),
-            ]
+            ],
         ]);
 });
 
 test('employee can not view expenses that do not belong to them', function () {
     $employee = User::factory()->employee()->create();
     $expense = Expense::factory()->create([
-        'company_id' => $employee->company_id
+        'company_id' => $employee->company_id,
     ]);
 
     actingAs($employee)
@@ -83,7 +83,7 @@ test('admin and managers can view any expense that belongs to the company', func
             ],
         ]);
 
-    $manager = User::factory()->manager()->create(['company_id'  => $admin->company_id]);
+    $manager = User::factory()->manager()->create(['company_id' => $admin->company_id]);
 
     actingAs($manager)
         ->getJson(route('api.v1.expenses.show', $expense->uuid))
@@ -96,7 +96,7 @@ test('admin and managers can view any expense that belongs to the company', func
                 'category' => $expense->category->value,
                 'created_at' => $expense->created_at->toISOString(),
                 'updated_at' => $expense->updated_at->toISOString(),
-            ]
+            ],
         ]);
 });
 
@@ -104,7 +104,6 @@ test('viewing invalid expense id returns 404', function () {
     $admin = User::factory()->admin()->create();
 
     actingAs($admin)
-    ->getJson(route('api.v1.expenses.show', ["dkdkdkdk"]))
-    ->assertNotFound();
+        ->getJson(route('api.v1.expenses.show', ['dkdkdkdk']))
+        ->assertNotFound();
 });
-

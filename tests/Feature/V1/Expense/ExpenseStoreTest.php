@@ -9,7 +9,7 @@ use function Pest\Laravel\actingAs;
 test('users can create an expense', function () {
     $user = User::factory()->create()->refresh();
     $payload = [
-        'title' => "Random Title",
+        'title' => 'Random Title',
         'amount' => 700,
         'category' => ExpenseCategory::Food->value,
     ];
@@ -27,10 +27,10 @@ test('users can create an expense', function () {
                 'category',
                 'created_at',
                 'updated_at',
-            ]
+            ],
         ])
         ->assertJson([
-            'data' => $payload
+            'data' => $payload,
         ]);
 
     $uuid = $response->json('data')['id'];
@@ -41,9 +41,9 @@ test('users can create an expense', function () {
 test('validation error is thrown when invalid input is passed', function () {
     $user = User::factory()->create()->refresh();
     $payload = [
-        'title' => "",
+        'title' => '',
         'amount' => -100,
-        'category' => "invalid_category",
+        'category' => 'invalid_category',
     ];
 
     actingAs($user)

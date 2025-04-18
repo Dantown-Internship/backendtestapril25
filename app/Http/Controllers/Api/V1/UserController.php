@@ -25,7 +25,7 @@ class UserController extends Controller
         $users = User::when(
             ! blank($search),
             fn (Builder $builder) => $builder->where('name', 'LIKE', "%$search%"))
-            ->when(! blank($role), fn(Builder $builder) => $builder->where('role', $role))
+            ->when(! blank($role), fn (Builder $builder) => $builder->where('role', $role))
             ->paginate($perPage)
             ->withQueryString();
 
@@ -49,7 +49,7 @@ class UserController extends Controller
             'company_id' => $request->user()->company_id,
         ]);
 
-        if($role === Role::Admin) {
+        if ($role === Role::Admin) {
             cache()->forget(CacheKey::companyAdmins($user->company_id));
         }
 
@@ -84,7 +84,7 @@ class UserController extends Controller
             'email' => $request->validated('email'),
             'role' => $role,
         ]);
-        if($roleChanged && ($role === Role::Admin || $previousRole === Role::Admin) ) {
+        if ($roleChanged && ($role === Role::Admin || $previousRole === Role::Admin)) {
             cache()->forget(CacheKey::companyAdmins($user->company_id));
         }
 

@@ -10,7 +10,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 
-test('unauthorized user cannot delete other company expense', function() {
+test('unauthorized user cannot delete other company expense', function () {
     $user = User::factory()->admin()->create();
     $otherCompanyExpense = Expense::factory()->create();
 
@@ -21,7 +21,6 @@ test('unauthorized user cannot delete other company expense', function() {
     assertDatabaseHas('expenses', ['id' => $otherCompanyExpense->id]);
 });
 
-
 test('employee cannot delete an expense', function () {
     $user = User::factory()->employee()->create();
     $otherCompanyExpense = Expense::factory()->create(['company_id' => $user->company_id]);
@@ -30,7 +29,6 @@ test('employee cannot delete an expense', function () {
         ->deleteJson(route('api.v1.expenses.destroy', [$otherCompanyExpense->uuid]))
         ->assertForbidden();
 });
-
 
 test('manager cannot delete an expense', function () {
     $user = User::factory()->manager()->create();
@@ -69,7 +67,7 @@ test('audit log is recorded when an expense is deleted', function () {
         'changes' => (new AuditLogChangesDto(
             old: $expense->getAttributes(),
             new: null
-            ))
-            ->toJson()
+        ))
+            ->toJson(),
     ]);
 });
