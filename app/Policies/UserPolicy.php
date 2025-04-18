@@ -21,6 +21,11 @@ class UserPolicy
 
     public function createCompany(User $user): bool
     {
-        return $user->isAdmin() == false;
+        return $user->isAdmin();
+    }
+
+    public function createUser(User $user): bool
+    {
+        return $user->isAdmin();
     }
 }

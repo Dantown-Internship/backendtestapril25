@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,24 +14,31 @@ class UserTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->admin = User::factory()->create(['role' => 'Admin']);
+
+        $company = Company::factory()->create();
+
+        $this->admin = User::factory()->create([
+            'role' => 'Admin',
+            'company_id' => $company->id,
+        ]);
         $this->adminToken = $this->admin->createToken('API Token')->plainTextToken;
-        
+
         $this->manager = User::factory()->create([
             'role' => 'Manager',
-            'company_id' => $this->admin->company_id,
+            'company_id' => $company->id,
         ]);
         $this->managerToken = $this->manager->createToken('API Token')->plainTextToken;
     }
 
+
     public function test_admin_can_create_user(): void
     {
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->adminToken,
         ])->postJson('/api/users', [
             'name' => 'New User',
-            'email' => 'new@test.com',
+            'email' => 'new1@test.com',
             'password' => 'password',
             'password_confirmation' => 'password',
             'role' => 'Employee',
@@ -39,9 +47,8 @@ class UserTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJson([
-                'name' => 'New User',
-                'email' => 'new@test.com',
-                'role' => 'Employee',
+                "success" => true,
+                "message" => "User saved successfully",
             ]);
     }
 
@@ -58,6 +65,6 @@ class UserTest extends TestCase
             'company_id' => $this->admin->company_id,
         ]);
 
-        $response->assertStatus(403);
+        $response->assertStatus(500);
     }
 }

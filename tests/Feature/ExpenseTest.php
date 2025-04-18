@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\Expense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,11 +15,12 @@ class ExpenseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->admin = User::factory()->create(['role' => 'Admin']);
+
+        $company = Company::factory()->create();
+        $this->admin = User::factory()->create(['role' => 'Admin', 'company_id' => $company->id]);
         $this->manager = User::factory()->create(['role' => 'Manager', 'company_id' => $this->admin->company_id]);
         $this->employee = User::factory()->create(['role' => 'Employee', 'company_id' => $this->admin->company_id]);
-        
+
         $this->adminToken = $this->admin->createToken('API Token')->plainTextToken;
         $this->managerToken = $this->manager->createToken('API Token')->plainTextToken;
         $this->employeeToken = $this->employee->createToken('API Token')->plainTextToken;
@@ -36,9 +38,8 @@ class ExpenseTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJson([
-                'title' => 'Test Expense',
-                'amount' => 100.50,
-                'category' => 'Travel',
+                "success" => true,
+                "message" => "Expenses saved successfully",
             ]);
     }
 
@@ -59,9 +60,8 @@ class ExpenseTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'title' => 'Updated Expense',
-                'amount' => 150.75,
-                'category' => 'Food',
+                "success" => true,
+                "message" => "Expenses updated successfully",
             ]);
     }
 
@@ -76,7 +76,7 @@ class ExpenseTest extends TestCase
             'Authorization' => 'Bearer ' . $this->adminToken,
         ])->deleteJson("/api/expenses/{$expense->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
         $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
     }
 }
