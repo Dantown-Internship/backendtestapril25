@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\DataTransferObjects\TokenDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
@@ -17,11 +18,7 @@ class LoginController extends Controller
 
         return $this->successResponse('Login successful', [
             'user' => new UserResource($user->load('company')),
-            'token' => [
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
-            ],
+            'token' => (new TokenDto($token))->toArray()
         ]);
     }
 
