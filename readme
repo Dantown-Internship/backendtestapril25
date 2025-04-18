@@ -71,10 +71,10 @@ Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-b
 
 ---
 
-### ⚙️ Task 4: Optimization & Performance
+### ⚙️ Task 4: Optimization & Performance ****RECHECK THIS INDEXES PROOF"
 
 - Use **Eager Loading** (`with()`) to avoid N+1 queries
-- Add **indexes** on `company_id` and `user_id` in the expenses table
+- Add **indexes** on `company_id` and `user_id` in the expenses table......
 - Implement **Redis caching** for frequently accessed queries
 
 ---

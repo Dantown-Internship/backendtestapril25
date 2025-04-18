@@ -1,0 +1,518 @@
+openapi: 3.0.3
+info:
+  title: 'Expense Management API API Documentation'
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000'
+tags:
+  -
+    name: Authentication
+    description: ''
+  -
+    name: 'User Management'
+    description: ''
+  -
+    name: 'Expense Management'
+    description: ''
+  -
+    name: 'Audit Logs'
+    description: ''
+  -
+    name: 'Performance Testing'
+    description: ''
+  -
+    name: Endpoints
+    description: ''
+paths:
+  /api/register:
+    post:
+      summary: 'Register a new user.'
+      operationId: registerANewUser
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the user. Must not be greater than 255 characters.'
+                  example: b
+                  nullable: false
+                email:
+                  type: string
+                  description: 'The email of the user. Must be a valid email address. Must not be greater than 255 characters.'
+                  example: zbailey@example.net
+                  nullable: false
+                password:
+                  type: string
+                  description: 'The password for the user.'
+                  example: architecto
+                  nullable: false
+                company_name:
+                  type: string
+                  description: 'The name of the company. Must not be greater than 255 characters.'
+                  example: 'n'
+                  nullable: false
+                company_email:
+                  type: string
+                  description: 'The email of the company. Must be a valid email address. Must not be greater than 255 characters.'
+                  example: ashly64@example.com
+                  nullable: false
+                password_confirmation:
+                  type: string
+                  description: 'The password confirmation. Must match password.'
+                  example: architecto
+                  nullable: false
+              required:
+                - name
+                - email
+                - password
+                - company_name
+                - company_email
+                - password_confirmation
+      security: []
+  /api/login:
+    post:
+      summary: 'Login user and create token.'
+      operationId: loginUserAndCreateToken
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: gbailey@example.net
+                  nullable: false
+                password:
+                  type: string
+                  description: ''
+                  example: '|]|{+-'
+                  nullable: false
+              required:
+                - email
+                - password
+      security: []
+  /api/user:
+    get:
+      summary: 'Get the authenticated user.'
+      operationId: getTheAuthenticatedUser
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Authentication
+      security: []
+  /api/logout:
+    post:
+      summary: 'Logout user (revoke the token).'
+      operationId: logoutUserrevokeTheToken
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Authentication
+      security: []
+  /api/users:
+    get:
+      summary: 'Display a listing of the users.'
+      operationId: displayAListingOfTheUsers
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'User Management'
+      security: []
+    post:
+      summary: 'Store a newly created user in storage.'
+      operationId: storeANewlyCreatedUserInStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                  nullable: false
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: zbailey@example.net
+                  nullable: false
+                password:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: false
+                role:
+                  type: string
+                  description: ''
+                  example: Admin
+                  nullable: false
+                  enum:
+                    - Admin
+                    - Manager
+                    - Employee
+              required:
+                - name
+                - email
+                - password
+                - role
+      security: []
+  '/api/users/{id}':
+    get:
+      summary: 'Display the specified user.'
+      operationId: displayTheSpecifiedUser
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'User Management'
+      security: []
+    put:
+      summary: 'Update the specified user in storage.'
+      operationId: updateTheSpecifiedUserInStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                  nullable: false
+                email:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: false
+                role:
+                  type: string
+                  description: ''
+                  example: Admin
+                  nullable: false
+                  enum:
+                    - Admin
+                    - Manager
+                    - Employee
+              required:
+                - name
+                - role
+      security: []
+    delete:
+      summary: 'Remove the specified user from storage.'
+      operationId: removeTheSpecifiedUserFromStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Management'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: 63
+        required: true
+        schema:
+          type: integer
+  /api/expenses:
+    get:
+      summary: 'Display a listing of expenses with pagination and search.'
+      operationId: displayAListingOfExpensesWithPaginationAndSearch
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Expense Management'
+      security: []
+    post:
+      summary: 'Store a newly created expense in storage.'
+      operationId: storeANewlyCreatedExpenseInStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Expense Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                  nullable: false
+                amount:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 39
+                  nullable: false
+                category:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: g
+                  nullable: false
+              required:
+                - title
+                - amount
+                - category
+      security: []
+  '/api/expenses/{id}':
+    get:
+      summary: 'Display the specified expense.'
+      operationId: displayTheSpecifiedExpense
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Expense Management'
+      security: []
+    put:
+      summary: 'Update the specified expense in storage.'
+      operationId: updateTheSpecifiedExpenseInStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Expense Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                  nullable: false
+                amount:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 39
+                  nullable: false
+                category:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: g
+                  nullable: false
+              required:
+                - title
+                - amount
+                - category
+      security: []
+    delete:
+      summary: 'Remove the specified expense from storage.'
+      operationId: removeTheSpecifiedExpenseFromStorage
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Expense Management'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the expense.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/audit-logs:
+    get:
+      summary: 'Display a listing of audit logs.'
+      operationId: displayAListingOfAuditLogs
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Audit Logs'
+      security: []
+  '/api/audit-logs/{id}':
+    get:
+      summary: 'Display the specified audit log.'
+      operationId: displayTheSpecifiedAuditLog
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Audit Logs'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the audit log.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/eager-loading-test:
+    get:
+      summary: 'Run tests to demonstrate eager loading benefits'
+      operationId: runTestsToDemonstrateEagerLoadingBenefits
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Performance Testing'
+      security: []
+  /api/test-eager-loading:
+    get:
+      summary: ''
+      operationId: getApiTestEagerLoading
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Endpoints
+      security: []
