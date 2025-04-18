@@ -19,12 +19,14 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $limit = $request->query('limit', 10); // Default to 10 items per page
+        $limit = min(max((int)$limit, 1), 100); // Ensure limit is between 1 and 100
 
         // Create a unique cache key based on user and request parameters
         $cacheKey = 'expenses_' . $user->id . '_' . $user->company_id . '_' . md5(json_encode($request->all()));
 
         // Get data from cache or run the query
-        return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($request, $user) {
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request, $user, $limit) {
             $query = Expense::with('user')
                 ->where('company_id', $user->company_id);
 
@@ -38,22 +40,6 @@ class ExpenseController extends Controller
                 $query->where('category', $request->category);
             }
 
-            if ($request->has('start_date')) {
-                $query->whereDate('created_at', '>=', $request->start_date);
-            }
-
-            if ($request->has('end_date')) {
-                $query->whereDate('created_at', '<=', $request->end_date);
-            }
-
-            if ($request->has('min_amount')) {
-                $query->where('amount', '>=', $request->min_amount);
-            }
-
-            if ($request->has('max_amount')) {
-                $query->where('amount', '<=', $request->max_amount);
-            }
-
             // Handle search term
             if ($request->has('search')) {
                 $query->where('title', 'like', '%' . $request->search . '%');
@@ -64,7 +50,7 @@ class ExpenseController extends Controller
             $sortDirection = $request->sort_direction ?? 'desc';
             $query->orderBy($sortField, $sortDirection);
 
-            $expenses = $query->paginate(10);
+            $expenses = $query->paginate($limit, ['*'], 'page', $request->query('page'))->toResourceCollection();
 
             return ExpenseResource::collection($expenses);
         });
