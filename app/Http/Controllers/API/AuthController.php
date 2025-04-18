@@ -71,7 +71,7 @@ class AuthController extends Controller
         // Check if user exists and credentials are correct
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'credentials' => ['The provided credentials are incorrect.'],
             ]);
         }
 
