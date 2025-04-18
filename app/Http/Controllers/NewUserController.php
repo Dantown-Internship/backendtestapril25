@@ -12,9 +12,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class NewUserController extends Controller
 {
     use AuthorizesRequests;
-
-//This Route Is For Creating New Users
-public function create_user(Request $req) {
+ //This Route Is For Creating New Users
+   
+ 
+   public function create_user(Request $req) {
     
     $req->validate([
         "name"=>"Required",
@@ -44,33 +45,37 @@ public function create_user(Request $req) {
 
 
 //This Route Is For Listing Users
-public function view_users() {
- $this->authorize("view",User::class);
- $user = User::where("company_id",auth()->user()->company_id)->get();
- return $user;
-}
+   public function view_users() {
+    $this->authorize("view",User::class);
+    $user = User::where("company_id",auth()->user()->company_id)->get();
+    return $user; 
+    }
 
-public function update_user(Request $req, $id) {
+//This Route Is For Updateing Users
+   public function update_user(Request $req, $id) {
+   
+    $user = User::findOrFail($id);
 
-$userAuth = auth()->user();
-$user = User::find($id);
-$this->authorize('update', $user);
+    $this->authorize('update', $user); 
 
-$user->name = $req->name;
-$user->email = $req->email;
-$user->role = $req->role;
-$user->company_id = $userAuth->company->id;
-$user->password = $req->password;
+    $user->name = $req->name;
+    $user->email = $req->email;
+    $user->role = $req->role;
+    $user->company_id = auth()->user()->company_id;
+    $user->password = bcrypt($req->password);
 
-return $user->save();
- 
+    $user->save();
+    
+    return response()->json(['message' => 'User updated'], 201);
+  
+    
 }
 
 // LOGOUT Logic
-public function logout(Request $req)
-{
-$req->user()->currentAccessToken()->delete();
-return response()->json(['message' => 'Logged out']);
-}
+     public function logout(Request $req)
+    {
+      $req->user()->currentAccessToken()->delete();
+      return response()->json(['message' => 'Logged out']);
+    }
 
 }

@@ -11,20 +11,13 @@ class UserPolicy
 
     public function before(User $user, string $ability): bool|null
 {
-    // Ensure company is fetched correctly based on the user's company_id
-    $company = Company::find($user->company_id);
-
-    // Check if the user is a superadmin
+   
+ // Check if the user is a superadmin
     if ($user->role === 'SuperAdmin') {
         return true;  // superAdmins can do everything
     }
 
-    // Admins are allowed only if their associated company matches the provided company
-    if ($user->role === 'Admin' && $company && $company->id === $user->company_id) {
-        return true;  // Admin is authorized
-    }
 
-    // Otherwise, continue with other policy methods
     return null;  // Proceed to other checks for this ability
    }
 
@@ -50,7 +43,7 @@ class UserPolicy
     public function create(User $user): bool
     {
        //return true;
-      return in_array($user->role, ['superadmin', 'admin']);
+      return in_array($user->role, ['Superadmin', 'Admin']);
     }
 
     /**
@@ -58,7 +51,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return auth()->user()->role === "Admin" && auth()->user()->company_id === $model->company_id;
+        return $user->role === "Admin" && $user->company_id === $model->company_id;
     }
 
     /**

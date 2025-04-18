@@ -10,7 +10,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::Post("/login",[AdminAuthController::class,"login"])->name("admin.login");
+Route::Post("/login",[AdminAuthController::class,"login"])->name("admin.login");// Public Route For Login
+
+//THIS route is for admin And User Registration
 Route::middleware(['auth:sanctum', 'role'])
 ->controller(AdminAuthController::class)
 ->group(function() {

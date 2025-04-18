@@ -1,0 +1,1 @@
+<h2>A new user has registered with the email: {{ $userExpenses }}</h2>
