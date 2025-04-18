@@ -47,8 +47,8 @@ class UserController extends Controller
 
         $data = $request->validated();
 
-        $userService->updateUser($user, $data);
+        $user = $userService->updateUser($user, $data);
 
-        return successJsonResponse('User role updated successfully.');
+        return successJsonResponse('User role updated successfully.', ['user' => $user]);
     }
 }

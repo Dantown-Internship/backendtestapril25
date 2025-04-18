@@ -38,6 +38,6 @@ class UserService
     {
         $user->update($data);
 
-        return $user;
+        return $user->fresh();
     }
 }
