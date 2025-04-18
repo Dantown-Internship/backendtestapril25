@@ -38,7 +38,7 @@ class WeeklyExpenseReport extends Command
             }
         });
 
-        $this->info('Weekly expense report job has been dispatched.');
+        $this->info('Weekly expense report sent.');
 
         return 0;
     }

@@ -22,7 +22,6 @@ class ExpenseController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            WeeklyExpenseReportJob::dispatch();
             $expenses = $this->expenseService->getExpensesForCompany(
                 $request->user()->company_id,
                 $request->all()
