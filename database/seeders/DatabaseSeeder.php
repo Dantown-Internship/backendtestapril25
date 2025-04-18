@@ -5,8 +5,11 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Enums\Role;
+use App\Models\Company;
+use App\Models\Expense;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,24 +18,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $companies = \App\Models\Company::factory(5)->create();
+        $companyCount = Company::count();
+        Log::info("Companies before seeding: $companyCount");
+
+        $companies = Company::factory(5)->create();
+        Log::info("Companies after creating 5: " . Company::count());
 
         foreach ($companies as $company) {
             foreach (Role::cases() as $role) {
+                Log::info("Creating user for company {$company->id} with role {$role->value}");
                 // Create user with the role and associated with the company
-                $user = \App\Models\User::factory()->create([
+                $user = User::factory()->create([
                     'company_id' => $company->id,
                     'role' => $role->value,
                     'name' => $role->name,  // Consider using a more realistic name for users
                     'email' => $role->value.$company->id.'@mail.com',
                     'password' => bcrypt('password'),
                 ]);
+                Log::info("Companies after creating user: " . Company::count());
 
                 // Create expenses for this user
-                \App\Models\Expense::factory(5)->create([
-                    'user_id' => $user->id,
-                    'company_id' => $company->id,
-                ]);
+                Expense::factory(5)->forUser($user)->create();
+                Log::info("Companies after creating expenses: " . Company::count());
             }
         }
 

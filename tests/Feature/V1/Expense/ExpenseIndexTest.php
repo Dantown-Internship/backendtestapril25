@@ -119,7 +119,7 @@ test('list of expenses can be filtered', function () {
 
 test('users cannot view expenses of other companies', function () {
     $admin = User::factory()->admin()->create();
-    Expense::factory(20)->create();
+    Expense::factory(20)->forCompany()->create();
     actingAs($admin)
         ->getJson(route('api.v1.expenses.index'))
         ->assertStatus(200)

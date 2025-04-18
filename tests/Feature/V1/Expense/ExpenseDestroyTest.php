@@ -12,7 +12,7 @@ use function Pest\Laravel\assertDatabaseMissing;
 
 test('unauthorized user cannot delete other company expense', function () {
     $user = User::factory()->admin()->create();
-    $otherCompanyExpense = Expense::factory()->create();
+    $otherCompanyExpense = Expense::factory()->forUser()->create();
 
     actingAs($user)
         ->deleteJson(route('api.v1.expenses.destroy', [$otherCompanyExpense->uuid]))
@@ -23,7 +23,7 @@ test('unauthorized user cannot delete other company expense', function () {
 
 test('employee cannot delete an expense', function () {
     $user = User::factory()->employee()->create();
-    $otherCompanyExpense = Expense::factory()->create(['company_id' => $user->company_id]);
+    $otherCompanyExpense = Expense::factory()->forCompany($user->company_id)->create();
 
     actingAs($user)
         ->deleteJson(route('api.v1.expenses.destroy', [$otherCompanyExpense->uuid]))
@@ -32,7 +32,7 @@ test('employee cannot delete an expense', function () {
 
 test('manager cannot delete an expense', function () {
     $user = User::factory()->manager()->create();
-    $otherCompanyExpense = Expense::factory()->create(['company_id' => $user->company_id]);
+    $otherCompanyExpense = Expense::factory()->forCompany($user->company_id)->create();
 
     actingAs($user)
         ->deleteJson(route('api.v1.expenses.destroy', [$otherCompanyExpense->uuid]))
@@ -42,7 +42,7 @@ test('manager cannot delete an expense', function () {
 test('admin can delete an expense that belongs to their company', function () {
 
     $user = User::factory()->admin()->create();
-    $expense = Expense::factory()->create(['company_id' => $user->company_id]);
+    $expense = Expense::factory()->forCompany($user->company_id)->create();
 
     actingAs($user)
         ->deleteJson(route('api.v1.expenses.destroy', [$expense->uuid]))
@@ -53,7 +53,7 @@ test('admin can delete an expense that belongs to their company', function () {
 
 test('audit log is recorded when an expense is deleted', function () {
     $user = User::factory()->admin()->create();
-    $expense = Expense::factory()->create(['company_id' => $user->company_id])->fresh();
+    $expense = Expense::factory()->forCompany($user->company_id)->create()->fresh();
 
     actingAs($user)
         ->deleteJson(route('api.v1.expenses.destroy', [$expense->uuid]))

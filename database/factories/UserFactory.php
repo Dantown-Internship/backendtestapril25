@@ -26,7 +26,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => fn() => Company::factory(),
             'role' => fake()->randomElement(Role::cases())->value,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
