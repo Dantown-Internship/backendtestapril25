@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\ExpenseCategory;
 use App\Enums\Role;
+use App\Helpers\CacheKey;
 use App\Models\Company;
 use App\Notifications\WeeklyExpenseReportNotification;
 use Illuminate\Bus\Batchable;
@@ -31,9 +32,15 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $admins = $this->company->users()
-            ->where('role', Role::Admin)
-            ->get();
+        $admins = cache()->remember(
+            CacheKey::companyAdmins($this->company->id),
+            now()->addDays(30),
+            function () {
+                return $this->company->users()
+                    ->where('role', Role::Admin)
+                    ->get();
+            }
+        );
 
         $startDate = now()->subWeek();
         $endDate = now();

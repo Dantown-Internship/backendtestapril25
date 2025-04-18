@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\Role;
+use App\Helpers\CacheKey;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListUsersRequest;
 use App\Http\Requests\StoreUserRequest;
@@ -39,13 +40,18 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $role = Role::from($request->validated('role'));
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => bcrypt($request->validated('password')),
-            'role' => $request->validated('role'),
+            'role' => $role,
             'company_id' => $request->user()->company_id,
         ]);
+
+        if($role === Role::Admin) {
+            cache()->forget(CacheKey::companyAdmins($user->company_id));
+        }
 
         return $this->successResponse(
             message: 'User created successfully',
@@ -70,15 +76,21 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $role = Role::from($request->validated('role'));
+        $previousRole = $user->role;
+        $roleChanged = $previousRole !== $role;
         $user->update([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
-            'role' => $request->validated('role'),
+            'role' => $role,
         ]);
+        if($roleChanged && ($role === Role::Admin || $previousRole === Role::Admin) ) {
+            cache()->forget(CacheKey::companyAdmins($user->company_id));
+        }
 
         return $this->successResponse(
             message: 'User updated successfully',
-            data: new UserResource($request->userToBeUpdated)
+            data: new UserResource($user)
         );
     }
 }

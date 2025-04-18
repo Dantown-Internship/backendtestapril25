@@ -2,4 +2,9 @@
 
 namespace App\Helpers;
 
-class CacheKey {}
+class CacheKey {
+    public static function companyAdmins($companyId): string
+    {
+        return "company_admins_{$companyId}";
+    }
+}
