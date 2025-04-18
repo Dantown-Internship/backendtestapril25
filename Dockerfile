@@ -27,4 +27,6 @@ RUN composer install --no-dev --optimize-autoloader
 # Set permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080"]
+
