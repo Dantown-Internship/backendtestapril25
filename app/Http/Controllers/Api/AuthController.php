@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -18,11 +19,10 @@ class AuthController extends Controller
 {
     use ApiResponse, AuthorizesRequests;
 
-    public function __construct(private UserService $userService) {
-    }
+    public function __construct(private UserService $userService) {}
 
     public function register(RegisterRequest $request): JsonResponse
-    {   
+    {
         $this->authorize('createCompany', User::class);
 
         try {
@@ -38,7 +38,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => $request->password,
                 'company_id' => $company->id,
-                'role' => 'Admin',
+                'role' => UserRole::Admin,
             ]);
             $data['company '] = $company;
             $data['user'] = $user;

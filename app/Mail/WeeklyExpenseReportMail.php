@@ -14,12 +14,11 @@ class WeeklyExpenseReportMail extends Mailable
     public function __construct(
         public Company $company,
         public $expenses
-    ) {
-    }
+    ) {}
 
     public function build()
     {
         return $this->subject('Weekly Expense Report')
-            ->markdown('emails.weekly-expense-report');
+        ->html('<p>This is your weekly expense report.</p><p>Regards,<br>Team</p>');
     }
 }

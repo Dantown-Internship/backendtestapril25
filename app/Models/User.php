@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -43,16 +44,16 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'Admin';
+        return $this->role === UserRole::Admin;
     }
 
     public function isManager(): bool
     {
-        return $this->role === 'Manager';
+        return $this->role === UserRole::Manager;
     }
 
     public function isEmployee(): bool
     {
-        return $this->role === 'Employee';
+        return $this->role === UserRole::Employee;
     }
 }

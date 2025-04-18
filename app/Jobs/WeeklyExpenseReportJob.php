@@ -18,7 +18,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function handle(ExpenseService $expenseService): void
-    {
+    {   
         Company::chunk(100, function ($companies) use ($expenseService) {
             foreach ($companies as $company) {
                 $admins = User::where('company_id', $company->id)
@@ -29,7 +29,7 @@ class WeeklyExpenseReportJob implements ShouldQueue
                     continue;
                 }
                 
-                $expenses = $expenseService->getExpensesForCompany(
+                $expenses = $expenseService->generateReport(
                     $company->id,
                     ['start_date' => now()->subWeek(), 'end_date' => now()]
                 );

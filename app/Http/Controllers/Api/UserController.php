@@ -15,10 +15,7 @@ class UserController extends Controller
 {
     use ApiResponse, AuthorizesRequests;
 
-    public function __construct(private UserService $userService)
-    {
-        
-    }
+    public function __construct(private UserService $userService) {}
 
     public function index(Request $request): JsonResponse
     {

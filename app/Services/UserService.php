@@ -27,7 +27,7 @@ class UserService
     }
 
     public function getUsersByCompany(int $companyId, $perPage)
-    {   
+    {
         $perPage = $perPage ?? 15;
         return User::with('company')->where('company_id', $companyId)->paginate($perPage);
     }

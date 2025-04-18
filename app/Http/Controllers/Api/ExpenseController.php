@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpenseRequest;
-use App\Models\Expense;
+use App\Jobs\WeeklyExpenseReportJob;
 use App\Services\ExpenseService;
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -22,6 +22,7 @@ class ExpenseController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
+            WeeklyExpenseReportJob::dispatch();
             $expenses = $this->expenseService->getExpensesForCompany(
                 $request->user()->company_id,
                 $request->all()
@@ -56,7 +57,7 @@ class ExpenseController extends Controller
             $this->authorize('update', $expense);
             $updatedExpense = $this->expenseService->updateExpense(
                 $request->validated(),
-                $expense 
+                $expense
             );
 
             $message = 'Expenses updated successfully';
