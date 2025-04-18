@@ -14,8 +14,6 @@ class Expense extends Model
     {
         static::addGlobalScope('company', function (Builder $query) {
             if (auth()->hasUser()) {
-                // $query->where('company_id', auth()->user()->company_id);
-                // or with a `team` relationship defined:
                 $query->whereBelongsTo(auth()->user()->company);
             }
         });
@@ -26,7 +24,8 @@ class Expense extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function scopeFilter(Builder $builder, QueryFilter $filters) {
+    public function scopeFilter(Builder $builder, QueryFilter $filters)
+    {
         return $filters->apply($builder);
     }
     public function user()
