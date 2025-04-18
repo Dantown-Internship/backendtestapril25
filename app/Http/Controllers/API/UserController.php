@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
@@ -23,7 +24,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', auth()->user());
+        Gate::authorize('viewAny', Auth::user());
         return UserResource::collection(User::paginate(10));
     }
 
@@ -34,7 +35,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        Gate::authorize('create', auth()->user());
+        Gate::authorize('create', Auth::user());
         $user = $this->authService->createUser($request->user(), $request->validated());
         return UserResource::make($user);
     }

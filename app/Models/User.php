@@ -53,8 +53,10 @@ class User extends Authenticatable
         'role',
     ];
 
+    protected $with = ['expenses'];
+
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidden for serialization.d
      *
      * @var list<string>
      */

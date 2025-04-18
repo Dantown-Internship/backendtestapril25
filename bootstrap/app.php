@@ -1,12 +1,11 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Middleware\CacheResponseMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,7 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'cache_response' => CacheResponseMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $respond = function (string $message, int $code) {
