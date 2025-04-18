@@ -18,6 +18,17 @@ A comprehensive API for expense management built with Laravel 12, featuring role
 - **Jobs**: Weekly expense report generation and delivery
 - **Blade Templates**: Email templates for weekly reports
 
+## Assumptions
+
+The system makes the following assumptions about user registration and company management:
+
+- The standard registration flow automatically creates users with Admin role
+- During registration, users must provide a company name which creates a company profile
+- The email provided during registration is used as both the user's email and company email
+- All subsequent users are added via the user management endpoints by admins
+- Users added by an admin are automatically associated with the admin's company
+- Company isolation is maintained throughout all operations in the system
+
 ## Run Locally
 
 - Clone the project
