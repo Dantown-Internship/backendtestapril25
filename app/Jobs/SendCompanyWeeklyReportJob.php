@@ -6,6 +6,7 @@ use App\Enums\ExpenseCategory;
 use App\Enums\Role;
 use App\Helpers\CacheKey;
 use App\Models\Company;
+use App\Models\Expense;
 use App\Notifications\WeeklyExpenseReportNotification;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -44,12 +45,15 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
 
         $startDate = now()->subWeek();
         $endDate = now();
-        $expenseQuery = $this->company->expenses()
-            ->where('created_at', '>=', $startDate);
+        $expenseQuery = Expense::query()
+            ->where('company_id', $this->company->id)
+            ->where('created_at', '>=', $startDate)
+            ->where('created_at', '<=', $endDate);
 
-        $totalExpense = $expenseQuery->sum('amount');
+        $totalExpense = $expenseQuery->clone()->sum('amount');
 
         $topSpenders = $expenseQuery
+            ->clone()
             ->select('user_id', DB::raw('SUM(amount) as total'))
             ->groupBy('user_id')
             ->with('user:id,name')
@@ -62,6 +66,7 @@ class SendCompanyWeeklyReportJob implements ShouldQueue
             ]);
 
         $expenseByCategory = $expenseQuery
+            ->clone()
             ->select('category', DB::raw('SUM(amount) as total'))
             ->groupBy('category')
             ->get()
