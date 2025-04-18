@@ -4,31 +4,30 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  mixed  ...$roles
-     */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You must be logged in to access this resource.',
+                'errors' => []
+            ], 401);
         }
 
-        // change all roles case to lowercase
+        $user = Auth::user();
         $userRole = strtolower($user->role);
         $allowedRoles = array_map('strtolower', $roles);
 
         if (!in_array($userRole, $allowedRoles)) {
-            return response()->json(['message' => 'Forbidden: Insufficient role'], 403);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Forbidden: Insufficient role permissions.',
+                'errors' => []
+            ], 403);
         }
 
         return $next($request);

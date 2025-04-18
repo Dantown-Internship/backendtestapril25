@@ -1,47 +1,59 @@
 <?php
 
-
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExpensesController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-
-// authentication routes
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+| Routes for user authentication, including registration, login, logout,
+| email verification, password management, and token refresh.
+|
+*/
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1');
-Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
-    ->middleware('signed')
-    ->name('verification.verify');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.reset');
+Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->middleware('signed')->name('verification.verify');
 
-    Route::middleware('auth:sanctum')->post('/refresh-token', [AuthController::class, 'refreshToken']);
-
-
-// expenses routes
+// Protected authentication routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+    Route::put('/password', [AuthController::class, 'updatePassword']); 
+});
+
+/*
+|--------------------------------------------------------------------------
+| Expense Management Routes
+|--------------------------------------------------------------------------
+|
+| Routes for managing expenses, accessible to authenticated users with
+| role-based restrictions (Admin, Manager, Employee).
+|
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/save/expenses', [ExpensesController::class, 'saveExpenses']);
     Route::get('/expenses', [ExpensesController::class, 'listExpenses']);
-    Route::post('/expenses', [ExpensesController::class, 'saveExpenses']);
     Route::put('/expenses/{id}', [ExpensesController::class, 'updateExpenses'])->middleware('role:Admin,Manager');
     Route::delete('/expenses/{id}', [ExpensesController::class, 'destroyExpenses'])->middleware('role:Admin');
-
-    // user mgt routes
-    Route::get('/users', [UserController::class, 'listUsers'])->middleware('role:Admin');
-    Route::post('/users', [UserController::class, 'storeUsersData'])->middleware('role:Admin');
-    Route::put('/users/{id}', [UserController::class, 'updateRole'])->middleware('role:Admin');
 });
 
 
-// Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
-//     Route::get('/users', [UserController::class, 'index']);
-//     Route::post('/users', [UserController::class, 'store']);
-// });
-
-// Route::middleware(['auth:sanctum', 'role:Admin,Manager'])->group(function () {
-//     Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
-// });
-
-// Route::middleware(['auth:sanctum', 'role:Admin,Manager,Employee'])->group(function () {
-//     Route::get('/expenses', [ExpenseController::class, 'index']);
-// });
+/*
+|--------------------------------------------------------------------------
+| User Management Routes
+|--------------------------------------------------------------------------
+|
+| Routes for managing users, restricted to Admins only.
+|
+*/
+Route::middleware(['role:Admin', 'auth:sanctum'])->group(function () {
+    Route::get('/list/users', [UserController::class, 'listUsers']);
+    Route::post('/users', [UserController::class, 'storeUsersData']);
+    Route::put('/user/{id}', [UserController::class, 'updateRole']);
+});

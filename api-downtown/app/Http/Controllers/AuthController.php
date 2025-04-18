@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -13,75 +14,23 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use App\Mail\VerifyEmail;
 use App\Models\Companies;
-use Illuminate\Auth\Events\Registered;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Log;
+
+
 
 
 class AuthController extends Controller
 {
+
+ 
+
     /**
      * Register a new user and company.
      */
-    // public function register(Request $request)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'name' => 'required|string|max:255',
-    //             'email' => 'required|string|email|max:255|unique:users,email',
-    //             'password' => 'required|string|min:8|confirmed',
-    //             'company_name' => 'required|string|max:255',
-    //             'company_email' => 'required|string|email|unique:companies,email',
-    //         ]);
     
-    //         if (Auth::check() && Auth::user()->role !== 'Admin') {
-    //             return $this->errorResponse('You are unauthorized to perform this action', 403);
-    //         }
-    
-    //         $company = Companies::create([
-    //             'name' => $request->company_name,
-    //             'email' => $request->company_email,
-    //         ]);
-    
-    //         $user = User::create([
-    //             'name' => $request->name,
-    //             'email' => $request->email,
-    //             'password' => Hash::make($request->password),
-    //             'company_id' => $company->id,
-    //             'role' => 'Admin',
-    //         ]);
-    
-    //         // Generate the verification link
-    //         $signedUrl = URL::temporarySignedRoute(
-    //             'verification.verify',
-    //             now()->addHours(24),
-    //             ['id' => $user->id, 'hash' => sha1($user->email)]
-    //         );
-    
-    //         // Save the verification link to the user (but not in the email)
-    //         $user->verification_link = $signedUrl;
-    //         $user->save();
-    
-    //         // Send a custom email 
-    //         Mail::to($user->email)->send(new VerifyEmail($user));
-    
-    //         // Auth token 
-    //         $token = $user->createToken('auth_token', ['*'], now()->addHours(24))->plainTextToken;
-    
-    //         return $this->successResponse('Registration successful. Please verify your email to gain access to your account dashboard.', [
-    //             'token' => $token,
-    //             'user' => $user
-    //         ], 201);
-    
-    //     } catch (ValidationException $e) {
-    //         return $this->errorResponse($e->getMessage(), 422, $e->errors());
-    //     } catch (QueryException $e) {
-    //         return $this->errorResponse('Failed to register user. Please try again.', 500);
-    //     }
-    // }
-
-
     public function register(Request $request)
 {
     try {
@@ -215,33 +164,89 @@ public function refreshToken(Request $request)
     /**
      * Log out a user.
      */
+    // public function logout(Request $request)
+    // {
+    //     try {
+    //         $request->user()->currentAccessToken()->delete();
+    //         return $this->successResponse('Logged out successfully');
+    //     } catch (\Exception $e) {
+    //         return $this->errorResponse('Failed to log out. Please try again.', 500);
+    //     }
+    // }
+
     public function logout(Request $request)
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            $user = $request->user();
+            if (!$user) {
+                return $this->errorResponse('User not authenticated.', 401);
+            }
+    
+            //$token = PersonalAccessToken::findToken($request->bearerToken());
+            $token = PersonalAccessToken::findToken($request->bearerToken());
+            if ($token) {
+                $token->delete();
+            } else {
+                return $this->errorResponse('Invalid or expired token.', 401);
+            }
+    
             return $this->successResponse('Logged out successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse('Failed to log out. Please try again.', 500);
+        } catch (\Exception $e) {          
+            Log::error('Logout Error: ' . $e->getMessage());
+    
+            return $this->errorResponse('An unexpected error occurred during logout: ' . $e->getMessage(), 500);
         }
     }
+
 
     /**
      * Send a password reset link.
      */
     public function forgotPassword(Request $request)
-    {
-        try {
-            $request->validate(['email' => 'required|email']);
+{
+    try {
+        $request->validate(['email' => 'required|email']);
 
-            $status = Password::sendResetLink($request->only('email'));
+        $user = User::where('email', $request->email)->first();
 
-            return $status === Password::RESET_LINK_SENT
-                ? $this->successResponse(__($status))
-                : $this->errorResponse(__($status), 400);
-        } catch (ValidationException $e) {
-            return $this->errorResponse($e->getMessage(), 422, $e->errors());
+        if (!$user) {
+            return $this->errorResponse('User not found', 404);
         }
+
+        // Generate the password reset token
+        $token = Password::createToken($user);
+
+        // Create backend reset URL
+        $resetUrl = URL::to('/') . '/reset-password?' . http_build_query([
+            'token' => $token,
+            'email' => $user->email,
+        ]);
+
+        // Save to user for testing/debugging
+        $user->reset_password_link = $resetUrl; 
+        $user->save();
+
+        // Wrap for frontend consumption of the API
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
+        $frontendWrappedUrl = $frontendUrl . '/reset-password?' . http_build_query([
+            'token' => $token,
+            'email' => $user->email,
+        ]);
+
+        // Send the reset email to the user
+        Mail::to($user->email)->send(new ResetPasswordMail($frontendWrappedUrl, $user));
+
+
+        return $this->successResponse('Reset link sent. Check your email.', [
+            'backend_reset_link' => $resetUrl,         // For postman test
+            'frontend_reset_link' => $frontendWrappedUrl // For frontend consumption of the endpoint
+        ]);
+
+    } catch (ValidationException $e) {
+        return $this->errorResponse($e->getMessage(), 422, $e->errors());
     }
+}
+
 
     /**
      * Reset the user's password.
@@ -254,24 +259,33 @@ public function refreshToken(Request $request)
                 'email' => 'required|email',
                 'password' => 'required|string|min:8|confirmed',
             ]);
-
+    
             $status = Password::reset(
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user, $password) {
                     $user->forceFill([
-                        'password' => Hash::make($password)
+                        'password' => Hash::make($password),
                     ])->save();
+    
+                    // revoke old tokens
+                    $user->tokens()->delete();
+    
+                    // generate new token
+                    $user->fresh();
                 }
             );
-
-            return $status === Password::PASSWORD_RESET
-                ? $this->successResponse(__($status))
-                : $this->errorResponse(__($status), 400);
+    
+            if ($status === Password::PASSWORD_RESET) {
+                return $this->successResponse('Your password has been reset successfully.');
+            } else {
+                return $this->errorResponse(__($status), 400);
+            }
+    
         } catch (ValidationException $e) {
             return $this->errorResponse($e->getMessage(), 422, $e->errors());
         }
     }
-
+    
     /**
      * Update the authenticated user's password.
      */
