@@ -13,6 +13,13 @@ class RegisterData extends Data
 {
     public function __construct(
         #[Required]
+        public string $company_name,
+
+        #[Required]
+        #[Unique('companies', 'email')]
+        public string $company_email,
+
+        #[Required]
         public string $name,
 
         #[Required]
@@ -25,9 +32,5 @@ class RegisterData extends Data
         #[Required]
         #[Exists('companies', 'id')]
         public int $company_id,
-
-        #[Required]
-        #[Enum(RoleEnum::class)]
-        public string $role,
     ) {}
 }
