@@ -6,43 +6,30 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 
 class WeeklyExpenseReportMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $expenses;
     public $admin;
+    public $expenses;
+    public $total;
 
-    public function __construct($expenses, $admin)
+    public function __construct($admin, $expenses, $total)
     {
-        $this->expenses = $expenses;
         $this->admin = $admin;
+        $this->expenses = $expenses;
+        $this->total = $total;
     }
 
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Weekly Expense Report'
-        );
-    }
-
-    public function content(): Content
-{
-    return new Content(
-        markdown: 'emails.reports.weekly-expense',
-        with: [
-            'expenses' => $this->expenses,
-            'admin' => $this->admin,
-            'total' => $this->expenses->sum('amount'),
-        ]
-    );
-}
-
-    public function attachments(): array
-    {
-        return [];
+        return $this->subject('Weekly Expense Report')
+            ->view('emails.weekly_expense')
+            ->with([
+                'admin' => $this->admin,
+                'expenses' => $this->expenses,
+                'total' => $this->total,
+            ]);
     }
 }

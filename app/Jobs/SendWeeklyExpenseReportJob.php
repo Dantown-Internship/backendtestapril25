@@ -17,23 +17,25 @@ class SendWeeklyExpenseReportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $admin;
+    public function __construct(){ }
 
-    public function __construct(User $admin)
+    public function handle()
     {
-        $this->admin = $admin;
-    }
+        // Get all admins
+        $admins = User::where('role', 'Admin')->get();
 
-    public function handle(): void
-    {
-        $companyId = $this->admin->company_id;
+        foreach ($admins as $admin) {
+            // Fetch expenses for the admin's company
+            $expenses = $admin->company->expenses()
+                ->with('user')
+                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->latest()
+                ->get();
 
-        $expenses = Expense::where('company_id', $companyId)
-            ->whereBetween('created_at', [Carbon::now()->subWeek(), Carbon::now()])
-            ->with('user')
-            ->get();
+            $totalAmount = $expenses->sum('amount');
 
-        Mail::to($this->admin->email)->send(new WeeklyExpenseReportMail($expenses, $this->admin));
+            Mail::to($admin->email)->queue(new WeeklyExpenseReportMail($admin, $expenses, $totalAmount));
+        }
     }
 }
 

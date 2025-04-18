@@ -18,4 +18,8 @@ class Company extends Model
     public function users() {
         return $this->hasMany(User::class);
     }
+
+    public function expenses() {
+        return $this->hasMany(Expense::class);
+    }
 }
