@@ -12,6 +12,7 @@ use App\Jobs\WeeklyExpenseReport;
 
 it('sends a weekly report email to admins with correct expenses', function () {
     Mail::fake();
+    $randomizer = bin2hex(random_bytes(4));
 
     $company = Company::factory()->create();
 
@@ -19,7 +20,7 @@ it('sends a weekly report email to admins with correct expenses', function () {
     $admin = User::factory()->create([
         'company_id' => $company->id,
         'role' => Roles::ADMIN,
-        'email' => 'admin@company.com',
+        'email' => $randomizer.'admin@company.com',
     ]);
 
     // Create expenses for last week

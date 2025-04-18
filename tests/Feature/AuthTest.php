@@ -29,9 +29,11 @@ it('allows admin to register a user', function () {
 
     $token = $admin->createToken('auth')->plainTextToken;
 
+    $randomizer = bin2hex(random_bytes(4));
+
     $response = $this->withToken($token)->postJson('/api/register', [
         'name' => 'New User',
-        'email' => 'newuser@example.com',
+        'email' => "{$randomizer}newuser@example.com",
         'password' => 'password',
         'password_confirmation' => 'password',
         'company_id' => $company->id,

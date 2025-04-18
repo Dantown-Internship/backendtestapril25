@@ -13,4 +13,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected $seed = true;
 
+    /**
+     * Indicates whether the database should be refreshed after each test.
+     *
+     * @var bool
+     */
+    protected $refresh = true;
 }

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 // // and after each test, it will roll back the database transactions
 // // to ensure a clean state for the next test.
 
-// uses(RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 
 // test('Seeding the database', function () {
