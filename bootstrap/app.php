@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->job(new SendWeeklyExpenseReportJob)->weeklyOn(1, '08:00');
+        $schedule->job(new SendWeeklyExpenseReportJob)->saturdays();
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
