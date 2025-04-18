@@ -173,7 +173,17 @@ php artisan expense:report
 
 ---
 
+### Running Tests
+
+To run the tests, ensure the **SQLite extension** is enabled for your PHP setup. Alternatively, you can modify the `phpunit.xml` file to use your preferred database connection. Once set up, you can execute the tests by running the following Artisan command:
+
+```bash
+php artisan test
+
+```
+
 That's it! You are now ready to use the application.
+
 
 ## 🧩 Additional Notes, Considerations & Additions
 
@@ -227,7 +237,7 @@ The `HasUUID` trait:
 
 A dedicated `CacheKey` helper class ensures consistent cache key naming, reducing the risk of cache collisions. Caching is selectively applied as follows:
 
--   Dynamic data (like paginated records) **is not cached** due to frequent changes.
+-   Dynamic data (like paginated records) **is not cached** because of frequent changes and the difficulty of invalidating the cache.
 -   The list of **company admins** is cached and invalidated when admins are added, removed, or their roles change.
 -   For paginated data caching, **full request URLs** (including query parameters) are used as cache keys.
 
@@ -273,11 +283,4 @@ The project uses **Laravel Pint** for automatic code formatting. This ensures th
     -   Admins receive the appropriate notifications.
 -   Writing the tests early made it easier to **refactor and improve the codebase** with confidence, ensuring changes didn’t break existing functionality
 
-### Running Tests
 
-To run the tests, ensure the **SQLite extension** is enabled for your PHP setup. Alternatively, you can modify the `phpunit.xml` file to use your preferred database connection. Once set up, you can execute the tests by running the following Artisan command:
-
-```bash
-php artisan test
-
-```
