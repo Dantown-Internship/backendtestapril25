@@ -22,4 +22,17 @@ class Expense extends Model
     public function company(){
         return $this->belongsTo(Company::class, 'company_id');
     }
+
+
+    public static function createExpenseRecord($params, $companyId, $userId){
+
+        $expense = new Expense();
+        $expense->title= $params['title'];
+        $expense->category = $params['category'];
+        $expense->amount = $params['amount'];
+        $expense->user_id = $params['user_id'];
+        $expense->company_id = $companyId;
+        $expense->save();
+        return $expense;
+    }
 }

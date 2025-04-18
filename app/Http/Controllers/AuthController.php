@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompanyAccountRequest;
 use App\Http\Requests\RegisterAccountRequest;
+use App\Http\Requests\UserAccountRequest;
 use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,7 +17,7 @@ class AuthController extends Controller
 {
     // Create User Account
 
-    public function store(Request $request){
+    public function register(UserAccountRequest $request){
         DB::beginTransaction();
         try {
         //Register company Account
