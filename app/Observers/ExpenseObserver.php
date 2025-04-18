@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\AuditLog;
 use App\Models\Expense;
 
 class ExpenseObserver
@@ -27,6 +28,12 @@ class ExpenseObserver
     public function updated(Expense $expense): void
     {
         //
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'company_id' => $expense->company_id,
+            'changes' => json_encode($expense->getChanges()),
+        ]);
     }
 
     /**
@@ -35,6 +42,13 @@ class ExpenseObserver
     public function deleted(Expense $expense): void
     {
         //
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted',
+            'company_id' => $expense->company_id,
+            'changes' => json_encode($expense->getChanges()),
+
+        ]);
     }
 
     /**

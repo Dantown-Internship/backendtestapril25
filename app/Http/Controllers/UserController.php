@@ -16,7 +16,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'company_id' => 'required|exists:companies,id',
+            // 'company_id' => 'required|exists:companies,id',
         ]);
 
         if (!$this->isAdmin(auth()->user())) {
@@ -26,7 +26,7 @@ class UserController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->company_id = $request->company_id;
+        $user->company_id = auth()->user()->company_id;
         $user->password = bcrypt($request->password);
         $user->save();
 

@@ -16,9 +16,9 @@ class CompanyController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
         ]);
-        if (!$this->isAdmin(auth()->user())) {
-            return $this->onError(403, 'You are not authorized to create a company');
-        }
+        // if (!$this->isAdmin(auth()->user())) {
+        //     return $this->onError(403, 'You are not authorized to create a company');
+        // }
         $company = new Company();
         $company->name = $request->name;
         $company->email = $request->email;

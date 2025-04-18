@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Filter\ExpenseFilter;
 use App\Http\Library\ApiHelpers;
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ExpenseController extends Controller
 {
@@ -12,9 +14,16 @@ class ExpenseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ExpenseFilter $filter)
     {
         //
+        $expenses = Cache::remember('expenses', 60, function () use ($filter) {
+            return Expense::filter($filter)->with(['company'])->latest()->paginate(10);
+        });
+        // $expenses = Expense::filter($filter)->with(['company'])->latest()->paginate(10);
+        // Return a response
+        return $this->onSuccess(message: 'Expenses retrieved successfully', data: $expenses);
+
     }
 
     /**
@@ -42,7 +51,7 @@ class ExpenseController extends Controller
         $expense->amount = $validatedData['amount'];
         $expense->title = $validatedData['title'];
         $expense->category = $validatedData['category'];
-        $expense->user_id = auth()->id(); // Assuming you have a user_id field in your expenses table
+        $expense->user_id = auth()->id();
         $expense->save();
         // Return a response
         return $this->onSuccess(message: 'Expense created successfully', data: $expense);
@@ -70,6 +79,19 @@ class ExpenseController extends Controller
     public function update(Request $request, Expense $expense)
     {
         //
+        // Validate the request data   
+        if (!($this->isAdmin(auth()->user()) || $this->isManager(auth()->user()))) {
+            return $this->onError(code: 403, message: 'You are not authorized to update this expense');
+        }
+        $validatedData = $request->validate([
+            'amount' => 'sometimes|numeric',
+            'title' => 'sometimes|string|max:255',
+            'category' => 'sometimes|string|max:255',
+        ]);
+        // Update the expense
+        $expense->update($validatedData);
+        // Return a response
+        return $this->onSuccess(message: 'Expense updated successfully', data: $expense);
     }
 
     /**
@@ -78,5 +100,11 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         //
+        if (!($this->isAdmin(auth()->user()))) {
+            return $this->onError(code: 403, message: 'You are not authorized to delete this expense');
+        }
+        $expense->delete();
+        // Return a response  
+        return $this->onSuccess(message: 'Expense deleted successfully', data: null);
     }
 }

@@ -12,7 +12,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('company', [CompanyController::class, 'createCompany'])
-    ->middleware('auth:sanctum')
+    // ->middleware('auth:sanctum')
     ->name('company.create');
 
 Route::post('register', [AuthController::class, 'register']);
