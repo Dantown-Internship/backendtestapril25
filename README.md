@@ -21,8 +21,8 @@ php artisan schedule:run
 
 ## Default Admin
 
-email: john.doe@example.com
-password: securePass123
+* email: john.doe@example.com
+* password: securePass123
 
 ## Test
 
