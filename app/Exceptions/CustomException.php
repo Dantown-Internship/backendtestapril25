@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Http\Controllers\Concerns\HasApiResponse;
+use App\Traits\HasApiResponse;
 use Exception;
 
 class CustomException extends Exception

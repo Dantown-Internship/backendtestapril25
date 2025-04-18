@@ -3,14 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Enums\Role;
-use App\Http\Controllers\Concerns\HasApiResponse;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
-    use HasApiResponse;
 
     public ?User $userToBeUpdated = null;
 
