@@ -176,7 +176,7 @@ That's it! You are now ready to use the application.
 
 ## 🧩 Additional Notes, Considerations & Additions
 
-### 1. **Multitenancy via Global Scope**
+### **Multitenancy via Global Scope**
 
 A `CompanyScope` global scope is applied to all tenant-aware models to ensure tenant isolation. This guarantees:
 
@@ -185,36 +185,36 @@ A `CompanyScope` global scope is applied to all tenant-aware models to ensure te
 
 This design enforces strict tenant isolation and prevents data leaks.
 
-### 2. **Authorization via Policies**
+### **Authorization via Policies**
 
 Laravel’s **Policy classes** are used to authorize expense-related actions (view, update, delete) based on user roles and company ownership. This ensures that users can only interact with resources within their permission scope.
 
-### 3. **Role Middleware & Helper for Clean Access Control**
+### **Role Middleware & Helper for Clean Access Control**
 
 A custom `RoleMiddleware` class restricts access to API routes based on user roles (e.g., Admin, Manager, Employee).  
 The `roleMiddleware()` helper function generates middleware **aliases** and corresponding **role strings** dynamically, ensuring consistency and eliminating hard-coded role references in route definitions.
 
-### 4. **API Versioning**
+### **API Versioning**
 
 To ensure backward compatibility and smooth transitions, API versioning has been introduced. You can now specify the version of the API when making requests.  
 Example:  
 `GET 127.0.0.1:8000/v1/users`  
 This approach allows new features and improvements without breaking existing integrations.
 
-### 5. **Expense Persistence on User Deletion**
+### **Expense Persistence on User Deletion**
 
 Expenses are preserved even if a user is deleted. The `user_id` on the `expenses` table is nullable and uses `nullOnDelete()`, ensuring historical expense data remains intact.
 
-### 6. **Scoped Expense Listing**
+### **Scoped Expense Listing**
 
 -   **Employees**: Can only view their own expenses.
 -   **Managers** and **Admins**: Can view all expenses within their company, including who created each expense.
 
-### 7. **Standardized API Responses Using a Trait**
+### **Standardized API Responses Using a Trait**
 
 API responses follow a consistent format through a custom `HasApiResponse` trait. This trait ensures success, error, and paginated responses have a unified structure, simplifying response handling for frontend consumers.
 
-### 8. **UUIDs for Public-Facing Identifiers**
+### **UUIDs for Public-Facing Identifiers**
 
 UUIDs are used for public-facing identifiers in API responses and route parameters, avoiding exposure of internal auto-incrementing IDs. Internally, primary `id` fields are still used for efficiency.  
 The `HasUUID` trait:
@@ -222,7 +222,7 @@ The `HasUUID` trait:
 -   Automatically assigns an **ordered UUID** during model creation.
 -   Enables **route model binding** using the UUID instead of numeric IDs, improving security and consistency.
 
-### 9. **Caching Strategy**
+### **Caching Strategy**
 
 A dedicated `CacheKey` helper class ensures consistent cache key naming, reducing the risk of cache collisions. Caching is selectively applied as follows:
 
@@ -230,7 +230,7 @@ A dedicated `CacheKey` helper class ensures consistent cache key naming, reducin
 -   The list of **company admins** is cached and invalidated when admins are added, removed, or their roles change.
 -   For paginated data caching, **full request URLs** (including query parameters) are used as cache keys.
 
-### 10. **Weekly Expense Report**
+### **Weekly Expense Report**
 
 The **Weekly Expense Report** summarizes weekly expenses, showing:
 
@@ -238,11 +238,26 @@ The **Weekly Expense Report** summarizes weekly expenses, showing:
 -   **Expense Breakdown by Categories**: Provides a detailed breakdown of expenses by category.
 -   **Top 5 Spenders**: Lists the top 5 users with the highest expenses for the week.
 
-### 11. **Weekly Expense Report via Batching**
+### **Weekly Expense Report via Batching**
 
 A custom Artisan command dispatches weekly expense report jobs using `Bus::batch()`. Each job aggregates the past week’s expenses and notifies all company admins with the report. This scalable design ensures fault-tolerant processing of reports across multiple tenants.
 
-### 12. **Code Formatting**
+### **Audit Log Implementation**
+
+An audit log system is in place to track all changes to sensitive models. To ensure proper type safety when creating audit logs, a custom cast was implemented that casts the changes JSON column to an `AuditLogChangesDto`. This ensures that all changes are typed and properly structured for easy retrieval and analysis.  
+Admin users have access to the audit logs and can filter logs based on the **action** performed (update, delete) and the **time** the action occurred.
+
+### **Indexing for Performance**
+
+Since the application is multi-tenant, indexing was carefully implemented to optimize query performance. Composite indexes have been added to frequently filtered columns, ensuring efficient retrieval of data.  
+Specifically, the following composite indexes were added:
+
+-   `company_id` + `uuid` (for fast access to data by company and UUID)
+-   `company_id` + `id` (for efficient access to primary key-based queries)
+
+These indexes ensure that queries are executed efficiently, even when filtering large datasets across different tenants.
+
+### **Code Formatting**
 
 The project uses **Laravel Pint** for automatic code formatting. This ensures the codebase adheres to a consistent style, making it easier to maintain and collaborate on.
 
