@@ -77,6 +77,9 @@ RUN touch database/database.sqlite \
     && chown -R www-data:www-data database/database.sqlite \
     && chmod 664 database/database.sqlite
 
+# Create .env file from .env.example if it doesn't exist
+RUN if [ ! -f .env ]; then cp .env.example .env || echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=/var/www/database/database.sqlite" > .env; fi
+
 # Generate application key
 RUN php artisan key:generate --force
 
