@@ -12,10 +12,20 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * @group Expenses
+ * 
+ * Expense Related Apis
+ */
 class ExpenseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List all products
+     * 
+     * This endpoint returns a paginated list of all expenses
+     * 
+     * @apiResourceCollection App\Http\Resources\ExpenseResource
+     * @apiResourceModel App\Models\Expense paginate=10
      */
     public function index(Request $request)
     {
@@ -26,7 +36,12 @@ class ExpenseController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Create New Expense
+     * 
+     * This endpoint creates a new expense
+     *
+     * @apiResource App\Http\Resources\ExpenseResource
+     * @apiResourceModel App\Models\Expense 
      */
     public function store(StoreExpenseRequest $request)
     {
@@ -43,7 +58,13 @@ class ExpenseController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * Updates Single Expense
+     * 
+     * This endpoint updates a single expense
+     *
+     * @apiResource App\Http\Resources\ExpenseResource
+     * @apiResourceModel App\Models\Expense 
+     * @response 404 { "data": {"message": "App\Models\Expense not found"}}
      */
     public function update(UpdateExpenseRequest $request, Expense $expense)
     {
@@ -55,7 +76,16 @@ class ExpenseController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Updates Single Expense
+     * 
+     * This endpoint updates a single expense.
+     *
+     * @response 204 {"data": null}
+     * @response 404 {
+     *   "data": {
+     *     "message": "App\\Models\\Expense not found"
+     *   }
+     * }
      */
     public function destroy(Expense $expense)
     {

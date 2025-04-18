@@ -10,6 +10,11 @@ use App\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
+/**
+ * @group Authentication
+ * 
+ * Auth Related Apis
+ */
 class AuthController extends Controller
 {
     private $authService;
@@ -17,6 +22,12 @@ class AuthController extends Controller
     {
         $this->authService = $authService;
     }
+    /**
+     * Register User
+     * @unauthenticated
+     * This endpoint registers a new user as admin and their company
+     *
+     */
     public function register(RegisterUserRequest $request)
     {
         ['user' => $user, 'token' => $token] = $this->authService->register($request->validated());
@@ -27,6 +38,12 @@ class AuthController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Login User
+     * @unauthenticated
+     * This endpoint logs in a user
+     *
+     */
     public function login(LoginRequest $request)
     {
         ['user' => $user, 'token' => $token] =
@@ -45,6 +62,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout
+     * 
+     * This endpoint logs out a user
+     *
+     */
     public function logout(Request $request)
     {
         $this->authService->logout($request->user());

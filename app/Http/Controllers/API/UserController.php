@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * @group User
+ * 
+ * User Related Apis
+ */
 class UserController extends Controller
 {
     private $authService;
@@ -19,8 +24,14 @@ class UserController extends Controller
     {
         $this->authService = $authService;
     }
+
     /**
-     * Display a listing of the resource.
+     * List all users
+     * 
+     * This endpoint returns a paginated list of all users
+     * 
+     * @apiResourceCollection App\Http\Resources\UserResource
+     * @apiResourceModel App\Models\User paginate=10
      */
     public function index()
     {
@@ -31,7 +42,12 @@ class UserController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Create New User
+     * 
+     * This endpoint creates a new user
+     *
+     * @apiResource App\Http\Resources\UserResource
+     * @apiResourceModel App\Models\User
      */
     public function store(StoreUserRequest $request)
     {
@@ -43,7 +59,12 @@ class UserController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * Updates Single User
+     * 
+     * This endpoint updates a single user
+     *
+     * @apiResource App\Http\Resources\UserResource
+     * @apiResourceModel App\Models\User
      */
     public function update(UpdateUserRequest $request, User $user)
     {

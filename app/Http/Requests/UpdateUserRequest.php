@@ -6,6 +6,11 @@ use App\Enums\RoleEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\Enum\Laravel\Rules\EnumRule;
 
+/**
+ * @bodyParam name string required The user's full name. Max 255 characters. Example: Jane Doe
+ * @bodyParam email string required The user's email address. Must be unique and valid. Max 255 characters. Example: jane@example.com
+ * @bodyParam role string optional The user role. Must be one of: manager, employee, admin. Example: manager
+ */
 class UpdateUserRequest extends FormRequest
 {
     /**
@@ -25,7 +30,7 @@ class UpdateUserRequest extends FormRequest
     {
         return
             [
-                'name' => ['required', 'max:255', 'string'],
+                'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 "role" => ["sometimes", new EnumRule(RoleEnum::class)],
             ];

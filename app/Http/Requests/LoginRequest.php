@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @bodyParam email string required The user's email address. Must be a valid email. Max 255 characters. Example: user@example.com
+ * @bodyParam password string required The user's password. Example: password123
+ */
 class LoginRequest extends FormRequest
 {
     /**

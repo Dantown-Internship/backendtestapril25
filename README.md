@@ -1,66 +1,93 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Douglas Leslie
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### <u>NOTES/ASSUMPTIONS MADE</u>
 
-## About Laravel
+1. I used soft deletes for the company and User model as that is industry standard and helps ensure data integrity. There was no need to use it for the Expense model given the extensive logging feature added
+2. I used decimal for currency to ensure accuracy and prevent floating point errors in how dbs store floating point numbers
+3. I used policies over gates, so that in the event that an admin dashboard is added later via Laravel Nova, FilamentPHP or any admin tool,Existing policies would manage resources effectively
+4. Bubbled forbidden exceptions to not found exceptions to promote security through obscurity and guard against bruteforce attacks.
+5. Would have used subdomains for managing multiple tenants but that would overcomplicate what should be a "simple" assessment
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### <u>FEATURES I IMPLEMENTED</u>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Task 1: Multi-Tenant Database Structure (Migrations & Models)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. If you are looking for an explicit index on the company_id and other fields, Laravel by default indexes id and foreignId fields
 
-## Learning Laravel
+Task 2: API Authentication and RBAC
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. I used laravel policies for managing access to resources
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Task 3: API Endpoints
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. All the api endpoints were created and have role based access control
 
-## Laravel Sponsors
+Task 4: Optimization
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Redis was used to cache certain routes via middleware and the send weekly expense job used eager loading and chunking for better performance
 
-### Premium Partners
+Task 5: Background Job Processing
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. I have attached a screenshot of what the email looks like for the weekly expense report. I also wrote tests for the background job and mailer
+   [![Evidence-of-email.png](https://i.postimg.cc/4N3z2JcP/Evidence-of-email.png)](https://postimg.cc/rzv0K2QR)
 
-## Contributing
+Task 6: Audit Logs
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Completed To specification
 
-## Code of Conduct
+### <u>INSTRUCTIONS FOR TESTING</u>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### PROJECT SETUP
 
-## Security Vulnerabilities
+1. Clone repository
+2. Set encryption key
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+php artisan key:generate
+```
 
-## License
+3. copy .env.example file to .env and also to .env.testing file. Go to [Configuration](#configuration) to set DB details
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+cp .env.example .env && cp .env.example .env.testing
+```
+
+4. Download Dependencies
+
+```
+composer install
+```
+
+5. Perform migrations and seed database and migrate db for testing database
+
+```
+php artisan migrate --seed && php artisan migrate  --env=testing
+```
+
+#### TESTING
+
+1. After setting up, you can run the tests by running:
+
+```
+php artisan test
+```
+
+2. To see code coverage for the tests, install [xdebug][xdebug-url] and then run
+
+```
+php artisan test --coverage
+```
+
+### CONFIGURATION
+
+Please modify these values in the `.env` file.
+
+-   DB_DATABASE=expense
+-   DB_PASSWORD=**\*\*\*\*** (Put your password here, leave blank if your mysql root uses no password)
+
+Please modify these values in the `.env.testing` file.
+
+-   DB_DATABASE=expense_testing
+-   DB_PASSWORD=**\*\*\*\*** (Put your password here, leave blank if your mysql root uses no password)
+
+[xdebug-url]: https://xdebug.org/docs/install
