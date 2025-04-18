@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\User;
 use App\Services\Contracts\AuthServiceInterface;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService implements AuthServiceInterface
 {
@@ -46,6 +47,8 @@ class AuthService implements AuthServiceInterface
 
     public function logout(User $user): void
     {
-        $user->currentAccessToken()->delete();
+        /** @var PersonalAccessToken|null $token */
+        $token = $user->currentAccessToken();
+        $token->delete();
     }
 }
