@@ -13,24 +13,46 @@ use Illuminate\Support\Facades\Route;
 })->middleware('auth:sanctum');*/
 
 // Auth routes
-Route::post('/register-user', [AuthController::class, 'registerUser'])->middleware(['auth:sanctum', 'checkRole:Admin,Manager']);
-Route::post('/register-admin', [AuthController::class, 'registerAdminUser'])->middleware(['auth:sanctum','checkRole:SuperAdmin']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['checkRole:Admin,Manager'])->group(function () {
+        Route::post('/register-user', [AuthController::class, 'registerUser']);
+    });
+    Route::middleware(['checkRole:SuperAdmin'])->group(function () {
+        Route::post('/register-admin', [AuthController::class, 'registerAdminUser']);
+    });
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
-// Company route
-Route::put('/update-company/{id}', [CompanyController::class, 'updateCompany'])->middleware(['auth:sanctum','checkRole:SuperAdmin']);
-Route::get('/company', [CompanyController::class, 'index'])->middleware(['auth:sanctum','checkRole:SuperAdmin']);
-Route::get('/company/{id}', [CompanyController::class, 'viewCompany'])->middleware(['auth:sanctum', 'checkRole:SuperAdmin,Admin,Manager']);
-Route::delete('/company/{id}', [CompanyController::class, 'deleteCompany'])->middleware(['auth:sanctum', 'checkRole:SuperAdmin']);
+// Company routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['checkRole:SuperAdmin'])->group(function () {
+        Route::get('/companies', [CompanyController::class, 'index']);
+        Route::put('/update-company/{id}', [CompanyController::class, 'updateCompany']);
+        Route::patch('/deactivate-company/{id}', [CompanyController::class, 'deactivateCompany']);
+        Route::patch('/activate-company/{id}', [CompanyController::class, 'activateCompany']);
+        Route::delete('/company/{id}', [CompanyController::class, 'deleteCompany']);
+    });
 
+    Route::middleware(['checkRole:Admin,Manager'])->group(function () {
+        Route::get('/company', [CompanyController::class, 'viewCompany']);
+    });
+});
 
 // Expenses routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/expenses', [ExpensesController::class, 'index']);
-    Route::post('/expenses', [ExpensesController::class, 'store']);
-    Route::put('/expenses/{id}', [ExpensesController::class, 'update'])->middleware(['auth:sanctum', 'checkRole:Admin,Manager']);
-    Route::delete('/expenses/{id}', [ExpensesController::class, 'destroy'])->middleware(['auth:sanctum', 'checkRole:Admin']);
+    Route::middleware(['checkRole:Admin,Manager,Employee'])->group(function () {
+        Route::get('/expenses', [ExpensesController::class, 'index']);
+        Route::post('/expenses', [ExpensesController::class, 'store']);
+    });
+
+    Route::middleware(['checkRole:Admin,Manager'])->group(function () {
+        Route::put('/expenses/{id}', [ExpensesController::class, 'update']);
+    });
+
+    Route::middleware(['checkRole:Admin'])->group(function () {
+        Route::delete('/expenses/{id}', [ExpensesController::class, 'destroy']);
+    });
 });
 
 // User routes
@@ -38,4 +60,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'deleteUser'])->middleware(['auth:sanctum', 'checkRole:Admin']);
 });

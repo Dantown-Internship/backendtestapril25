@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 use Exception;
 
 class CompanyService
@@ -19,15 +20,12 @@ class CompanyService
         return Company::all();
     }
 
-    /**
-     * Get company by ID
-     *
-     * @param int $id
-     * @return Company|null
-     */
-    public function getCompanyById(int $id): ?Company
+   
+    public function getCompanyById($id): ?array
     {
-        return Company::find($id);
+        $data = Company::find($id);
+        
+        return ['success' => true, 'message' => 'fetch data successfully', 'data' => $data];
     }
 
     public function getCompanyByNameAndEmail(string $companyName, string $companyEmail): ?Company
@@ -35,55 +33,76 @@ class CompanyService
         return Company::where(['email'=> $companyEmail, 'name'=> $companyName])->first();
     }
 
-    /**
-     * Create a new company
-     *
-     * @param array $data
-     * @return Company
-     */
+   
     public function createCompany(array $data): Company
     {
         return Company::create($data);
     }
 
-    /**
-     * Update an existing company
-     *
-     * @param int $id
-     * @param array $data
-     * @return Company|null
-     */
-    public function updateCompany(int $id, array $data): ?Company
+   
+    public function updateCompany(int $id, array $data): array
     {
-        $company = $this->getCompanyById($id);
+        $company = $this->getCompanyById($id)['data'];
         
         if (!$company) {
-            return null;
+            return ['success' => false, 'message' => 'data not found', 'data' => []];
         }
 
-        $company->update($data);
-        return $company->fresh();
+        $isUpdated = $company->update($data);
+        return ['success' => $isUpdated, 'message' => 'data updated successfully', 'data' => $company->fresh()];
+        
     }
 
-    /**
-     * Delete a company
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function deleteCompany(int $id): bool
+   
+    public function deleteCompany(int $id): array
     {
-        $company = $this->getCompanyById($id);
+        $company = $this->getCompanyById($id)['data'];
         
         if (!$company) {
-            return false;
+            return ['success' => false, 'message' => 'Failed to delete company', 'data' => []];
         }
 
-        try {
-            return $company->delete();
-        } catch (Exception $e) {
-            Log::error('Failed to delete company: ' . $e->getMessage());
-            return false;
+        $isCompanyDeleted = $company->delete();
+        return ['success' => $isCompanyDeleted, 'message' => 'data deleted successfully', 'data' => []];
+    }
+
+    public function softDeleteCompany(int $id): array
+    {
+        $company = $this->getCompanyById($id)['data'];
+
+        if (!$company) {
+            return ['success' => false, 'message' => 'Failed to deactivate company', 'data' => []];
         }
+
+        $company->is_active = false;
+        $company->save();
+
+        $company->users()->update(['is_active' => false]);
+
+        return [
+            'success' => true,
+            'message' => 'Company deactivated successfully',
+            'data' => [],
+        ];
+    }
+
+    public function activateCompany(int $id): array
+    {
+        $company = $this->getCompanyById($id)['data'];
+
+        if (!$company) {
+            return ['success' => false, 'message' => 'Failed to activate company', 'data' => []];
+        }
+
+        $company->is_active = true;
+        $company->save();
+
+        $company->users()->update(['is_active' => true]);
+
+        return [
+            'success' => true,
+            'message' => 'Company activated successfully',
+            'data' => [],
+        ];
     }
 }

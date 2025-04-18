@@ -9,6 +9,8 @@ use App\Models\Company;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use Auth;
 
 class CompanyController extends Controller
 {
@@ -23,38 +25,16 @@ class CompanyController extends Controller
     {
         $companies = $this->companyService->getAllCompanies();
         
-        return response()->json([
-            'status' => 'success',
-            'data' => $companies
-        ]);
-    }
-
-    public function registerCompany(StoreCompanyRequest $request): JsonResponse
-    {
-        $company = $this->companyService->createCompany($request->validated());
-        
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Company created successfully',
-            'data' => $company
-        ], Response::HTTP_CREATED);
+        return response()->json(['success' => true, 'message' => 'fetch data successfully', 'data' => $companies]);
     }
 
     public function viewCompany(int $id): JsonResponse
     {
-        $company = $this->companyService->getCompanyById($id);
-        
-        if (!$company) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Company not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-        
-        return response()->json([
-            'status' => 'success',
-            'data' => $company
-        ]);
+        $authUser = Auth::user()->load('company');
+
+        $company = $this->companyService->getCompanyById($authUser->company_id);
+       
+       return response()->json($company, 200);
     }
 
     /**
@@ -64,22 +44,15 @@ class CompanyController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function updateCompany(UpdateCompanyRequest $request, int $id): JsonResponse
+    public function updateCompany(Request $request, int $id): JsonResponse
     {
-        $company = $this->companyService->updateCompany($id, $request->validated());
-        
-        if (!$company) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Company not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-        
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Company updated successfully',
-            'data' => $company
+        $updateRequest = $request->validate([
+            "name" => "required|string|max:255",
+            "email" => "required|email",
         ]);
+        $responseData = $this->companyService->updateCompany($id, $updateRequest);
+        
+        return response()->json($responseData, $responseData['success'] ? 200:400);
     }
 
     /**
@@ -90,18 +63,22 @@ class CompanyController extends Controller
      */
     public function deleteCompany(int $id): JsonResponse
     {
-        $deleted = $this->companyService->deleteCompany($id);
+        $responseData = $this->companyService->deleteCompany($id);
         
-        if (!$deleted) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Company not found or could not be deleted'
-            ], Response::HTTP_NOT_FOUND);
-        }
+        return response()->json($responseData, $responseData['success'] ? 200:400);
+    }
+
+    public function deactivateCompany(int $id): JsonResponse
+    {
+        $responseData = $this->companyService->softDeleteCompany($id);
         
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Company deleted successfully'
-        ]);
+        return response()->json($responseData, $responseData['success'] ? 200:400);
+    }
+
+    public function activateCompany(int $id): JsonResponse
+    {
+        $responseData = $this->companyService->activateCompany($id);
+        
+        return response()->json($responseData, $responseData['success'] ? 200:400);
     }
 }
