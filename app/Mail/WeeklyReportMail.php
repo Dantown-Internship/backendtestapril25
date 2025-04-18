@@ -1,5 +1,5 @@
 <?php
-// app/Mail/WeeklyExpenseReportMail.php
+// app/Mail/WeeklyReportMail.php
 
 namespace App\Mail;
 
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Models\Company;
 use Illuminate\Support\Collection;
 
-class WeeklyExpenseReportMail extends Mailable implements ShouldQueue
+class WeeklyReportMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
