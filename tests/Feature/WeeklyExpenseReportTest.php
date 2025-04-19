@@ -194,7 +194,7 @@ test('it filters expenses specific to each user', function () {
     $adminC->assignRole('admin');
 
     // Add expenses for this admin
-    $expenses = Expense::factory()->count(2)->create([
+    Expense::factory()->count(2)->create([
         'company_id' => $this->companyA->id,
         'user_id' => $adminC->id,
         'category' => 'Entertainment',
@@ -202,32 +202,29 @@ test('it filters expenses specific to each user', function () {
         'amount' => 150,
     ]);
 
-//    dd($expenses->sum('amount'));
-
     // Dispatch job for both admins
     $job = new SendExpenseReportJob([$this->adminB->id, $adminC->id]);
     $job->handle();
 
     // Verify each admin gets only their own expenses
-//    Notification::assertSentTo(
-//        $this->adminB,
-//        WeeklyExpenseReportNotification::class,
-//        function ($notification) {
-//            // Should only have Meals category (adminB's expenses)
-//            expect($notification->categoryTotals)->toHaveKey('Meals');
-//            expect($notification->totalAmount)->toBe(600.0);
-//            return true;
-//        }
-//    );
+    Notification::assertSentTo(
+        $this->adminB,
+        WeeklyExpenseReportNotification::class,
+        function ($notification) {
+            // Should only have Meals category (adminB's expenses)
+            expect($notification->categoryTotals)->toHaveKey('Meals');
+            expect($notification->totalAmount)->toBe(300.0);
+            return true;
+        }
+    );
 
     Notification::assertSentTo(
         $adminC,
         WeeklyExpenseReportNotification::class,
         function ($notification) {
-            dd($notification->totalAmount);
             // Should only have Entertainment category (adminC's expenses)
-            expect($notification->categoryTotals->keys()->toArray())->toBe(['Entertainment']);
-            expect($notification->totalAmount)->toBe(300); // 2 entertainment at $150
+            expect($notification->categoryTotals)->toHaveKey('Entertainment');
+            expect($notification->totalAmount)->toBe(300.0); // 2 entertainment at $150
             return true;
         }
     );

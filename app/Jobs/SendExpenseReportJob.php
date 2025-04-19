@@ -26,6 +26,7 @@ class SendExpenseReportJob implements ShouldQueue
         $lastWeekStart = now()->subWeek()->startOfWeek();
         $lastWeekEnd = now()->subWeek()->endOfWeek();
 
+
         // Fetch expenses with eager loading in a single query
         $expenses = Expense::whereIn('user_id', $this->userIds)
             ->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])
@@ -33,16 +34,18 @@ class SendExpenseReportJob implements ShouldQueue
             ->get();
 
         // Calculate the totals only once
-        $totalAmount = $expenses->sum('amount');
+//        $totalAmount = $expenses->sum('amount');
+
         $categoryTotals = $expenses->groupBy('category')
             ->map(fn($items) => $items->sum('amount'))->toArray();
 
         User::whereIn('id', $this->userIds)
             ->with('company:id,name')
-            ->chunk(100, function ($users) use ($totalAmount, $categoryTotals, $expenses, $lastWeekStart, $lastWeekEnd) {
+            ->chunk(100, function ($users) use ($categoryTotals, $expenses, $lastWeekStart, $lastWeekEnd) {
                 foreach ($users as $user) {
                     // Filter expenses specific to this user
                     $userExpenses = $expenses->where('user_id', $user->id);
+                    $totalAmount = $userExpenses->sum('amount');
 
                     // Only send notification if user has expenses
                     if ($userExpenses->isNotEmpty()) {
