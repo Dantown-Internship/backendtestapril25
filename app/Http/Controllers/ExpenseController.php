@@ -3,16 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Services\ExpenseService;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
+    protected $expenseService;
+
+    public function __construct(ExpenseService $expenseService)
+    {
+        $this->expenseService = $expenseService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $expenses = $this->expenseService->getAllExpenses(request());
+        return response()->json($expenses);
     }
 
     /**
@@ -20,7 +29,11 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->expenseService->createExpense($request);
+        return response()->json([
+            'message' => 'Expense created successfully'],
+            201
+        );
     }
 
     /**
@@ -36,7 +49,12 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, Expense $expense)
     {
-        //
+        $this->authorizeExpense($expense);
+        $this->expenseService->updateExpense($request, $expense);
+        return response()->json([
+            'message' => 'Expense updated successfully'],
+            200
+        );
     }
 
     /**
@@ -44,6 +62,18 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense)
     {
-        //
+        $this->authorizeExpense($expense);
+        $this->expenseService->deleteExpense($expense);
+        return response()->json([
+            'message' => 'Expense deleted successfully'],
+            200
+        );
+    }
+
+    private function authorizeExpense(Expense $expense)
+    {
+        if ($expense->company_id !== auth()->user()->company_id) {
+            abort(403, 'Unauthorized');
+        }
     }
 }

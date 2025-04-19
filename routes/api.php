@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +16,16 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/expenses', [ExpenseController::class, 'index']);
+    Route::post('/expenses', [ExpenseController::class, 'store']);
+    Route::put('/expenses/{expense}', [ExpenseController::class, 'update'])->middleware('role:Admin,Manager');
+    Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy'])->middleware('role:Admin');
+
+    Route::get('/users', [UserController::class, 'index'])->middleware('role:Admin');
+    Route::post('/users', [UserController::class, 'store'])->middleware('role:Admin');
+    Route::put('/users/{id}', [UserController::class, 'update'])->middleware('role:Admin');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('role:Admin');
 });

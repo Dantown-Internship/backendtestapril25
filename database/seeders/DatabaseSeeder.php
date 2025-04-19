@@ -3,6 +3,10 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Company;
+use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +16,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        Company::factory(3)->create()->each(function ($company) {
+            $admin = User::factory()->create([
+                'company_id' => $company->id,
+                'role'       => 'Admin',
+                'email'      => 'admin@' . strtolower($company->name) . '.com',
+            ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+            $managers = User::factory(2)->create([
+                'company_id' => $company->id,
+                'role'       => 'Manager',
+            ]);
+
+            $employees = User::factory(3)->create([
+                'company_id' => $company->id,
+                'role'       => 'Employee',
+            ]);
+
+            $users = collect([$admin])->merge($managers)->merge($employees);
+
+            $users->each(function ($user) use ($company) {
+                Expense::factory(5)->create([
+                    'company_id' => $company->id,
+                    'user_id'    => $user->id,
+                ]);
+            });
+        });
     }
 }
