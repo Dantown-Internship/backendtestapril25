@@ -24,13 +24,21 @@ class ExpenseController extends Controller
             $query->where('category', 'LIKE', '%' . $request->category . '%');
         }
 
-        // Eager load user info (optional)
-        $expenses = $query->with('user')
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
+        // Eager load user info 
+        $expenses = Expense::with('user')
+            ->where('company_id', $user->company_id)
+            ->when($request->search, fn($q) =>
+                $q->where(function ($query) use ($request) {
+                    $query->where('title', 'like', '%' . $request->search . '%')
+                          ->orWhere('category', 'like', '%' . $request->search . '%');
+                })
+            )
+            ->latest()
+            ->paginate(10);
 
         return response()->json($expenses);
     }
+
 
     public function store(Request $request)
     {
