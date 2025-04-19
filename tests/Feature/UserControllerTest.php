@@ -52,7 +52,6 @@ beforeEach(function () {
 });
 
 test('admin can list company users', function () {
-    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $response = $this->getJson('/api/users');
@@ -132,7 +131,6 @@ test('non-admin cannot create a user', function () {
 });
 
 test('admin can update a user role', function () {
-    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $updateData = [
@@ -158,7 +156,6 @@ test('admin can update a user role', function () {
 });
 
 test('admin cannot update users from another company', function () {
-    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $updateData = [

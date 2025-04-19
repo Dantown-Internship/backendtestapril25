@@ -13,8 +13,6 @@ beforeEach(function () {
 });
 
 test('company and admin can be registered', function () {
-    $this->withoutExceptionHandling();
-
     $response = $this->postJson('/api/register', [
         'company_name' => 'Acme Inc',
         'company_email' => 'admin@acme.com',
@@ -55,7 +53,6 @@ test('company and admin can be registered', function () {
 });
 
 test('user can login', function () {
-    $this->withoutExceptionHandling();
     // Create a company and user
     $company = Company::factory()->create([
         'name' => 'Test Company',
@@ -84,7 +81,6 @@ test('user can login', function () {
 });
 
 test('user can logout', function () {
-    $this->withoutExceptionHandling();
     $company = Company::factory()->create();
     $user = User::factory()->create([
         'company_id' => $company->id,

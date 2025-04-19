@@ -6,9 +6,6 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
-    // Migration fresh before each test
-    $this->artisan('migrate:fresh');
-
     // Seed roles and permissions
     $this->artisan('db:seed', ['--class' => 'Database\Seeders\RolesAndPermissionsSeeder']);
 
@@ -19,26 +16,26 @@ beforeEach(function () {
     // Create users for Company A
     $this->adminA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Admin',
+        'role' => \App\Enums\RoleEnum::ADMIN->value,
     ]);
     $this->adminA->assignRole('admin');
 
     $this->managerA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Manager',
+        'role' => \App\Enums\RoleEnum::MANAGER->value,
     ]);
     $this->managerA->assignRole('manager');
 
     $this->employeeA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Employee',
+        'role' => \App\Enums\RoleEnum::EMPLOYEE->value,
     ]);
     $this->employeeA->assignRole('employee');
 
     // Create user for Company B
     $this->adminB = User::factory()->create([
         'company_id' => $this->companyB->id,
-        'role' => 'Admin',
+        'role' => \App\Enums\RoleEnum::ADMIN->value,
     ]);
     $this->adminB->assignRole('admin');
 
@@ -72,10 +69,10 @@ test('user can list expenses for their company only', function () {
     $expenses = json_decode($response->getContent(), true)['data'];
 
     // Should see 8 expenses (5 from employeeA + 3 from managerA)
-    expect(count($expenses))->toBe(8);
+    expect(count($expenses['data']))->toBe(8);
 
     // All expenses should belong to Company A
-    foreach ($expenses as $expense) {
+    foreach ($expenses['data'] as $expense) {
         expect($expense['company_id'])->toBe($this->companyA->id);
     }
 });
@@ -90,10 +87,10 @@ test('user can filter expenses by category', function () {
     $expenses = json_decode($response->getContent(), true)['data'];
 
     // Should see 5 expenses in Travel category
-    expect(count($expenses))->toBe(5);
+    expect(count($expenses['data']))->toBe(5);
 
     // All expenses should have Travel category
-    foreach ($expenses as $expense) {
+    foreach ($expenses['data'] as $expense) {
         expect($expense['category'])->toBe('Travel');
     }
 });
@@ -135,6 +132,7 @@ test('manager can update an expense', function () {
     $updateData = [
         'title' => 'Updated Expense',
         'amount' => 500.00,
+        'category' => 'Travel',
     ];
 
     $response = $this->putJson("/api/expenses/{$expense->id}", $updateData);
@@ -168,6 +166,7 @@ test('employee cannot update an expense', function () {
     $updateData = [
         'title' => 'Try to update',
         'amount' => 999.99,
+        'category' => 'Travel',
     ];
 
     $response = $this->putJson("/api/expenses/{$expense->id}", $updateData);
@@ -225,7 +224,7 @@ test('user cannot access expense from another company', function () {
 
     $response = $this->getJson("/api/expenses/{$expenseFromB->id}");
 
-    $response->assertStatus(404);
+    $response->assertStatus(403);
 });
 
 test('admin can delete an expense', function () {
@@ -235,10 +234,7 @@ test('admin can delete an expense', function () {
 
     $response = $this->deleteJson("/api/expenses/{$expense->id}");
 
-    $response->assertOk()
-        ->assertJson([
-            'message' => 'Expense deleted successfully',
-        ]);
+    $response->assertNoContent();
 
     $this->assertDatabaseMissing('expenses', [
         'id' => $expense->id,

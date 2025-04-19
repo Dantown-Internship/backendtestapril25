@@ -33,9 +33,6 @@ class SendExpenseReportJob implements ShouldQueue
             ->with('user:id,name,email')
             ->get();
 
-        // Calculate the totals only once
-//        $totalAmount = $expenses->sum('amount');
-
         $categoryTotals = $expenses->groupBy('category')
             ->map(fn($items) => $items->sum('amount'))->toArray();
 
@@ -45,13 +42,12 @@ class SendExpenseReportJob implements ShouldQueue
                 foreach ($users as $user) {
                     // Filter expenses specific to this user
                     $userExpenses = $expenses->where('user_id', $user->id);
-                    $totalAmount = $userExpenses->sum('amount');
 
                     // Only send notification if user has expenses
                     if ($userExpenses->isNotEmpty()) {
                         $user->notify(new WeeklyExpenseReportNotification(
                             $userExpenses,
-                            $totalAmount,
+                            $userExpenses->sum('amount'),
                             $categoryTotals,
                             $lastWeekStart,
                             $lastWeekEnd

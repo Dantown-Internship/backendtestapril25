@@ -73,7 +73,6 @@ beforeEach(function () {
 });
 
 test('it dispatches expense report job for admin users', function () {
-    $this->withoutExceptionHandling();
     Bus::fake();
 
     // Call the command handler
@@ -90,7 +89,6 @@ test('it dispatches expense report job for admin users', function () {
 });
 
 test('it sends notifications only to admins with personal expenses', function () {
-    $this->withoutExceptionHandling();
     Notification::fake();
 
     // Dispatch the job with admin IDs

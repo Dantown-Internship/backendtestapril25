@@ -41,7 +41,6 @@ class ExpenseController extends Controller
     public function store(CreateExpenseRequest $request): JsonResponse
     {
         $expenseData = ExpenseData::fromRequest($request->validated());
-        dd($expenseData->toArray()); // Debugging line, remove in production
         $expense = Expense::create($expenseData->toArray());
 
         return new JsonResponse(
@@ -55,6 +54,16 @@ class ExpenseController extends Controller
 
     public function show(Expense $expense): JsonResponse
     {
+        $adminUser = auth()->user();
+        if ($expense->user->company_id !== $adminUser->company_id) {
+            return new JsonResponse(
+                [
+                    'message' => 'Unauthorized',
+                ],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
         return new JsonResponse(
             [
                 'message' => 'Expense retrieved successfully',
@@ -95,7 +104,7 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense): JsonResponse
     {
         $user = auth()->user();
-        if (!$user->isAdmin) {
+        if (!$user->isAdmin()) {
             return new JsonResponse(
                 [
                     'message' => 'Unauthorized',

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\RoleEnum;
 use App\Jobs\SendExpenseReportJob;
 use App\Models\Company;
 use App\Models\User;
@@ -28,12 +29,7 @@ class SendWeeklyExpenseReportCommand extends Command
      */
     public function handle()
     {
-        User::where('role', 'Admin')
-            ->select('users.*')
-            ->chunk(100, function ($admins) {
-                $ids = $admins->pluck('id')->toArray();
-                SendExpenseReportJob::dispatch($ids);
-            });
-
+        $adminUserIds = User::where('role', RoleEnum::ADMIN->value)->pluck('id')->toArray();
+        dispatch(new SendExpenseReportJob($adminUserIds));
     }
 }
