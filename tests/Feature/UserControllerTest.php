@@ -5,9 +5,6 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
-    // Migration fresh before each test
-    $this->artisan('migrate:fresh');
-
     // Seed roles and permissions
     $this->artisan('db:seed', ['--class' => 'Database\Seeders\RolesAndPermissionsSeeder']);
 
@@ -18,31 +15,44 @@ beforeEach(function () {
     // Create users for Company A
     $this->adminA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Admin',
+        'role' => 'admin',
     ]);
     $this->adminA->assignRole('admin');
 
     $this->managerA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Manager',
+        'role' => 'manager',
     ]);
     $this->managerA->assignRole('manager');
 
     $this->employeeA = User::factory()->create([
         'company_id' => $this->companyA->id,
-        'role' => 'Employee',
+        'role' => \App\Enums\RoleEnum::EMPLOYEE->value,
     ]);
     $this->employeeA->assignRole('employee');
 
     // Create user for Company B
     $this->adminB = User::factory()->create([
         'company_id' => $this->companyB->id,
-        'role' => 'Admin',
+        'role' => 'admin',
     ]);
     $this->adminB->assignRole('admin');
+
+    $this->managerB = User::factory()->create([
+        'company_id' => $this->companyB->id,
+        'role' => 'manager',
+    ]);
+    $this->managerB->assignRole('manager');
+
+    $this->employeeB = User::factory()->create([
+        'company_id' => $this->companyB->id,
+        'role' => \App\Enums\RoleEnum::EMPLOYEE->value,
+    ]);
+    $this->employeeB->assignRole('employee');
 });
 
 test('admin can list company users', function () {
+    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $response = $this->getJson('/api/users');
@@ -52,10 +62,10 @@ test('admin can list company users', function () {
     $users = json_decode($response->getContent(), true)['data'];
 
     // Should see 3 users from Company A
-    expect(count($users))->toBe(3);
+    expect(count($users['data']))->toBe(3);
 
     // All users should belong to Company A
-    foreach ($users as $user) {
+    foreach ($users['data'] as $user) {
         expect($user['company_id'])->toBe($this->companyA->id);
     }
 });
@@ -76,7 +86,7 @@ test('admin can create a new user', function () {
         'email' => 'newuser@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-        'role' => 'Manager',
+        'role' => \App\Enums\RoleEnum::MANAGER->value,
     ];
 
     $response = $this->postJson('/api/users', $userData);
@@ -85,14 +95,14 @@ test('admin can create a new user', function () {
         ->assertJsonFragment([
             'name' => 'New User',
             'email' => 'newuser@example.com',
-            'role' => 'Manager',
+            'role' => \App\Enums\RoleEnum::MANAGER->value,
             'company_id' => $this->companyA->id,
         ]);
 
     $this->assertDatabaseHas('users', [
         'name' => 'New User',
         'email' => 'newuser@example.com',
-        'role' => 'Manager',
+        'role' => \App\Enums\RoleEnum::MANAGER->value,
         'company_id' => $this->companyA->id,
     ]);
 
@@ -109,7 +119,7 @@ test('non-admin cannot create a user', function () {
         'email' => 'attempt@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-        'role' => 'Employee',
+        'role' => \App\Enums\RoleEnum::EMPLOYEE->value,
     ];
 
     $response = $this->postJson('/api/users', $userData);
@@ -122,22 +132,23 @@ test('non-admin cannot create a user', function () {
 });
 
 test('admin can update a user role', function () {
+    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $updateData = [
-        'role' => 'Manager',
+        'role' => \App\Enums\RoleEnum::MANAGER->value,
     ];
 
     $response = $this->putJson("/api/users/{$this->employeeA->id}", $updateData);
 
     $response->assertOk()
         ->assertJsonFragment([
-            'role' => 'Manager',
+            'role' => \App\Enums\RoleEnum::MANAGER->value,
         ]);
 
     $this->assertDatabaseHas('users', [
         'id' => $this->employeeA->id,
-        'role' => 'Manager',
+        'role' => \App\Enums\RoleEnum::MANAGER->value,
     ]);
 
     // Check that the role was updated
@@ -147,16 +158,17 @@ test('admin can update a user role', function () {
 });
 
 test('admin cannot update users from another company', function () {
+    $this->withoutExceptionHandling();
     Sanctum::actingAs($this->adminA);
 
     $updateData = [
         'name' => 'Attempted Update',
-        'role' => 'Employee',
+        'role' => \App\Enums\RoleEnum::EMPLOYEE->value,
     ];
 
-    $response = $this->putJson("/api/users/{$this->adminB->id}", $updateData);
+    $response = $this->putJson("/api/users/{$this->employeeB->id}", $updateData);
 
-    $response->assertStatus(404);
+    $response->assertStatus(403);
 
     // Verify user was not updated
     $this->assertDatabaseMissing('users', [

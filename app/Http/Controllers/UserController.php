@@ -23,9 +23,9 @@ class UserController extends Controller
             );
         }
 
-        $users = User::where('company_id', $user->company_id)
-            ->select('id', 'name', 'email', 'role', 'created_at')
-            ->paginate($request->per_page ?? 15);
+        $users = User::with('company')
+            ->where('company_id', $user->company_id)
+            ->paginate();
 
         return new JsonResponse(
             [
@@ -75,11 +75,21 @@ class UserController extends Controller
             'manager' => $newUser->assignRole('manager'),
             'employee' => $newUser->assignRole('employee'),
         };
+
+        return new JsonResponse(
+            [
+                'message' => 'User created successfully',
+                'data' => $newUser,
+            ],
+            Response::HTTP_CREATED
+        );
     }
 
     public function update(Request $request, User $user): JsonResponse
     {
         $adminUser = auth()->user();
+
+        $oldValues = $user->getAttributes();
 
         if (!$adminUser->isAdmin()) {
             return new JsonResponse(
@@ -90,6 +100,14 @@ class UserController extends Controller
             );
         }
 
+        if ($user->company_id !== $adminUser->company_id) {
+            return new JsonResponse(
+                [
+                    'message' => 'Unauthorized',
+                ],
+                Response::HTTP_FORBIDDEN
+            );
+        }
 
         if ($adminUser->id === $user->id) {
             return new JsonResponse(
@@ -99,6 +117,7 @@ class UserController extends Controller
                 Response::HTTP_FORBIDDEN
             );
         }
+
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => [
@@ -113,7 +132,7 @@ class UserController extends Controller
 
         $user->update($request->only('name', 'email', 'role'));
 
-        if (isset($validated['role']) && $user->role !== $validated['role']) {
+        if (isset($validated['role']) && $oldValues['role'] !== $validated['role']) {
             // Remove the old role
             $user->syncRoles([]);
 
