@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->decimal('amount', 10, 2);
+            $table->string('category');
             $table->timestamps();
+
+            // Add indexes for performance
+            $table->index('company_id');
+            $table->index('user_id');
+            $table->index(['company_id', 'category']);
         });
     }
 

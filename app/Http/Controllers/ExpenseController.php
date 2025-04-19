@@ -41,6 +41,7 @@ class ExpenseController extends Controller
     public function store(CreateExpenseRequest $request): JsonResponse
     {
         $expenseData = ExpenseData::fromRequest($request->validated());
+        dd($expenseData->toArray()); // Debugging line, remove in production
         $expense = Expense::create($expenseData->toArray());
 
         return new JsonResponse(

@@ -35,9 +35,8 @@ class SendExpenseReportJob implements ShouldQueue
         // Calculate the totals only once
         $totalAmount = $expenses->sum('amount');
         $categoryTotals = $expenses->groupBy('category')
-            ->map(fn($items) => $items->sum('amount'));
+            ->map(fn($items) => $items->sum('amount'))->toArray();
 
-        // Use chunk instead of each to reduce memory usage when dealing with many users
         User::whereIn('id', $this->userIds)
             ->with('company:id,name')
             ->chunk(100, function ($users) use ($totalAmount, $categoryTotals, $expenses, $lastWeekStart, $lastWeekEnd) {

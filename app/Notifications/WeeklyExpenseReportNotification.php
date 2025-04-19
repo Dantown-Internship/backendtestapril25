@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -18,9 +19,9 @@ class WeeklyExpenseReportNotification extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        public Expense $userExpenses,
+        public Collection $userExpenses,
         public float $totalAmount,
-        public float $categoryTotals,
+        public array $categoryTotals,
         public Carbon $lastWeekStart,
         public Carbon $lastWeekEnd,
     )

@@ -8,9 +8,6 @@ use Laravel\Sanctum\Sanctum;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Migration fresh before each test
-//    $this->artisan('migrate:fresh');
-
     // Seed roles and permissions
     $this->artisan('db:seed', ['--class' => 'Database\Seeders\RolesAndPermissionsSeeder']);
 });
@@ -87,6 +84,7 @@ test('user can login', function () {
 });
 
 test('user can logout', function () {
+    $this->withoutExceptionHandling();
     $company = Company::factory()->create();
     $user = User::factory()->create([
         'company_id' => $company->id,
@@ -99,7 +97,7 @@ test('user can logout', function () {
 
     $response->assertOk()
         ->assertJson([
-            'message' => 'Logged out successfully',
+            'message' => 'User Logged Out Successfully',
         ]);
 
     // Check that token was deleted

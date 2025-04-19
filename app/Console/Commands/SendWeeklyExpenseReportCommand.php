@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Console\Command;
 
-class SendWeeklyExpenseReports extends Command
+class SendWeeklyExpenseReportCommand extends Command
 {
     /**
      * The name and signature of the console command.
