@@ -5,39 +5,35 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use App\Models\AuditLog;
+use Illuminate\Support\Facades\Cache;
 
 
 class ExpenseController extends Controller
 {
+   
     public function index(Request $request)
     {
         $user = auth()->user();
+        $search = $request->search ?? '';
+        $page = $request->get('page', 1);
+        $cacheKey = "expenses:{$user->id}:{$search}:page:{$page}";
 
-        $query = Expense::where('company_id', $user->company_id);
+        $cached = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($user, $search) {
+            return Expense::with('user')
+                ->where('company_id', $user->company_id)
+                ->when($search, fn($q) =>
+                    $q->where(function ($query) use ($search) {
+                        $query->where('title', 'like', '%' . $search . '%')
+                            ->orWhere('category', 'like', '%' . $search . '%');
+                    })
+                )
+                ->latest()
+                ->paginate(10);
+        });
 
-        // Optional filtering
-        if ($request->has('title')) {
-            $query->where('title', 'LIKE', '%' . $request->title . '%');
-        }
-
-        if ($request->has('category')) {
-            $query->where('category', 'LIKE', '%' . $request->category . '%');
-        }
-
-        // Eager load user info 
-        $expenses = Expense::with('user')
-            ->where('company_id', $user->company_id)
-            ->when($request->search, fn($q) =>
-                $q->where(function ($query) use ($request) {
-                    $query->where('title', 'like', '%' . $request->search . '%')
-                          ->orWhere('category', 'like', '%' . $request->search . '%');
-                })
-            )
-            ->latest()
-            ->paginate(10);
-
-        return response()->json($expenses);
+        return response()->json($cached);
     }
+
 
 
     public function store(Request $request)
