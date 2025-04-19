@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\CompanyScope;
 
 class Expense extends Model
 {
@@ -22,5 +23,11 @@ class Expense extends Model
         return $this->belongsTo(User::class);
     }
     
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CompanyScope);
+    }
+
 }
 
