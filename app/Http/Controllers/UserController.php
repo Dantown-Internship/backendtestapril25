@@ -57,6 +57,36 @@ class UserController extends Controller
         ], 201);
     }
 
+    
+
+    public function update(Request $request, $id)
+    {
+        $admin = auth()->user();
+
+        if ($admin->role !== 'Admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $validated = $request->validate([
+            'role' => ['required', Rule::in(['Admin', 'Manager', 'Employee'])]
+        ]);
+
+        $user = \App\Models\User::where('company_id', $admin->company_id)->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found or not in your company'], 404);
+        }
+
+        $user->role = $validated['role'];
+        $user->save();
+
+        return response()->json([
+            'message' => 'User role updated successfully.',
+            'user' => $user
+        ]);
+    }
+
+
 
 }
 
