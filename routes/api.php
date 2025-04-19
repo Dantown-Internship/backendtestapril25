@@ -14,6 +14,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/expenses/{id}', [\App\Http\Controllers\ExpenseController::class, 'update']);
     Route::delete('/expenses/{id}', [\App\Http\Controllers\ExpenseController::class, 'destroy']);
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
+    Route::post('/users', [\App\Http\Controllers\UserController::class, 'store']);
+
 
 
 
