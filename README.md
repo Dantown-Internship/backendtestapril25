@@ -10,20 +10,17 @@ invoice and nally marking an invoice as paid
 
 - PHP 8.2
 - Laravel 12.x
-- Alpinejs
 
 ## Installation Steps
 
 1. **Clone and Setup Project**
    ```bash
    # Clone the repository
-   git clone git@github.com:kingsleyudenewu/vendor-invoice.git
+   git clone git@github.com:kingsleyudenewu/kingsley-udenewu.git
    cd vendor-invoice
    
    # Install composer dependencies and NPM packages
     composer install
-    npm install
-    npm run dev
    
    # Install all dependencies in one command
    chmod +x setup.sh
@@ -43,4 +40,4 @@ invoice and nally marking an invoice as paid
    '''
 
 ### Base URL
-`https://localhost:8081/`
+`https://localhost:8000/`
