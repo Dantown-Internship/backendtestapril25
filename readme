@@ -1,147 +1,92 @@
-# 🧾 Mid-Level Technical Test – Multi-Tenant SaaS-Based Expense Management API
+# 🧾 Multi-Tenant SaaS-Based Expense Management API
 
-Welcome! This is a technical test for laravel backend developers.
+## Overview
 
-Your task is to build a secure, high-performance API for a **Multi-Tenant SaaS-based Expense Management System**, where multiple companies can manage their expenses independently. Please follow the instructions below and submit your solution as described.
-
----
-
-## 🚀 Project Requirements
-
-### ✅ Key Features to Implement
-
-- **Multi-Tenant Support** – Companies should have isolated data.
-- **Secure API Authentication** – Use Laravel Sanctum.
-- **Role-Based Access Control (RBAC)** – Admins, Managers, Employees.
-- **Advanced Query Optimization** – Indexing, Eager Loading.
-- **Background Job Processing** – Laravel Queues.
-- **Audit Logging** – Track changes to expenses.
+This project is a **Multi-Tenant SaaS-based Expense Management System** that allows multiple companies to manage their expenses independently through a robust API. It includes secure API authentication, role-based access control, and other features listed below.
 
 ---
+## Features
 
-## 🗂️ Tasks Breakdown
+- **Multi-Tenant Support** – Complete data isolation between companies
+- **Secure API Authentication** – Token-based auth with Laravel Sanctum.
+- **Role-Based Access Control (RBAC)** – Admin, Manager, and Employee roles
+- **Advanced Query Optimization** – Database indexing & eager loading using MySQL
+- **Background Job Processing** – Automated weekly expense reports
+- **Audit Logging** – Track changes to expense records.
+- **Redis Caching** High-performance response times
+  
+---
+## Technologies Used
 
-### 🏗️ Task 1: Multi-Tenant Database Structure (Migrations & Models)
+- PHP 8.4.6 
+- Laravel 12.9.0 and 
+- MySQL version 9.0.0
+- Composer 2.8.8
+    
+---
+## Database Setup
 
-#### Companies Table
-- Fields: `id`, `name`, `email`, `created_at`, `updated_at`
+This application uses the following database structure:
 
-#### Users Table (Modified)
-- Add `company_id` (Foreign Key)
-- Add `role` (Enum: `["Admin", "Manager", "Employee"]`)
+- **companies** - Stores company information
+- **users** - Stores user information with company association
+- **expenses** - Stores expense records
+- **audit_logs** - Tracks changes to expenses
+- **jobs** - For queue processing
 
-#### Expenses Table
-- Fields: `id`, `company_id`, `user_id`, `title`, `amount`, `category`, `created_at`, `updated_at`
-- Add an index on `company_id` for performance
+---
+## Authentication
 
-#### Relationships
+- Laravel Sanctum for token-based authentication.
+- Register or login to receive a token
+- Include the token in the Authorization header.
+
+---
+## Role-Based Permissions
+
+- `Admin:` → Full access to all resources
+- `Manager:` → Can manage expenses but not users
+- `Employee:` → Can view and create their own expenses
+
+---
+## API Endpoints
+
+#### **Authentication Routes:**
+
+- `POST /api/register:` → This is restricted to Admins only. Admins can create new users. (Done with middleware('role:Admin'))
+
+- `POST /api/login:` → This allows everyone to log in, regardless of their role.
+
+- `POST /api/logout:` → This is for logging out the authenticated user (uses Sanctum's token-based authentication).
+
+#### **Expense Management:**
+
+- `GET /api/expenses:` → Allows Admins, Managers, and Employees to view expenses. The ExpenseController@index method will be responsible for fetching expenses, ensuring they are filtered by company (using auth()->user()->company_id).
+
+The list will be paginated and searchable by title/category, as specified.
+
+- `POST /api/expenses:` → Allows Admins, Managers, and Employees to create an expense. The ExpenseController@store method ensures the expense is linked to the authenticated user's company.
+
+- `PUT /api/expenses/{id}:` → Allows Admins and Managers to update expenses (as you mentioned).
+
+- `DELETE /api/expenses/{id}:` → Allows only Admins to delete an expense.
+
+#### **User Management:**
+
+- `GET /api/users:` → Lists all users, restricted to Admins only.
+
+- `POST /api/users:` → Allows Admins only to add new users.
+
+- `PUT /api/users/{id}:` → Allows Admins only to update a user's role.
+
+---
+## To view API Endpoints from the commandline, run:
+
+    php artisan route:list
+
+---
+## Relationships
+
 - A **Company** has many **Users**
 - A **User** belongs to a **Company**
 - A **User** has many **Expenses**
-
----
-
-### 🔐 Task 2: API Authentication & RBAC
-
-- Use **Laravel Sanctum** for token-based authentication
-- Implement Role-Based Access Control:
-  - **Admin**: Manage users & expenses
-  - **Manager**: Manage expenses (cannot delete users)
-  - **Employee**: View and create expenses
-- Ensure users **cannot access data** from other companies
-
----
-
-### 🧾 Task 3: API Endpoints
-
-#### Authentication
-- `POST /api/register` → Admin only
-- `POST /api/login`
-
-#### Expense Management
-- `GET /api/expenses` → List (by company, paginated, searchable by title/category)
-- `POST /api/expenses` → Create (restricted to logged-in user’s company)
-- `PUT /api/expenses/{id}` → Update (Managers & Admins only)
-- `DELETE /api/expenses/{id}` → Delete (Admins only)
-
-#### User Management
-- `GET /api/users` → List users (Admins only)
-- `POST /api/users` → Add user (Admins only)
-- `PUT /api/users/{id}` → Update user role (Admins only)
-
----
-
-### ⚙️ Task 4: Optimization & Performance
-
-- Use **Eager Loading** (`with()`) to avoid N+1 queries
-- Add **indexes** on `company_id` and `user_id` in the expenses table
-- Implement **Redis caching** for frequently accessed queries
-
----
-
-### 🧵 Task 5: Background Job Processing
-
-- Use Laravel Queues (with `database` or `redis` driver)
-- Create a **weekly job** that sends an expense report to all Admins
-- Use Laravel’s **scheduler** (`schedule:run`) to run the job
-
----
-
-### 🕵️‍♀️ Task 6: Audit Logs
-
-#### Audit Logs Table
-- Fields: `id`, `user_id`, `company_id`, `action`, `changes`, `created_at`
-
-#### Requirements
-- Log every **update/delete** action on expenses
-- Store the **old and new values** of each expense before update
-
----
-
-## 🛠️ Tech Stack
-
-- Laravel 10+
-- MySQL or PostgreSQL
-- Laravel Sanctum
-- Redis (optional but recommended)
-- Laravel Queues & Scheduler
-
----
-
-## 📬 How to Submit
-
-1. **Fork** this repository.
-2. **Clone** the forked repository to your local machine.
-3. Create a new **branch** using your full name (e.g., `john-doe`):
-
-   ```bash
-   git checkout -b john-doe
-4. Complete the tasks outlined above.
-5. Push your branch to your forked repository:
-
-   git push origin your-branch-name
-
-6. Create a Pull Request (PR) to the original repository’s `main` branch.
-
-7. In the PR description, please include:
-   - Your full name
-   - Any notes or assumptions made
-   - Features you implemented or skipped (with reasons)
-   - Any instructions for testing (if applicable)
-
----
-
-## ✅ Evaluation Criteria
-
-- Correctness & completeness of features  
-- Code structure and readability  
-- Proper use of Laravel best practices  
-- Security and role enforcement  
-- Performance optimizations  
-- Bonus: Tests, Redis integration, and proper API responses  
-
----
-
-Good luck! 🍀 Feel free to reach out if you need clarification on any part of the task.
-
-
