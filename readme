@@ -1,8 +1,8 @@
-# 🧾 Mid-Level Technical Test – Multi-Tenant SaaS-Based Expense Management API
+# 🧾 Multi-Tenant SaaS-Based Expense Management API
 
 ## Overview
 
-This project is a **Multi-Tenant SaaS-based Expense Management System** that allows multiple companies to manage their expenses independently through a robust API. It includes secure API authentication, role-based access control.
+This project is a **Multi-Tenant SaaS-based Expense Management System** that allows multiple companies to manage their expenses independently through a robust API. It includes secure API authentication, role-based access control, and other features listed below.
 
 ---
 ## Features
